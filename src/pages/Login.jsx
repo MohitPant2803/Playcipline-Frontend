@@ -2,6 +2,8 @@ import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 
+const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://playcipline-backend.vercel.app/api';
+
 export default function Login() {
   const { user, loading, error } = useAuth();
   const navigate = useNavigate();
@@ -58,7 +60,7 @@ export default function Login() {
 
           <div className="flex flex-row flex-wrap gap-3 sm:items-center">
             <a
-              href="/api/auth/google"
+              href={`${API_BASE}/auth/google`}
               className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700"
             >
               Login / Sign up
