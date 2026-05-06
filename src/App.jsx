@@ -29,9 +29,6 @@ function ProtectedRoute({ children }) {
 function RootRedirect() {
   const { loading, user, token } = useAuth();
   
-  console.log('RootRedirect:', { loading, user: !!user, token: !!token });
-  console.log('URL params:', window.location.search);
-  
   if (loading) return null;
   return <Navigate to="/explore" />;
 }

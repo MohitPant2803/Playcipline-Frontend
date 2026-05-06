@@ -9,11 +9,11 @@ export default defineConfig({
     headers: {
       'Content-Security-Policy': [
         "default-src 'self'",
-        "script-src 'self' 'unsafe-inline'",
+        "script-src 'self' 'unsafe-inline' https://accounts.google.com",
         "style-src 'self' 'unsafe-inline'",
         "img-src 'self' data: https:",
         "font-src 'self' data:",
-        "connect-src 'self' http://localhost:5000"  // ← this was missing
+        "connect-src 'self' http://localhost:5000 https://accounts.google.com https://www.google.com"  
       ].join('; ')
     }
   },

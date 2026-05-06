@@ -7,12 +7,8 @@ export default function Login() {
   const { user, loading, error } = useAuth();
   const navigate = useNavigate();
 
-  // Debug: Log the OAuth URL
   const oauthUrl = `${API_BASE_URL}/api/auth/google`;
-  React.useEffect(() => {
-    console.log('🔗 OAuth URL:', oauthUrl);
-    console.log('📍 API_BASE_URL:', API_BASE_URL);
-  }, []);
+
   const featureCards = [
     {
       title: 'Dashboard',
