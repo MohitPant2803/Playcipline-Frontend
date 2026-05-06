@@ -1,18 +1,20 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 
-const apiTarget = process.env.VITE_API_TARGET || 'http://localhost:5000';
-
 export default defineConfig({
   plugins: [react()],
   server: {
     port: 5173,
     strictPort: true,
-    proxy: {
-      '/api': {
-        target: apiTarget,
-        changeOrigin: true
-      }
+    headers: {
+      'Content-Security-Policy': [
+        "default-src 'self'",
+        "script-src 'self' 'unsafe-inline'",
+        "style-src 'self' 'unsafe-inline'",
+        "img-src 'self' data: https:",
+        "font-src 'self' data:",
+        "connect-src 'self' http://localhost:5000"  // ← this was missing
+      ].join('; ')
     }
   },
   build: {

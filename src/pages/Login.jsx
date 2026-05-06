@@ -1,12 +1,18 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
-
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://playcipline-backend.vercel.app/api';
+import { API_BASE_URL } from '../api/client';
 
 export default function Login() {
   const { user, loading, error } = useAuth();
   const navigate = useNavigate();
+
+  // Debug: Log the OAuth URL
+  const oauthUrl = `${API_BASE_URL}/api/auth/google`;
+  React.useEffect(() => {
+    console.log('🔗 OAuth URL:', oauthUrl);
+    console.log('📍 API_BASE_URL:', API_BASE_URL);
+  }, []);
   const featureCards = [
     {
       title: 'Dashboard',
@@ -60,7 +66,7 @@ export default function Login() {
 
           <div className="flex flex-row flex-wrap gap-3 sm:items-center">
             <a
-              href={`${API_BASE}/auth/google`}
+              href={`${API_BASE_URL}/api/auth/google`}
               className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700"
             >
               Login / Sign up

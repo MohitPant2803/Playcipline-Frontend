@@ -1,6 +1,7 @@
 import axios from 'axios';
+import { API_BASE_URL } from '../config';
 
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://playcipline-backend.vercel.app/api';
+const API_BASE = `${API_BASE_URL}/api`;
 
 const apiClient = axios.create({
   baseURL: API_BASE,
@@ -85,4 +86,5 @@ export const feedAPI = {
   comment: (activityId, text) => apiClient.post('/feed/comment', { activityId, text }),
 };
 
+export { API_BASE_URL };
 export default apiClient;

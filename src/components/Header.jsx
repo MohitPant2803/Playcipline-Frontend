@@ -1,10 +1,8 @@
 import React from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { userAPI } from '../api/client';
+import { userAPI, API_BASE_URL } from '../api/client';
 import Navigation from './Navigation';
-
-const API_BASE = import.meta.env.VITE_API_BASE_URL || 'https://playcipline-backend.vercel.app/api';
 
 export default function Header() {
   const { user, logout } = useAuth();
@@ -165,7 +163,7 @@ export default function Header() {
             </>
           ) : (
             <a
-              href={`${API_BASE}/auth/google`}
+              href={`${API_BASE_URL}/api/auth/google`}
               className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-5 py-2 text-sm font-bold text-white transition hover:bg-blue-700"
             >
               Login

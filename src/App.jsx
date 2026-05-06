@@ -26,6 +26,15 @@ function ProtectedRoute({ children }) {
 
   return children;
 }
+function RootRedirect() {
+  const { loading, user, token } = useAuth();
+  
+  console.log('RootRedirect:', { loading, user: !!user, token: !!token });
+  console.log('URL params:', window.location.search);
+  
+  if (loading) return null;
+  return <Navigate to="/explore" />;
+}
 
 function AppContent() {
   const { user } = useAuth();
@@ -34,7 +43,7 @@ function AppContent() {
     <Router>
       <Header />
       <Routes>
-        <Route path="/" element={<Navigate to="/explore" />} />
+        <Route path="/" element={<RootRedirect />} />
         <Route path="/login" element={<Login />} />
         <Route path="/explore" element={<Explore />} />
         <Route path="/leaderboard" element={<Leaderboard />} />

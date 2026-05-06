@@ -34,38 +34,30 @@ export function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
   useEffect(() => {
-    // Check for token in URL (from OAuth callback)
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get('token');
-    
-    if (token) {
-      localStorage.setItem('token', token);
-      window.history.replaceState({}, document.title, window.location.pathname);
-      // Fetch user info
-      authAPI.getMe()
-        .then(res => {
-          dispatch({ type: 'SET_USER', payload: res.data, token });
-        })
-        .catch(err => {
-          dispatch({ type: 'SET_ERROR', payload: err.message });
-          localStorage.removeItem('token');
-        });
-    } else {
-      const existingToken = localStorage.getItem('token');
-      if (existingToken) {
-        authAPI.getMe()
-          .then(res => {
-            dispatch({ type: 'SET_USER', payload: res.data, token: existingToken });
-          })
-          .catch(() => {
-            localStorage.removeItem('token');
-            dispatch({ type: 'SET_LOADING', payload: false });
-          });
-      } else {
+  const params = new URLSearchParams(window.location.search);
+  const urlToken = params.get('token');
+  const existingToken = localStorage.getItem('token');
+  const token = urlToken || existingToken;
+
+  if (urlToken) {
+    localStorage.setItem('token', urlToken);
+    // Clear URL immediately
+    window.history.replaceState({}, document.title, window.location.pathname);
+  }
+
+  if (token) {
+    authAPI.getMe()
+      .then(res => {
+        dispatch({ type: 'SET_USER', payload: res.data, token });
+      })
+      .catch(() => {
+        localStorage.removeItem('token');
         dispatch({ type: 'SET_LOADING', payload: false });
-      }
-    }
-  }, []);
+      });
+  } else {
+    dispatch({ type: 'SET_LOADING', payload: false });
+  }
+}, []);
 
   const logout = () => {
     localStorage.removeItem('token');
