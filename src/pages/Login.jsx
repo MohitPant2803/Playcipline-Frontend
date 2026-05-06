@@ -55,7 +55,7 @@ export default function Login() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <p className="text-sm font-semibold uppercase tracking-wide text-blue-600">Habit challenge platform</p>
-            <h1 className="text-4xl sm:text-5xl font-bold text-slate-950">Streakify</h1>
+            <h1 className="text-4xl sm:text-5xl font-bold text-slate-950">Playcipline</h1>
           </div>
 
           <div className="flex flex-row flex-wrap gap-3 sm:items-center">

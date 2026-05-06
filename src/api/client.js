@@ -29,9 +29,18 @@ apiClient.interceptors.response.use(
       baseURL: API_BASE
     });
     
+    // Only redirect on 401 for auth-specific endpoints
+    // Public endpoints like /challenges should not trigger redirect
     if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      window.location.href = '/';
+      const skipRedirectUrls = ['/challenges', '/leaderboard', '/feed'];
+      const shouldSkipRedirect = skipRedirectUrls.some(url => 
+        error.config?.url?.includes(url)
+      );
+      
+      if (!shouldSkipRedirect) {
+        localStorage.removeItem('token');
+        window.location.href = '/';
+      }
     }
     return Promise.reject(error);
   }

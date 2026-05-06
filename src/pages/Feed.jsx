@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { feedAPI } from '../api/client';
+import { useAuth } from '../context/AuthContext';
 import Toast from '../components/Toast';
+import Modal from '../components/Modal';
 import { Card } from '../components/UI';
 
 function timeAgo(date) {
@@ -15,16 +18,30 @@ function timeAgo(date) {
 }
 
 export default function Feed() {
+  const navigate = useNavigate();
+  const { user } = useAuth();
   const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState(null);
   const [commentText, setCommentText] = useState({});
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+
+  // Filter out activities from demo/test users
+  const isDemoUser = (activity) => {
+    const demoPatterns = ['demo', 'test', 'sample', 'fake', 'mock', 'placeholder'];
+    const userName = (activity.userId?.name || '').toLowerCase();
+    const userExists = activity.userId && activity.userId._id;
+    // Filter out if no valid user or if user name contains demo patterns
+    return !userExists || demoPatterns.some(pattern => userName.includes(pattern));
+  };
 
   useEffect(() => {
     const fetchFeed = async () => {
       try {
         const res = await feedAPI.getAll();
-        setActivities(res.data);
+        // Filter out activities from demo/test users
+        const filteredActivities = (res.data || []).filter(activity => !isDemoUser(activity));
+        setActivities(filteredActivities);
         setLoading(false);
       } catch (err) {
         setToast({ message: 'Failed to load feed', type: 'error' });
@@ -35,6 +52,10 @@ export default function Feed() {
   }, []);
 
   const handleLike = async (activityId) => {
+    if (!user) {
+      setShowLoginPrompt(true);
+      return;
+    }
     try {
       const res = await feedAPI.like(activityId);
       setActivities(activities.map(a => 
@@ -48,6 +69,10 @@ export default function Feed() {
   };
 
   const handleComment = async (activityId) => {
+    if (!user) {
+      setShowLoginPrompt(true);
+      return;
+    }
     const text = commentText[activityId];
     if (!text?.trim()) return;
 
@@ -123,7 +148,12 @@ export default function Feed() {
                 <div className="border-t border-gray-200 pt-3 mb-3">
                   <button
                     onClick={() => handleLike(activity._id)}
-                    className="text-gray-600 hover:text-red-500 transition font-medium text-sm flex items-center gap-2"
+                    disabled={!user}
+                    className={`transition font-medium text-sm flex items-center gap-2 ${
+                      user
+                        ? 'text-gray-600 hover:text-red-500 cursor-pointer'
+                        : 'text-gray-400 cursor-not-allowed opacity-60'
+                    }`}
                   >
                     <span>♥️</span> {activity.likes?.length || 0}
                   </button>
@@ -145,7 +175,7 @@ export default function Feed() {
                 <div className="flex gap-2">
                   <input
                     type="text"
-                    placeholder="Add a comment..."
+                    placeholder={user ? "Add a comment..." : "Login to comment"}
                     value={commentText[activity._id] || ''}
                     onChange={(e) => setCommentText({ ...commentText, [activity._id]: e.target.value })}
                     onKeyPress={(e) => {
@@ -153,11 +183,21 @@ export default function Feed() {
                         handleComment(activity._id);
                       }
                     }}
-                    className="flex-grow px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-blue-500"
+                    disabled={!user}
+                    className={`flex-grow px-3 py-2 border rounded-lg text-sm focus:outline-none ${
+                      user
+                        ? 'border-gray-300 focus:border-blue-500'
+                        : 'border-gray-200 bg-gray-50 cursor-not-allowed'
+                    }`}
                   />
                   <button
                     onClick={() => handleComment(activity._id)}
-                    className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition text-sm font-medium"
+                    disabled={!user}
+                    className={`px-4 py-2 rounded-lg transition text-sm font-medium ${
+                      user
+                        ? 'bg-blue-500 text-white hover:bg-blue-600'
+                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                    }`}
                   >
                     Post
                   </button>
@@ -169,6 +209,33 @@ export default function Feed() {
 
         {toast && <Toast message={toast.message} type={toast.type} />}
       </div>
+
+      <Modal
+        isOpen={showLoginPrompt}
+        onClose={() => setShowLoginPrompt(false)}
+        title="Login Required"
+      >
+        <div className="space-y-4">
+          <p className="text-gray-600">You need to be logged in to like and comment on activities.</p>
+          <div className="flex gap-3">
+            <button
+              onClick={() => setShowLoginPrompt(false)}
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+            >
+              Continue Browsing
+            </button>
+            <button
+              onClick={() => {
+                setShowLoginPrompt(false);
+                navigate('/');
+              }}
+              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-center font-medium"
+            >
+              Login
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

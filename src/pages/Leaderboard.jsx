@@ -1,16 +1,25 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { leaderboardAPI } from '../api/client';
+import { useAuth } from '../context/AuthContext';
 import Toast from '../components/Toast';
 import { Card, Badge } from '../components/UI';
 
 export default function Leaderboard() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [leaderboard, setLeaderboard] = useState([]);
   const [userRank, setUserRank] = useState(null);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState(null);
   const [activeTab, setActiveTab] = useState('global');
+
+  // Filter out demo/test users from leaderboard
+  const isDemoUser = (user) => {
+    const demoPatterns = ['demo', 'test', 'sample', 'fake', 'mock', 'placeholder'];
+    const name = (user.name || '').toLowerCase();
+    return demoPatterns.some(pattern => name.includes(pattern));
+  };
 
   useEffect(() => {
     const fetchLeaderboard = async () => {
@@ -19,7 +28,9 @@ export default function Leaderboard() {
         const res = activeTab === 'global'
           ? await leaderboardAPI.getGlobal()
           : await leaderboardAPI.getFriends();
-        setLeaderboard(res.data.leaderboard);
+        // Filter out demo/test users
+        const filteredLeaderboard = (res.data.leaderboard || []).filter(user => !isDemoUser(user));
+        setLeaderboard(filteredLeaderboard);
         setUserRank(res.data.currentUserRank);
         setLoading(false);
       } catch (err) {
@@ -42,10 +53,19 @@ export default function Leaderboard() {
               <button
                 key={tab}
                 type="button"
-                onClick={() => setActiveTab(tab)}
+                onClick={() => {
+                  if (tab === 'friends' && !user) {
+                    navigate('/');
+                    return;
+                  }
+                  setActiveTab(tab);
+                }}
+                disabled={tab === 'friends' && !user}
                 className={`rounded-md px-4 py-2 text-sm font-bold capitalize transition ${
                   activeTab === tab
                     ? 'bg-blue-600 text-white'
+                    : tab === 'friends' && !user
+                    ? 'text-gray-400 cursor-not-allowed bg-gray-50'
                     : 'text-gray-700 hover:bg-gray-50'
                 }`}
               >
@@ -59,7 +79,9 @@ export default function Leaderboard() {
           {leaderboard.length === 0 ? (
             <Card className="text-center py-12">
               <p className="text-gray-600 text-lg">
-                Follow people to build your friends leaderboard.
+                {activeTab === 'friends'
+                  ? 'Follow people to build your friends leaderboard.'
+                  : 'No users on the leaderboard yet. Be the first to climb up!'}
               </p>
             </Card>
           ) : leaderboard.map((user, index) => (

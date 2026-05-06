@@ -6,20 +6,22 @@ export default function Navigation() {
   const location = useLocation();
   const { user } = useAuth();
 
-  if (!user) return null;
-
-  const links = [
-    { path: '/dashboard', label: 'Dashboard' },
-    { path: '/explore', label: 'Explore' },
-    { path: '/leaderboard', label: 'Leaderboard' },
-    { path: '/profile', label: 'Profile' },
-    { path: '/feed', label: 'Feed' }
+  const allLinks = [
+    { path: '/explore', label: 'Explore', requiresAuth: false },
+    { path: '/leaderboard', label: 'Leaderboard', requiresAuth: false },
+    { path: '/feed', label: 'Feed', requiresAuth: false },
+    { path: '/dashboard', label: 'Dashboard', requiresAuth: true },
+    { path: '/profile', label: 'Profile', requiresAuth: true }
   ];
+
+  const visibleLinks = user 
+    ? allLinks 
+    : allLinks.filter(link => !link.requiresAuth);
 
   return (
     <nav className="bg-white border-t border-gray-200">
-      <div className="grid grid-cols-5">
-        {links.map(link => (
+      <div className={`grid gap-0 ${visibleLinks.length === 3 ? 'grid-cols-3' : 'grid-cols-5'}`}>
+        {visibleLinks.map(link => (
           <Link
             key={link.path}
             to={link.path}

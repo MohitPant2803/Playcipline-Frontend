@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { userAPI, challengeAPI, feedAPI } from '../api/client';
+import { useAuth } from '../context/AuthContext';
 import Toast from '../components/Toast';
 import FollowersModal from '../components/FollowersModal';
+import Modal from '../components/Modal';
 import { Card, Badge } from '../components/UI';
 import XPProgressCard from '../components/XPProgressCard';
 
@@ -20,6 +22,7 @@ function timeAgo(date) {
 export default function UserProfile() {
   const { userId } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const [profile, setProfile] = useState(null);
   const [stats, setStats] = useState(null);
   const [activities, setActivities] = useState([]);
@@ -29,6 +32,7 @@ export default function UserProfile() {
   const [followLoading, setFollowLoading] = useState(false);
   const [showFollowersModal, setShowFollowersModal] = useState(false);
   const [modalType, setModalType] = useState('followers');
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -89,6 +93,10 @@ export default function UserProfile() {
   }, [userId]);
 
   const handleFollow = async () => {
+    if (!user) {
+      setShowLoginPrompt(true);
+      return;
+    }
     setFollowLoading(true);
     try {
       if (isFollowing) {
@@ -168,14 +176,16 @@ export default function UserProfile() {
               <div className="mt-6 flex flex-wrap gap-3">
                 <button
                   onClick={handleFollow}
-                  disabled={followLoading}
+                  disabled={!user || followLoading}
                   className={`px-6 py-3 rounded-lg font-bold transition text-lg ${
-                    isFollowing
+                    !user
+                      ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      : isFollowing
                       ? 'bg-white text-purple-600 hover:bg-gray-100 disabled:bg-gray-200'
                       : 'bg-white text-blue-600 hover:bg-gray-100 disabled:bg-gray-200'
                   }`}
                 >
-                  {followLoading ? '⏳ Loading...' : isFollowing ? '✓ Following' : '+ Follow'}
+                  {!user ? '🔒 Login to Follow' : followLoading ? '⏳ Loading...' : isFollowing ? '✓ Following' : '+ Follow'}
                 </button>
                 <button
                   onClick={() => navigate('/leaderboard')}
@@ -207,6 +217,25 @@ export default function UserProfile() {
             </div>
           </div>
         </Card>
+
+        {/* Follow Button */}
+        {profile && (
+          <div className="mb-8 flex justify-center">
+            <button
+              onClick={() => handleFollow()}
+              disabled={!user || followLoading}
+              className={`px-6 py-3 rounded-lg font-bold transition ${
+                user
+                  ? isFollowing
+                    ? 'border border-gray-300 text-gray-700 hover:bg-gray-50'
+                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              }`}
+            >
+              {!user ? 'Login to Follow' : followLoading ? 'Loading...' : isFollowing ? 'Following' : 'Follow'}
+            </button>
+          </div>
+        )}
 
         {/* Badges Section */}
         <div className="mb-8">
@@ -305,6 +334,52 @@ export default function UserProfile() {
         )}
 
         {toast && <Toast message={toast.message} type={toast.type} />}
+
+        {/* Follow Button */}
+        {profile && (
+          <div className="mb-8 flex justify-center gap-4">
+            <button
+              onClick={() => handleFollow()}
+              disabled={!user || followLoading}
+              className={`px-6 py-3 rounded-lg font-bold transition ${
+                user
+                  ? isFollowing
+                    ? 'border border-gray-300 text-gray-700 hover:bg-gray-50'
+                    : 'bg-blue-600 text-white hover:bg-blue-700'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              }`}
+            >
+              {!user ? 'Login to Follow' : followLoading ? 'Loading...' : isFollowing ? 'Following' : 'Follow'}
+            </button>
+          </div>
+        )}
+
+        <Modal
+          isOpen={showLoginPrompt}
+          onClose={() => setShowLoginPrompt(false)}
+          title="Login Required"
+        >
+          <div className="space-y-4">
+            <p className="text-gray-600">You need to be logged in to follow users.</p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setShowLoginPrompt(false)}
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                Continue Browsing
+              </button>
+              <button
+                onClick={() => {
+                  setShowLoginPrompt(false);
+                  navigate('/');
+                }}
+                className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-center font-medium"
+              >
+                Login
+              </button>
+            </div>
+          </div>
+        </Modal>
       </div>
     </div>
   );

@@ -8,13 +8,22 @@ export default function FollowersModal({ userId, type = 'followers', onClose }) 
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
+  // Filter out demo/test users
+  const isDemoUser = (user) => {
+    const demoPatterns = ['demo', 'test', 'sample', 'fake', 'mock', 'placeholder'];
+    const name = (user.name || '').toLowerCase();
+    return demoPatterns.some(pattern => name.includes(pattern));
+  };
+
   useEffect(() => {
     const fetchList = async () => {
       try {
         const res = type === 'followers'
           ? await userAPI.getFollowers(userId)
           : await userAPI.getFollowing(userId);
-        setUsers(res.data);
+        // Filter out demo/test users
+        const filteredUsers = (res.data || []).filter(user => !isDemoUser(user));
+        setUsers(filteredUsers);
         setLoading(false);
       } catch (err) {
         console.log('Failed to load list');

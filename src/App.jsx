@@ -21,7 +21,7 @@ function ProtectedRoute({ children }) {
   }
 
   if (!user) {
-    return <Navigate to="/" />;
+    return <Navigate to="/login" />;
   }
 
   return children;
@@ -32,30 +32,18 @@ function AppContent() {
 
   return (
     <Router>
-      {user && <Header />}
+      <Header />
       <Routes>
-        <Route path="/" element={<Login />} />
+        <Route path="/" element={<Navigate to="/explore" />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/explore" element={<Explore />} />
+        <Route path="/leaderboard" element={<Leaderboard />} />
+        <Route path="/feed" element={<Feed />} />
         <Route
           path="/dashboard"
           element={
             <ProtectedRoute>
               <Dashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/explore"
-          element={
-            <ProtectedRoute>
-              <Explore />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/leaderboard"
-          element={
-            <ProtectedRoute>
-              <Leaderboard />
             </ProtectedRoute>
           }
         />
@@ -67,22 +55,8 @@ function AppContent() {
             </ProtectedRoute>
           }
         />
-        <Route
-          path="/user/:userId"
-          element={
-            <ProtectedRoute>
-              <UserProfile />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/feed"
-          element={
-            <ProtectedRoute>
-              <Feed />
-            </ProtectedRoute>
-          }
-        />
+        <Route path="/user/:userId" element={<UserProfile />} />
+        <Route path="*" element={<Navigate to="/explore" />} />
       </Routes>
     </Router>
   );
