@@ -55,9 +55,20 @@ export const authAPI = {
 
 export const challengeAPI = {
   getAll: () => apiClient.get('/challenges'),
+  getEnrollable: () => apiClient.get('/challenges/enrollable'),
   getMyChall: () => apiClient.get('/challenges/my-challenges'),
   getCompletedByUser: (userId) => apiClient.get(`/challenges/user/${userId}/completed`),
-  join: (id, mode) => apiClient.post(`/challenges/${id}/join`, { mode }),
+  join: async (id, mode) => {
+    try {
+      return await apiClient.post('/challenges/enroll', { challengeId: id, mode });
+    } catch (err) {
+      if (err.response?.status === 404) {
+        return apiClient.post(`/challenges/${id}/join`, { mode });
+      }
+      throw err;
+    }
+  },
+  leave: (userChallengeId) => apiClient.delete(`/challenges/enroll/${userChallengeId}`),
 };
 
 export const checkinAPI = {

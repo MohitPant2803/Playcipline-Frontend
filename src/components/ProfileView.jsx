@@ -1,6 +1,6 @@
 import React from 'react';
 import { Card, Badge } from './UI';
-import XPProgressCard from './XPProgressCard';
+import { getLevelInfo } from '../utils/leveling';
 
 const ALL_BADGES = ['7-day', '21-day', '75-hard', 'hard-mode', 'perfect-streak'];
 
@@ -28,29 +28,62 @@ export default function ProfileView({
   const followerCount = profile?.followerCount ?? profile?.followers ?? 0;
   const followingCount = profile?.followingCount ?? profile?.following ?? 0;
   const completedChallenges = stats?.allChallenges?.filter(challenge => challenge.status === 'completed') || [];
+  const completedCount = stats?.completedChallenges ?? completedChallenges.length;
+  const currentStreak = stats?.currentStreak ?? profile?.globalStreak ?? 0;
+  const longestStreak = stats?.longestStreak ?? profile?.longestStreak ?? 0;
+  const levelInfo = getLevelInfo(profile?.totalXP || 0);
+  const levelProgress = levelInfo.xpRange > 0
+    ? Math.min(100, Math.max(0, (levelInfo.xpIntoLevel / levelInfo.xpRange) * 100))
+    : 100;
 
   return (
     <div className="pb-20 sm:pb-0">
       <div className="max-w-4xl mx-auto px-4 py-8">
+        <div className="mb-6">
+          <h1 className="text-3xl font-bold text-slate-950">Profile</h1>
+        </div>
+
         <Card className="mb-8">
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1.1fr_1fr] lg:items-start">
             <div>
               <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
-                {profile?.avatar ? (
-                  <img
-                    src={profile.avatar}
-                    alt={profile.name}
-                    className="h-24 w-24 rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="flex h-24 w-24 items-center justify-center rounded-full bg-blue-100 text-3xl font-bold text-blue-700">
-                    {(profile?.name || 'U').charAt(0).toUpperCase()}
+                <div className="relative flex w-28 shrink-0 justify-center pb-5">
+                  {profile?.avatar ? (
+                    <img
+                      src={profile.avatar}
+                      alt={profile.name}
+                      className="h-24 w-24 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-24 w-24 items-center justify-center rounded-full bg-blue-100 text-3xl font-bold text-blue-700">
+                      {(profile?.name || 'U').charAt(0).toUpperCase()}
+                    </div>
+                  )}
+                  <div
+                    className="group absolute bottom-0 left-1/2 w-24 -translate-x-1/2 rounded-full border border-slate-200 bg-white px-2 py-1 shadow-md"
+                    aria-label={`${levelInfo.totalXP}/${levelInfo.nextLevelXp} XP to next level`}
+                  >
+                    <div className="mb-0.5 text-center text-[10px] font-bold leading-none text-slate-900">
+                      Level {levelInfo.level}
+                    </div>
+                    <div className="h-1.5 overflow-hidden rounded-full bg-slate-200">
+                      <div
+                        className="h-full rounded-full bg-blue-600"
+                        style={{ width: `${levelProgress}%` }}
+                      />
+                    </div>
+                    <div className="pointer-events-none absolute left-1/2 top-full z-20 mt-2 -translate-x-1/2 whitespace-nowrap rounded-md bg-slate-950 px-2 py-1 text-[11px] font-semibold text-white opacity-0 shadow-lg transition group-hover:opacity-100">
+                      {levelInfo.totalXP}/{levelInfo.nextLevelXp} XP
+                    </div>
                   </div>
-                )}
+                </div>
                 <div>
                   <h1 className="text-3xl font-bold mb-2">{profile?.name}</h1>
                   <p className="text-gray-600">{profile?.email}</p>
                   <p className="mt-2 text-gray-700">{profile?.location || 'Location not added'}</p>
+                  <p className="mt-3 max-w-xl text-sm leading-6 text-gray-700">
+                    {profile?.bio || 'No bio added yet.'}
+                  </p>
                   <div className="mt-4 flex flex-wrap gap-5 text-sm">
                     <button
                       type="button"
@@ -110,6 +143,16 @@ export default function ProfileView({
                       className="rounded-lg border border-gray-300 px-4 py-3 font-normal outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                     />
                   </label>
+                  <label className="grid gap-2 text-sm font-semibold text-gray-700">
+                    Bio
+                    <textarea
+                      value={form.bio}
+                      onChange={(event) => onFormChange?.({ ...form, bio: event.target.value })}
+                      placeholder="A short note about your habits, goals, or progress"
+                      rows={3}
+                      className="resize-none rounded-lg border border-gray-300 px-4 py-3 font-normal outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+                    />
+                  </label>
                   <button
                     type="submit"
                     disabled={saving}
@@ -122,22 +165,21 @@ export default function ProfileView({
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <XPProgressCard totalXP={profile?.totalXP || 0} className="col-span-2 shadow-none border border-gray-100" />
               <Card className="text-center shadow-none border border-gray-100">
-                <p className="text-gray-600 text-sm">Current Streak</p>
-                <p className="text-3xl font-bold text-orange-600">{stats?.currentStreak ?? profile?.globalStreak ?? 0}</p>
-              </Card>
-              <Card className="text-center shadow-none border border-gray-100">
-                <p className="text-gray-600 text-sm">Weekly XP</p>
-                <p className="text-3xl font-bold text-blue-600">{Math.round(profile?.weeklyXP || 0)}</p>
-              </Card>
-              <Card className="text-center shadow-none border border-gray-100">
-                <p className="text-gray-600 text-sm">Active Challenges</p>
-                <p className="text-3xl font-bold text-blue-600">{stats?.activeChallenges || 0}</p>
+                <p className="text-gray-600 text-sm">Badges Won</p>
+                <p className="text-3xl font-bold text-yellow-600">{earnedBadges.length}</p>
               </Card>
               <Card className="text-center shadow-none border border-gray-100">
                 <p className="text-gray-600 text-sm">Completed</p>
-                <p className="text-3xl font-bold text-green-600">{stats?.completedChallenges || 0}</p>
+                <p className="text-3xl font-bold text-green-600">{completedCount}</p>
+              </Card>
+              <Card className="text-center shadow-none border border-gray-100">
+                <p className="text-gray-600 text-sm">Current Streak</p>
+                <p className="text-3xl font-bold text-orange-600">{currentStreak}</p>
+              </Card>
+              <Card className="text-center shadow-none border border-gray-100">
+                <p className="text-gray-600 text-sm">Longest Streak</p>
+                <p className="text-3xl font-bold text-purple-600">{longestStreak}</p>
               </Card>
             </div>
           </div>
@@ -191,6 +233,9 @@ export default function ProfileView({
                     <div>
                       <h3 className="font-bold">{challenge.challengeId?.title}</h3>
                       <Badge text={challenge.mode} />
+                      <p className="mt-2 text-sm text-gray-600">
+                        Completed {challenge.completedDays || 0} times
+                      </p>
                     </div>
                     <p className="text-sm text-gray-600">
                       {challenge.challengeId?.duration} days

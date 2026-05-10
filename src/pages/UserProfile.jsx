@@ -86,6 +86,7 @@ export default function UserProfile() {
 
         setStats({
           currentStreak: profile?.globalStreak || 0,
+          longestStreak: profile?.longestStreak || 0,
           activeChallenges: 0,
           completedChallenges: completed,
           allChallenges

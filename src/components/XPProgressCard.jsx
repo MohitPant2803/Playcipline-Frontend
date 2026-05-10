@@ -6,7 +6,7 @@ import { getLevelGuide, getLevelInfo } from '../utils/leveling';
 export default function XPProgressCard({ totalXP = 0, className = '' }) {
   const [showGuide, setShowGuide] = React.useState(false);
   const levelInfo = getLevelInfo(totalXP);
-  const levelGuide = getLevelGuide(10);
+  const levelGuide = getLevelGuide(100);
   const progressPercent = levelInfo.xpRange > 0
     ? (levelInfo.xpIntoLevel / levelInfo.xpRange) * 100
     : 100;
@@ -48,9 +48,9 @@ export default function XPProgressCard({ totalXP = 0, className = '' }) {
       <Modal isOpen={showGuide} onClose={() => setShowGuide(false)} title="Level Guide">
         <div className="space-y-3">
           <p className="text-sm text-slate-600">
-            Early levels move quickly so a steady first week can reach Level 5. After that, each level takes more XP.
+            Level 1 starts at 100 total XP. A steady month can reach around Level 10, then each level asks for more.
           </p>
-          <div className="overflow-hidden rounded-lg border border-slate-200">
+          <div className="max-h-96 overflow-y-auto rounded-lg border border-slate-200">
             {levelGuide.map((entry) => (
               <div
                 key={entry.level}
@@ -60,7 +60,7 @@ export default function XPProgressCard({ totalXP = 0, className = '' }) {
               >
                 <span className="font-semibold text-slate-900">Level {entry.level}</span>
                 <span className="text-slate-600">{entry.totalXPRequired} total XP</span>
-                <span className="text-slate-500">+{entry.xpToNextLevel} next</span>
+                <span className="text-slate-500">+{entry.xpToNextLevel} to next</span>
               </div>
             ))}
           </div>

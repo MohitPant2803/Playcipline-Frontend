@@ -18,7 +18,8 @@ export default function Profile() {
   const [form, setForm] = useState({
     name: user?.name || '',
     avatar: user?.avatar || '',
-    location: user?.location || ''
+    location: user?.location || '',
+    bio: user?.bio || ''
   });
 
   useEffect(() => {
@@ -32,8 +33,8 @@ export default function Profile() {
         const currentStreak = Math.max(...allChallenges.map(challenge => challenge.currentStreak || 0), user?.globalStreak || 0);
 
         setStats({
-          currentStreak,
-          longestStreak,
+          currentStreak: user?.globalStreak || currentStreak,
+          longestStreak: user?.longestStreak || longestStreak,
           activeChallenges: active,
           completedChallenges: completed,
           allChallenges
@@ -52,7 +53,8 @@ export default function Profile() {
     setForm({
       name: user?.name || '',
       avatar: user?.avatar || '',
-      location: user?.location || ''
+      location: user?.location || '',
+      bio: user?.bio || ''
     });
   }, [user]);
 

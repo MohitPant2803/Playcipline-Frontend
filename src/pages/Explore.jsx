@@ -15,32 +15,33 @@ export default function Explore() {
   const [selectedMode, setSelectedMode] = useState(null);
   const [toast, setToast] = useState(null);
   const [joining, setJoining] = useState(false);
+  const [leavingId, setLeavingId] = useState(null);
   const [challengeSearch, setChallengeSearch] = useState('');
 
   // Fallback sample challenges when API returns empty or fails
   const sampleChallenges = [
     {
-      _id: 'sample1',
-      title: 'Morning Meditation',
-      description: 'Build a consistent meditation habit by practicing mindfulness every morning for 21 days.',
-      duration: 21,
-      baseDifficulty: 2,
+      _id: '100000000000000000000001',
+      title: 'Morning Walk',
+      description: 'Walk for at least 20 minutes each morning.',
+      duration: 7,
+      baseDifficulty: 1,
       category: 'Wellness'
     },
     {
-      _id: 'sample2',
-      title: 'Daily Exercise',
-      description: 'Commit to 30 minutes of physical activity every day. Choose any exercise you enjoy.',
-      duration: 30,
-      baseDifficulty: 3,
+      _id: '100000000000000000000002',
+      title: 'Deep Work Block',
+      description: 'Complete one focused 60-minute work session every day.',
+      duration: 21,
+      baseDifficulty: 2,
       category: 'Fitness'
     },
     {
-      _id: 'sample3',
-      title: 'Read More Books',
-      description: 'Read at least 20 pages of a book every day to expand your knowledge and imagination.',
-      duration: 14,
-      baseDifficulty: 1,
+      _id: '100000000000000000000003',
+      title: '75-Day Fitness Reset',
+      description: 'Train, hydrate, and stay consistent for the full reset.',
+      duration: 75,
+      baseDifficulty: 3,
       category: 'Learning'
     }
   ];
@@ -48,7 +49,12 @@ export default function Explore() {
   useEffect(() => {
     const fetchChallenges = async () => {
       try {
-        const res = await challengeAPI.getAll();
+        let res;
+        try {
+          res = user ? await challengeAPI.getEnrollable() : await challengeAPI.getAll();
+        } catch (err) {
+          res = await challengeAPI.getAll();
+        }
         // Use API data if available, otherwise use sample challenges
         const challengesData = res.data && res.data.length > 0 ? res.data : sampleChallenges;
         setChallenges(challengesData);
@@ -60,19 +66,53 @@ export default function Explore() {
       }
     };
     fetchChallenges();
-  }, []);
+  }, [user]);
 
   const handleJoin = async () => {
     setJoining(true);
     try {
-      await challengeAPI.join(selectedChallenge._id, selectedMode);
-      setToast({ message: 'Challenge joined! Head to Dashboard.', type: 'success' });
+      const res = await challengeAPI.join(selectedChallenge._id, selectedMode);
+      setChallenges(currentChallenges => currentChallenges.map(challenge => (
+        challenge._id === selectedChallenge._id
+          ? {
+              ...challenge,
+              isJoined: true,
+              enrollmentId: res.data._id,
+              enrollmentMode: res.data.mode
+            }
+          : challenge
+      )));
+      setToast({ message: 'Challenge enrolled! Head to Dashboard.', type: 'success' });
       setSelectedChallenge(null);
       setSelectedMode(null);
     } catch (err) {
       setToast({ message: err.response?.data?.error || 'Failed to join', type: 'error' });
     } finally {
       setJoining(false);
+    }
+  };
+
+  const handleLeave = async (challenge) => {
+    if (!challenge.enrollmentId) return;
+
+    setLeavingId(challenge._id);
+    try {
+      await challengeAPI.leave(challenge.enrollmentId);
+      setChallenges(currentChallenges => currentChallenges.map(item => (
+        item._id === challenge._id
+          ? {
+              ...item,
+              isJoined: false,
+              enrollmentId: null,
+              enrollmentMode: null
+            }
+          : item
+      )));
+      setToast({ message: 'You left the challenge.', type: 'success' });
+    } catch (err) {
+      setToast({ message: err.response?.data?.error || 'Failed to de-enroll', type: 'error' });
+    } finally {
+      setLeavingId(null);
     }
   };
 
@@ -149,14 +189,36 @@ export default function Explore() {
                   <Badge text={getDifficultyStars(challenge.baseDifficulty)} color="yellow" />
                 </div>
               </div>
-              <Button
-                onClick={() => setSelectedChallenge(challenge)}
-                variant="primary"
-                size="md"
-                className="w-full"
-              >
-                Join Challenge
-              </Button>
+              {challenge.isJoined ? (
+                <div className="grid gap-2">
+                  <Button
+                    disabled
+                    variant="secondary"
+                    size="md"
+                    className="w-full"
+                  >
+                    Joined{challenge.enrollmentMode ? ` (${challenge.enrollmentMode})` : ''}
+                  </Button>
+                  <Button
+                    onClick={() => handleLeave(challenge)}
+                    disabled={leavingId === challenge._id}
+                    variant="danger"
+                    size="md"
+                    className="w-full"
+                  >
+                    {leavingId === challenge._id ? 'Leaving...' : 'De-enroll'}
+                  </Button>
+                </div>
+              ) : (
+                <Button
+                  onClick={() => setSelectedChallenge(challenge)}
+                  variant="primary"
+                  size="md"
+                  className="w-full"
+                >
+                  Enroll
+                </Button>
+              )}
             </Card>
           ))}
         </div>
@@ -191,7 +253,7 @@ export default function Explore() {
             
             {!user && (
               <div className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="text-sm text-blue-800 font-medium">👤 Login to select difficulty and join this challenge</p>
+                <p className="text-sm text-blue-800 font-medium">Login to select difficulty and enroll in this challenge</p>
               </div>
             )}
 
@@ -209,7 +271,7 @@ export default function Explore() {
                   disabled={!selectedMode || joining}
                   className="flex-1"
                 >
-                  {joining ? 'Joining...' : 'Join Challenge'}
+                  {joining ? 'Enrolling...' : 'Enroll'}
                 </Button>
               ) : (
                 <Button
@@ -220,7 +282,7 @@ export default function Explore() {
                   variant="primary"
                   className="flex-1"
                 >
-                  Login to Join
+                  Login to Enroll
                 </Button>
               )}
             </div>
