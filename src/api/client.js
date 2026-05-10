@@ -74,6 +74,7 @@ export const userAPI = {
   getProfile: (id) => apiClient.get(`/users/${id}`),
   getFollowers: (id) => apiClient.get(`/users/${id}/followers`),
   getFollowing: (id) => apiClient.get(`/users/${id}/following`),
+  getFollowStatus: (id) => apiClient.get(`/users/${id}/follow-status`),
   search: (query) => apiClient.get('/users/search', { params: { q: query } }),
   follow: (id) => apiClient.post(`/users/${id}/follow`),
   unfollow: (id) => apiClient.delete(`/users/${id}/follow`),

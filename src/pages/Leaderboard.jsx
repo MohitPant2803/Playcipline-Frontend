@@ -8,6 +8,7 @@ import { Card, Badge } from '../components/UI';
 export default function Leaderboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
+  const currentUserId = user?._id;
   const [leaderboard, setLeaderboard] = useState([]);
   const [userRank, setUserRank] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -90,7 +91,7 @@ export default function Leaderboard() {
               onClick={() => navigate(`/user/${user._id}`)}
               className={`flex items-center gap-4 cursor-pointer hover:shadow-lg transition ${
                 index < 3 ? 'border-2 border-yellow-400' : ''
-              }`}
+              } ${user._id === currentUserId ? 'bg-yellow-200' : ''}`}
             >
               <div className="text-2xl font-bold text-gray-400 w-8">#{user.rank}</div>
               {user.avatar && (

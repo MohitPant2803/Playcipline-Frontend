@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { userAPI, API_BASE_URL } from '../api/client';
 import Navigation from './Navigation';
+import LogoutConfirmModal from './LogoutConfirmModal';
 
 export default function Header() {
   const { user, logout } = useAuth();
@@ -10,6 +11,7 @@ export default function Header() {
   const [userSearch, setUserSearch] = React.useState('');
   const [userResults, setUserResults] = React.useState([]);
   const [searchingUsers, setSearchingUsers] = React.useState(false);
+  const [showLogoutConfirm, setShowLogoutConfirm] = React.useState(false);
 
   // Filter out demo/test users
   const isDemoUser = (user) => {
@@ -72,6 +74,12 @@ export default function Header() {
     setUserSearch('');
     setUserResults([]);
     navigate(`/user/${userId}`);
+  };
+
+  const handleLogout = () => {
+    logout();
+    setShowLogoutConfirm(false);
+    navigate('/');
   };
 
   return (
@@ -155,11 +163,16 @@ export default function Header() {
               </Link>
               <button
                 type="button"
-                onClick={logout}
+                onClick={() => setShowLogoutConfirm(true)}
                 className="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-bold text-gray-700 transition hover:bg-gray-50"
               >
                 Logout
               </button>
+              <LogoutConfirmModal
+                isOpen={showLogoutConfirm}
+                onClose={() => setShowLogoutConfirm(false)}
+                onConfirm={handleLogout}
+              />
             </>
           ) : (
             <a

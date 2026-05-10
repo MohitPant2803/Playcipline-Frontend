@@ -27,10 +27,10 @@ function ProtectedRoute({ children }) {
   return children;
 }
 function RootRedirect() {
-  const { loading, user, token } = useAuth();
+  const { loading, user } = useAuth();
   
   if (loading) return null;
-  return <Navigate to="/explore" />;
+  return <Navigate to={user ? "/dashboard" : "/explore"} replace />;
 }
 
 function AppContent() {

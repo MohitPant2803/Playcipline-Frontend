@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { userAPI } from '../api/client';
+import { useAuth } from '../context/AuthContext';
 import { Card } from './UI';
 
 export default function FollowersModal({ userId, type = 'followers', onClose }) {
   const navigate = useNavigate();
+  const { user: currentUser } = useAuth();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [updatingUserId, setUpdatingUserId] = useState(null);
 
   // Filter out demo/test users
   const isDemoUser = (user) => {
@@ -39,6 +42,37 @@ export default function FollowersModal({ userId, type = 'followers', onClose }) 
   const handleUserClick = (targetUserId) => {
     navigate(`/user/${targetUserId}`);
     onClose();
+  };
+
+  const handleFollowToggle = async (event, targetUser) => {
+    event.stopPropagation();
+
+    if (!currentUser) {
+      onClose();
+      navigate('/login');
+      return;
+    }
+
+    if (targetUser._id === currentUser._id || targetUser.isCurrentUser) {
+      return;
+    }
+
+    setUpdatingUserId(targetUser._id);
+    try {
+      const res = targetUser.isFollowing
+        ? await userAPI.unfollow(targetUser._id)
+        : await userAPI.follow(targetUser._id);
+
+      setUsers(currentUsers => currentUsers.map(listUser => (
+        listUser._id === targetUser._id
+          ? { ...listUser, isFollowing: res.data.isFollowing }
+          : listUser
+      )));
+    } catch (err) {
+      console.log('Failed to update follow status');
+    } finally {
+      setUpdatingUserId(null);
+    }
   };
 
   if (loading) {
@@ -89,6 +123,20 @@ export default function FollowersModal({ userId, type = 'followers', onClose }) 
                   <p className="font-semibold text-gray-900">{user.name}</p>
                   <p className="text-xs text-gray-600">Level {user.level}</p>
                 </div>
+                {user._id !== currentUser?._id && !user.isCurrentUser && (
+                  <button
+                    type="button"
+                    onClick={(event) => handleFollowToggle(event, user)}
+                    disabled={updatingUserId === user._id}
+                    className={`ml-auto min-w-[92px] rounded-lg px-3 py-1.5 text-xs font-bold transition disabled:cursor-not-allowed disabled:opacity-60 ${
+                      user.isFollowing
+                        ? 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
+                        : 'bg-blue-600 text-white hover:bg-blue-700'
+                    }`}
+                  >
+                    {updatingUserId === user._id ? '...' : user.isFollowing ? 'Following' : 'Follow'}
+                  </button>
+                )}
               </div>
             ))}
           </div>
