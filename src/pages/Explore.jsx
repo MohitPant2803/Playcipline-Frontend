@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { challengeAPI } from '../api/client';
+import { challengeAPI, API_BASE_URL } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import Modal from '../components/Modal';
 import Toast from '../components/Toast';
@@ -86,6 +86,11 @@ export default function Explore() {
       setSelectedChallenge(null);
       setSelectedMode(null);
     } catch (err) {
+      // Trigger Google auth if unauthorized
+      if (err.response?.status === 401) {
+        window.location.href = `${API_BASE_URL}/api/auth/google`;
+        return;
+      }
       setToast({ message: err.response?.data?.error || 'Failed to join', type: 'error' });
     } finally {
       setJoining(false);
@@ -276,8 +281,7 @@ export default function Explore() {
               ) : (
                 <Button
                   onClick={() => {
-                    setSelectedChallenge(null);
-                    navigate('/');
+                    window.location.href = `${API_BASE_URL}/api/auth/google`;
                   }}
                   variant="primary"
                   className="flex-1"

@@ -34,30 +34,31 @@ export function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
   useEffect(() => {
-  const params = new URLSearchParams(window.location.search);
-  const urlToken = params.get('token');
-  const existingToken = localStorage.getItem('token');
-  const token = urlToken || existingToken;
+    const params = new URLSearchParams(window.location.search);
+    const urlToken = params.get('token');
+    const existingToken = localStorage.getItem('token');
+    const token = urlToken || existingToken;
 
-  if (urlToken) {
-    localStorage.setItem('token', urlToken);
-    // Clear URL immediately
-    window.history.replaceState({}, document.title, window.location.pathname);
-  }
+    if (urlToken) {
+      localStorage.setItem('token', urlToken);
+      // Clear URL immediately
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
 
-  if (token) {
-    authAPI.getMe()
-      .then(res => {
-        dispatch({ type: 'SET_USER', payload: res.data, token });
-      })
-      .catch(() => {
-        localStorage.removeItem('token');
-        dispatch({ type: 'SET_LOADING', payload: false });
-      });
-  } else {
-    dispatch({ type: 'SET_LOADING', payload: false });
-  }
-}, []);
+    if (token) {
+      authAPI.getMe()
+        .then(res => {
+          dispatch({ type: 'SET_USER', payload: res.data, token });
+        })
+        .catch((err) => {
+          console.error('Auth error:', err.message);
+          localStorage.removeItem('token');
+          dispatch({ type: 'SET_LOADING', payload: false });
+        });
+    } else {
+      dispatch({ type: 'SET_LOADING', payload: false });
+    }
+  }, []);
 
   const logout = () => {
     localStorage.removeItem('token');

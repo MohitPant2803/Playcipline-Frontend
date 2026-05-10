@@ -4,6 +4,7 @@ import { leaderboardAPI } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import Toast from '../components/Toast';
 import { Card, Badge } from '../components/UI';
+import { getTimeUntilWeekEnd, formatTimeRemaining } from '../utils/weeklyReset';
 
 export default function Leaderboard() {
   const navigate = useNavigate();
@@ -14,6 +15,14 @@ export default function Leaderboard() {
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState(null);
   const [activeTab, setActiveTab] = useState('global');
+  const [timeRemaining, setTimeRemaining] = useState(() => {
+    try {
+      return getTimeUntilWeekEnd();
+    } catch (err) {
+      console.error('Error initializing week timer:', err);
+      return { days: 0, hours: 0, minutes: 0, seconds: 0, total: 0 };
+    }
+  });
 
   // Filter out demo/test users from leaderboard
   const isDemoUser = (user) => {
@@ -30,17 +39,38 @@ export default function Leaderboard() {
           ? await leaderboardAPI.getGlobal()
           : await leaderboardAPI.getFriends();
         // Filter out demo/test users
-        const filteredLeaderboard = (res.data.leaderboard || []).filter(user => !isDemoUser(user));
+        const leaderboardData = res.data?.leaderboard || res.data || [];
+        const filteredLeaderboard = Array.isArray(leaderboardData) 
+          ? leaderboardData.filter(user => !isDemoUser(user))
+          : [];
         setLeaderboard(filteredLeaderboard);
-        setUserRank(res.data.currentUserRank);
+        setUserRank(res.data?.currentUserRank || null);
         setLoading(false);
       } catch (err) {
+        console.error('Leaderboard fetch error:', err.message);
+        // Handle 401 errors gracefully for friends leaderboard
+        if (err.response?.status === 401 && activeTab === 'friends') {
+          setLeaderboard([]);
+          setUserRank(null);
+          setLoading(false);
+          return;
+        }
         setToast({ message: 'Failed to load leaderboard', type: 'error' });
+        setLeaderboard([]);
         setLoading(false);
       }
     };
     fetchLeaderboard();
   }, [activeTab]);
+
+  // Update countdown timer every second
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeRemaining(getTimeUntilWeekEnd());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
 
   if (loading) return <div className="flex items-center justify-center h-screen">Loading...</div>;
 
@@ -73,6 +103,20 @@ export default function Leaderboard() {
                 {tab}
               </button>
             ))}
+          </div>
+        </div>
+
+        {/* Week End Countdown */}
+        <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border-2 border-purple-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-sm font-semibold text-gray-700">Week Ends In:</p>
+              <p className="text-2xl font-bold text-purple-600">
+                {formatTimeRemaining(timeRemaining)}
+              </p>
+              <p className="text-xs text-gray-600 mt-1">Scores reset when the week ends</p>
+            </div>
+            <div className="text-4xl">⏰</div>
           </div>
         </div>
 

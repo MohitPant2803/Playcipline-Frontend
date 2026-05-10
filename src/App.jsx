@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-d
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { UserProvider } from './context/UserContext';
 
-import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import Explore from './pages/Explore';
 import Leaderboard from './pages/Leaderboard';
@@ -21,7 +20,7 @@ function ProtectedRoute({ children }) {
   }
 
   if (!user) {
-    return <Navigate to="/login" />;
+    return <Navigate to="/explore" />;
   }
 
   return children;
@@ -41,7 +40,6 @@ function AppContent() {
       <Header />
       <Routes>
         <Route path="/" element={<RootRedirect />} />
-        <Route path="/login" element={<Login />} />
         <Route path="/explore" element={<Explore />} />
         <Route path="/leaderboard" element={<Leaderboard />} />
         <Route path="/feed" element={<Feed />} />
