@@ -5,6 +5,8 @@ import Toast from '../components/Toast';
 import { Card, Badge, Button, ProgressBar } from '../components/UI';
 import XPProgressCard from '../components/XPProgressCard';
 import { getLevelInfo } from '../utils/leveling';
+import { useDailyCheckInCountdown } from '../hooks/useDailyCheckIn';
+import { formatTimeUntilReset } from '../utils/dailyTimer';
 
 export default function Dashboard() {
   const { user, mergeUser } = useAuth();
@@ -14,6 +16,7 @@ export default function Dashboard() {
   const [toast, setToast] = useState(null);
   const [checking, setChecking] = useState({});
   const [leaving, setLeaving] = useState({});
+  const timeRemaining = useDailyCheckInCountdown();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -33,6 +36,28 @@ export default function Dashboard() {
     fetchData();
   }, []);
 
+  // Refetch check-in status when daily window resets (at 12:20 AM)
+  useEffect(() => {
+    // If time remaining is very small (less than 2 seconds), we're near the reset
+    if (timeRemaining.total > 0 && timeRemaining.total < 2000) {
+      // Wait a bit for 12:20 AM to fully pass, then refetch
+      const refetchTimer = setTimeout(async () => {
+        try {
+          const [chalRes, statusRes] = await Promise.all([
+            challengeAPI.getMyChall(),
+            checkinAPI.getTodayStatus()
+          ]);
+          setChallenges(chalRes.data.filter(c => c.status === 'active'));
+          setCheckedInToday(statusRes.data);
+        } catch (err) {
+          console.error('Failed to refresh check-in status after reset:', err);
+        }
+      }, 1500);
+
+      return () => clearTimeout(refetchTimer);
+    }
+  }, [timeRemaining.total]);
+
   const handleCheckin = async (userChallengeId) => {
     setChecking({ ...checking, [userChallengeId]: true });
     try {
@@ -46,7 +71,20 @@ export default function Dashboard() {
         longestStreak: res.data.longestStreak
       });
       
-      // Update challenge status if completed/failed
+      // Update challenge with new streak and completed days
+      setChallenges(challenges.map(c => {
+        if (c._id === userChallengeId) {
+          return {
+            ...c,
+            currentStreak: res.data.currentStreak,
+            completedDays: res.data.completedDays,
+            status: res.data.status
+          };
+        }
+        return c;
+      }));
+      
+      // Remove challenge if completed/failed
       if (res.data.status !== 'active') {
         setChallenges(challenges.filter(c => c._id !== userChallengeId));
       }
@@ -137,13 +175,33 @@ export default function Dashboard() {
 
         {/* Today's Challenges */}
         <h2 className="text-2xl font-bold mb-4">Daily Tasks</h2>
+        
+        {/* Daily Check-in Timer - Only show if user has active challenges */}
+        {challenges.length > 0 && (
+          <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border-2 border-blue-200">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm font-semibold text-gray-700">Daily Check-in Resets In:</p>
+                <p className="text-2xl font-bold text-blue-600">
+                  {formatTimeUntilReset(timeRemaining)}
+                </p>
+                <p className="text-xs text-gray-600 mt-1">You can check in once per day at any time. Resets every day at 12:01 AM</p>
+              </div>
+              <div className="text-4xl">⏱️</div>
+            </div>
+          </div>
+        )}
+
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
           {challenges.length === 0 ? (
             <Card className="col-span-full text-center py-12">
               <p className="text-gray-600 text-lg">No active challenges. Start one in Explore!</p>
             </Card>
           ) : (
-            challenges.map(uc => (
+            challenges.map(uc => {
+              const isCheckedInToday = checkedInToday.includes(uc._id);
+              
+              return (
               <Card key={uc._id}>
                 <div className="flex justify-between items-start mb-2">
                   <h3 className="text-lg font-bold">{uc.challengeId?.title || 'Challenge'}</h3>
@@ -164,12 +222,12 @@ export default function Dashboard() {
                 <div className="grid gap-2">
                   <Button
                     onClick={() => handleCheckin(uc._id)}
-                    disabled={checkedInToday.includes(uc._id) || checking[uc._id]}
-                    variant={checkedInToday.includes(uc._id) ? 'secondary' : 'primary'}
+                    disabled={isCheckedInToday || checking[uc._id]}
+                    variant={isCheckedInToday ? 'secondary' : 'primary'}
                     size="md"
                     className="w-full"
                   >
-                    {checkedInToday.includes(uc._id) ? 'Done today ✓' : 'Complete Day'}
+                    {isCheckedInToday ? 'Done today ✓' : checking[uc._id] ? 'Checking in...' : 'Complete Day'}
                   </Button>
                   <Button
                     onClick={() => handleLeave(uc._id)}
@@ -182,7 +240,8 @@ export default function Dashboard() {
                   </Button>
                 </div>
               </Card>
-            ))
+            );
+            })
           )}
         </div>
 
