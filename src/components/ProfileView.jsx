@@ -79,9 +79,9 @@ export default function ProfileView({
                 </div>
                 <div>
                   <h1 className="text-3xl font-bold mb-2">{profile?.name}</h1>
-                  <p className="text-gray-600">{profile?.email}</p>
+                  {/* <p className="text-gray-600">{profile?.email}</p> */}
                   <p className="mt-2 text-gray-700">{profile?.location || 'Location not added'}</p>
-                  <p className="mt-3 max-w-xl text-sm leading-6 text-gray-700">
+                  <p className="mt-3 max-w-xs text-sm leading-6 text-gray-700 line-clamp-3 break-words">
                     {profile?.bio || 'No bio added yet.'}
                   </p>
                   <div className="mt-4 flex flex-wrap gap-5 text-sm">
@@ -147,8 +147,9 @@ export default function ProfileView({
                     Bio
                     <textarea
                       value={form.bio}
-                      onChange={(event) => onFormChange?.({ ...form, bio: event.target.value })}
-                      placeholder="A short note about your habits, goals, or progress"
+                      onChange={(event) => onFormChange?.({ ...form, bio: event.target.value.slice(0, 100) })}
+                      placeholder="A short note about your habits, goals, or progress (max 100 characters)"
+                      maxLength={100}
                       rows={3}
                       className="resize-none rounded-lg border border-gray-300 px-4 py-3 font-normal outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                     />
