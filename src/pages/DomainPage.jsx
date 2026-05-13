@@ -19,6 +19,11 @@ export default function DomainPage() {
   const [joining, setJoining] = useState(false);
   const [leavingId, setLeavingId] = useState(null);
 
+  // Scroll to top when entering the domain page
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [domain]);
+
   useEffect(() => {
     const fetchChallenges = async () => {
       if (!domainInfo) return;
@@ -118,7 +123,7 @@ export default function DomainPage() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white font-sans pt-24 pb-20 px-4">
       <div className="max-w-6xl mx-auto">
-        <button onClick={() => navigate('/explore')} className="mb-8 text-purple-300 hover:text-white font-bold uppercase tracking-wide text-sm flex items-center gap-2 transition-colors">
+        <button onClick={() => navigate(-1)} className="mb-8 text-purple-300 hover:text-white font-bold uppercase tracking-wide text-sm flex items-center gap-2 transition-colors">
           ← Back to Explore
         </button>
         <div className="text-center mb-16">

@@ -2,12 +2,30 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 export const DOMAINS = [
-  { id: 'body', title: 'Body', subtitle: 'Strength', icon: '💪', color: 'bg-gray-100 text-gray-700', tagline: 'Forge your physical vessel.', category: 'Fitness' },
-  { id: 'mind', title: 'Mind', subtitle: 'Discipline', icon: '🧠', color: 'bg-gray-100 text-gray-700', tagline: 'Master your inner world.', category: 'Mind' },
-  { id: 'work', title: 'Work', subtitle: 'Mastery', icon: '⚡', color: 'bg-gray-100 text-gray-700', tagline: 'Dominate your craft.', category: 'Work' },
-  { id: 'social', title: 'Social', subtitle: 'Connection', icon: '🤝', color: 'bg-gray-100 text-gray-700', tagline: 'Build your tribe.', category: 'Social' },
-  { id: 'lifestyle', title: 'Lifestyle', subtitle: 'Control', icon: '🎯', color: 'bg-gray-100 text-gray-700', tagline: 'Design your environment.', category: 'Lifestyle' },
-  { id: 'purpose', title: 'Purpose', subtitle: 'Meaning', icon: '👁️', color: 'bg-gray-100 text-gray-700', tagline: 'Align with your destiny.', category: 'Purpose' },
+  { id: 'body', title: 'Body', subtitle: 'Strength & Vessel', icon: '💪', color: 'bg-gray-100 text-gray-700', tagline: 'Forge your physical vessel.', category: 'Fitness', quote: "Train when you don't feel like it.", description: "The mind gives up before the body. Push past your perceived limits, build unbreakable discipline, and forge your physical vessel.", align: "left", gradient: "from-[#020617] via-orange-950/30 to-[#020617]", glow: "bg-orange-600/30" },
+  { id: 'mind', title: 'Mind', subtitle: 'Focus & Discipline', icon: '🧠', color: 'bg-gray-100 text-gray-700', tagline: 'Master your inner world.', category: 'Mind', quote: "Silence the noise.", description: "In a world of constant distraction, focus is a superpower. Cultivate calmness, master your attention, and claim your inner peace.", align: "right", gradient: "from-[#020617] via-cyan-950/30 to-[#020617]", glow: "bg-cyan-600/30" },
+  { id: 'work', title: 'Work', subtitle: 'Ambition & Mastery', icon: '⚡', color: 'bg-gray-100 text-gray-700', tagline: 'Dominate your craft.', category: 'Work', quote: "Most people quit too early.", description: "Ambition means nothing without execution. Dive into deep work, build relentless momentum, and dominate your craft.", align: "left", gradient: "from-[#020617] via-indigo-950/30 to-[#020617]", glow: "bg-indigo-600/30" },
+  { id: 'social', title: 'Social', subtitle: 'Connection & Tribe', icon: '🤝', color: 'bg-gray-100 text-gray-700', tagline: 'Build your tribe.', category: 'Social', quote: "True connection requires presence.", description: "Build confidence, communicate with impact, and forge relationships that elevate you. Find your tribe.", align: "right", gradient: "from-[#020617] via-emerald-950/30 to-[#020617]", glow: "bg-emerald-600/30" },
+  { id: 'lifestyle', title: 'Lifestyle', subtitle: 'Systems & Control', icon: '🎯', color: 'bg-gray-100 text-gray-700', tagline: 'Design your environment.', category: 'Lifestyle', quote: "You fall to the level of your systems.", description: "Willpower is finite; habits are forever. Design your environment, master your routines, and build sustainable balance.", align: "left", gradient: "from-[#020617] via-purple-950/30 to-[#020617]", glow: "bg-purple-600/30" },
+  { id: 'purpose', title: 'Purpose', subtitle: 'Meaning & Legacy', icon: '👁️', color: 'bg-gray-100 text-gray-700', tagline: 'Align with your destiny.', category: 'Purpose', quote: "Leave a legacy.", description: "Align your daily actions with your ultimate destiny. Find meaning, cast a long-term vision, and build something that outlasts you.", align: "center", gradient: "from-[#020617] via-rose-950/30 to-[#020617]", glow: "bg-rose-600/30" },
+];
+
+/*
+export const ARCHETYPES = [
+  { id: 'warrior', name: 'The Warrior', icon: '⚔️', description: 'Relentless forward motion. You forge your character through physical resistance and unbreakable discipline.', traits: ['Discipline', 'Physical Toughness', 'Consistency'], gradient: 'from-red-900/40 to-transparent', borderHover: 'hover:border-red-500/50', glow: 'bg-red-500/20', dot: 'bg-red-500' },
+  { id: 'monk', name: 'The Monk', icon: '👁️', description: 'Mastery over the mind. You seek absolute clarity, unwavering focus, and internal peace amidst the noise.', traits: ['Focus', 'Clarity', 'Inner Control'], gradient: 'from-teal-900/40 to-transparent', borderHover: 'hover:border-teal-500/50', glow: 'bg-teal-500/20', dot: 'bg-teal-500' },
+  { id: 'builder', name: 'The Builder', icon: '🏗️', description: 'Transforming vision into reality. You are driven by ambition and the desire to create lasting value.', traits: ['Ambition', 'Creation', 'Deep Work'], gradient: 'from-indigo-900/40 to-transparent', borderHover: 'hover:border-indigo-500/50', glow: 'bg-indigo-500/20', dot: 'bg-indigo-500' },
+  { id: 'operator', name: 'The Operator', icon: '⚙️', description: 'Systems over motivation. You execute with surgical precision, optimizing every facet of your daily life.', traits: ['Execution', 'Precision', 'Systems'], gradient: 'from-purple-900/40 to-transparent', borderHover: 'hover:border-purple-500/50', glow: 'bg-purple-500/20', dot: 'bg-purple-500' },
+  { id: 'balanced', name: 'The Balanced', icon: '⚖️', description: 'The marathon runner. You prioritize sustainable, holistic growth across all domains of life without burning out.', traits: ['Sustainable Growth', 'Calmness', 'Health'], gradient: 'from-emerald-900/40 to-transparent', borderHover: 'hover:border-emerald-500/50', glow: 'bg-emerald-500/20', dot: 'bg-emerald-500' },
+];
+*/
+
+export const PROGRESSION_STAGES = [
+  { id: 'beginner', rank: 'Level 1-9', name: 'Beginner', desc: 'The hardest part is starting. You are fighting old habits and building new baselines. Motivation is fleeting, so you must rely on pure willpower.', traits: ['Starting', 'Uncertain', 'Curious'], colorClass: 'text-slate-400', glowClass: 'bg-slate-400', shadowClass: 'shadow-[0_0_30px_rgba(148,163,184,0.4)]', lineGradient: 'from-slate-500/50 to-blue-500/50' },
+  { id: 'disciplined', rank: 'Level 10-24', name: 'Disciplined', desc: 'Motivation is gone, but the routine remains. You show up even when you do not want to. The compound effect begins to take root.', traits: ['Consistency', 'Momentum', 'Routine'], colorClass: 'text-blue-400', glowClass: 'bg-blue-400', shadowClass: 'shadow-[0_0_30px_rgba(96,165,250,0.4)]', lineGradient: 'from-blue-500/50 to-purple-500/50' },
+  { id: 'relentless', rank: 'Level 25-49', name: 'Relentless', desc: 'The resistance fades. Your standards elevate. You are now driven by a deep internal fire that refuses to be extinguished.', traits: ['Intensity', 'Obsession', 'Drive'], colorClass: 'text-purple-400', glowClass: 'bg-purple-400', shadowClass: 'shadow-[0_0_30px_rgba(192,132,252,0.4)]', lineGradient: 'from-purple-500/50 to-pink-500/50' },
+  { id: 'elite', rank: 'Level 50-99', name: 'Elite', desc: 'Mastery over the self. Your execution is surgical, your focus is unbreakable. You operate on a completely different frequency.', traits: ['Mastery', 'Standards', 'Control'], colorClass: 'text-pink-400', glowClass: 'bg-pink-400', shadowClass: 'shadow-[0_0_30px_rgba(244,114,182,0.4)]', lineGradient: 'from-pink-500/50 to-yellow-500/50' },
+  { id: 'legendary', rank: 'Level 100+', name: 'Legendary', desc: 'Complete identity transformation. You are no longer building habits; you are building a legacy. You have become the architect of your reality.', traits: ['Legacy', 'Purpose', 'Transformation'], colorClass: 'text-yellow-400', glowClass: 'bg-yellow-400', shadowClass: 'shadow-[0_0_30px_rgba(250,204,21,0.4)]', lineGradient: 'from-yellow-500/50 to-transparent' },
 ];
 
 function useScrollReveal(options = { threshold: 0.3 }) {
@@ -16,7 +34,12 @@ function useScrollReveal(options = { threshold: 0.3 }) {
 
   useEffect(() => {
     const observer = new IntersectionObserver(([entry]) => {
-      setInView(entry.isIntersecting);
+      if (entry.isIntersecting) {
+        setInView(true);
+      } else if (entry.boundingClientRect.top > 0) {
+        // Reset the animation only when scrolling back up past the element
+        setInView(false);
+      }
     }, options);
 
     if (ref.current) observer.observe(ref.current);
@@ -28,25 +51,201 @@ function useScrollReveal(options = { threshold: 0.3 }) {
   return [ref, inView];
 }
 
-function IdentityPanel({ title, subtitle, description, align = 'left', gradient, glow, isLast }) {
-  const [ref, inView] = useScrollReveal({ threshold: 0.4 });
+function CinematicDomain({ domain }) {
+  const [ref, inView] = useScrollReveal({ threshold: 0.3 });
+  const navigate = useNavigate();
+  
+  const { id, title, subtitle, icon, quote, description, align, gradient, glow } = domain;
+  
+  const alignClass = align === 'center' 
+    ? 'items-center text-center' 
+    : align === 'right' 
+    ? 'items-end text-right md:ml-auto' 
+    : 'items-start text-left';
+  
+  const flexClass = align === 'right' ? 'justify-end' : align === 'center' ? 'justify-center' : 'justify-start';
+
+  return (
+    <div ref={ref} className="relative w-full min-h-screen flex items-center px-6 sm:px-12 lg:px-24 overflow-hidden border-b border-white/5">
+         {/* Ambient Backgrounds */}
+         <div className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${inView ? 'opacity-100' : 'opacity-0'}`}>
+            <div className={`absolute inset-0 bg-gradient-to-b ${gradient}`}></div>
+            <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90vw] h-[90vw] max-w-[1000px] max-h-[1000px] rounded-full mix-blend-screen filter blur-[120px] opacity-60 ${glow} animate-pulse`} style={{ animationDuration: '8s' }}></div>
+         </div>
+         
+         {/* Content */}
+         <div className={`relative z-10 w-full flex ${flexClass}`}>
+           <div className={`max-w-3xl flex flex-col ${alignClass}`}>
+             <div className={`flex items-center gap-4 mb-6 transform transition-all duration-1000 ease-out will-change-transform ${inView ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'}`}>
+                <span className="text-5xl sm:text-6xl drop-shadow-2xl">{icon}</span>
+                <span className="text-sm md:text-base font-black uppercase tracking-[0.5em] text-white/50">{subtitle}</span>
+             </div>
+             
+             <h2 className={`text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/60 leading-[0.9] tracking-tighter mb-8 transform transition-all duration-1000 delay-100 ease-out will-change-transform uppercase ${inView ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'}`}>{title}</h2>
+             
+             <p className={`text-2xl sm:text-3xl md:text-4xl text-white font-bold leading-tight mb-6 transform transition-all duration-1000 delay-200 ease-out will-change-transform ${inView ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'}`}>"{quote}"</p>
+             
+             <p className={`text-lg sm:text-xl text-slate-400 font-medium leading-relaxed mb-12 max-w-2xl transform transition-all duration-1000 delay-300 ease-out will-change-transform ${inView ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'}`}>{description}</p>
+             
+             <button 
+               onClick={() => navigate(`/explore/${id}`)}
+               className={`group relative px-8 py-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/30 rounded-full overflow-hidden transition-all duration-300 transform hover:scale-105 shadow-[0_0_30px_rgba(0,0,0,0.5)] transform transition-all duration-1000 delay-400 ease-out will-change-transform ${inView ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'}`}
+             >
+               <div className={`absolute inset-0 opacity-0 group-hover:opacity-30 transition-opacity duration-300 ${glow}`}></div>
+               <span className="relative z-10 text-sm font-black uppercase tracking-[0.2em] text-white flex items-center gap-3">
+                 Enter Domain 
+                 <span className="group-hover:translate-x-2 transition-transform duration-300">→</span>
+               </span>
+             </button>
+           </div>
+         </div>
+    </div>
+  );
+}
+
+function IdentityPanel({ title, subtitle, description, align = 'left', gradient, glow }) {
+  const [ref, inView] = useScrollReveal({ threshold: 0.2 });
   
   const alignClass = align === 'center' ? 'items-center text-center' : align === 'right' ? 'items-end text-right' : 'items-start text-left';
   
   return (
-    <div ref={ref} className={`relative w-full ${isLast ? 'h-[120vh]' : 'h-[150vh]'}`}>
-      <div className="sticky top-0 h-screen w-full flex items-center justify-center px-6 sm:px-12 overflow-hidden bg-[#020617]">
+    <div ref={ref} className="relative w-full py-32 sm:py-48 flex items-center justify-center px-6 sm:px-12 overflow-hidden">
          <div className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${inView ? 'opacity-100' : 'opacity-0'}`}>
             <div className={`absolute inset-0 bg-gradient-to-b ${gradient}`}></div>
-            <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] max-w-[1000px] max-h-[1000px] rounded-full mix-blend-screen filter blur-[120px] ${glow}`}></div>
+            <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] max-w-[800px] max-h-[800px] rounded-full mix-blend-screen filter blur-[100px] opacity-70 ${glow}`}></div>
          </div>
          
          <div className={`relative z-10 max-w-5xl w-full flex flex-col ${alignClass}`}>
-             <span className={`text-sm md:text-base font-black uppercase tracking-[0.4em] mb-6 text-white/50 transform transition-all duration-1000 ease-out ${inView ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'}`}>{subtitle}</span>
-             <h2 className={`text-5xl sm:text-7xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/70 leading-[1.1] tracking-tight mb-8 transform transition-all duration-1000 delay-200 ease-out ${inView ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'}`}>{title}</h2>
-             <p className={`text-xl sm:text-2xl md:text-3xl text-white/70 max-w-2xl font-medium leading-relaxed transform transition-all duration-1000 delay-400 ease-out ${inView ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'}`}>{description}</p>
+             <span className={`text-sm md:text-base font-black uppercase tracking-[0.4em] mb-6 text-white/50 transform transition-all duration-1000 ease-out will-change-transform ${inView ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'}`}>{subtitle}</span>
+             <h2 className={`text-5xl sm:text-7xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/70 leading-[1.1] tracking-tight mb-8 transform transition-all duration-1000 delay-100 ease-out will-change-transform ${inView ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'}`}>{title}</h2>
+             <p className={`text-xl sm:text-2xl md:text-3xl text-white/70 max-w-2xl font-medium leading-relaxed transform transition-all duration-1000 delay-200 ease-out will-change-transform ${inView ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'}`}>{description}</p>
          </div>
+    </div>
+  );
+}
+
+function TimelineMilestone({ day, title, description, align = 'left', glowColor = 'cyan' }) {
+  const [ref, inView] = useScrollReveal({ threshold: 0.4 });
+
+  const isLeft = align === 'left';
+  
+  const glowClasses = {
+    cyan: 'bg-cyan-400 border-cyan-300 shadow-[0_0_30px_rgba(34,211,238,0.8)]',
+    purple: 'bg-purple-500 border-purple-400 shadow-[0_0_30px_rgba(168,85,247,0.8)]',
+    pink: 'bg-pink-500 border-pink-400 shadow-[0_0_30px_rgba(236,72,153,0.8)]',
+    white: 'bg-white border-white shadow-[0_0_40px_rgba(255,255,255,0.9)]',
+  };
+  const textGlowClasses = {
+    cyan: 'text-cyan-400',
+    purple: 'text-purple-400',
+    pink: 'text-pink-400',
+    white: 'text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.8)]',
+  };
+
+  return (
+    <div ref={ref} className="relative flex items-center w-full mb-32 last:mb-0 min-h-[200px] group">
+      {/* Glowing Milestone Dot */}
+      <div className={`absolute left-8 md:left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full border-2 transition-all duration-1000 z-10 ${inView ? glowClasses[glowColor] + ' scale-150' : 'bg-[#0f172a] border-slate-700 scale-100'}`}></div>
+
+      {/* Cinematic Content Card */}
+      <div className={`w-full md:w-1/2 flex ${isLeft ? 'md:justify-end md:pr-24' : 'md:justify-start md:pl-24 md:ml-auto'} pl-24 pr-4 transition-all duration-1000 ease-out will-change-transform ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'}`}>
+        <div className={`flex flex-col ${isLeft ? 'md:text-right' : 'md:text-left'} text-left`}>
+          <span className={`text-xl sm:text-2xl font-black uppercase tracking-[0.3em] mb-4 transition-colors duration-1000 ${inView ? textGlowClasses[glowColor] : 'text-slate-800'}`}>{day}</span>
+          <h3 className="text-3xl sm:text-5xl font-black text-white mb-6 tracking-tight drop-shadow-lg leading-tight">{title}</h3>
+          <p className="text-lg sm:text-xl text-slate-400 font-medium leading-relaxed">{description}</p>
+        </div>
       </div>
+    </div>
+  );
+}
+
+function ReflectiveText({ text, subtext, actionButton = null }) {
+  const [ref, inView] = useScrollReveal({ threshold: 0.4 });
+
+  return (
+    <div ref={ref} className="min-h-[75vh] flex flex-col items-center justify-center text-center px-4 sm:px-12 relative z-10">
+      <h3 className={`text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/40 tracking-tighter leading-[1.1] p-4 transform transition-all duration-1000 ease-out will-change-transform ${inView ? 'translate-y-0 opacity-100 scale-100 blur-none' : 'translate-y-16 opacity-0 scale-95 blur-[10px]'}`}>
+         {text}
+      </h3>
+      {subtext && (
+        <p className={`mt-8 text-xl sm:text-2xl md:text-3xl text-slate-500 font-medium max-w-3xl leading-relaxed transform transition-all duration-1000 delay-300 ease-out will-change-transform ${inView ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'}`}>
+          {subtext}
+        </p>
+      )}
+      {actionButton && (
+         <div className={`mt-16 transform transition-all duration-1000 delay-500 ease-out will-change-transform ${inView ? 'translate-y-0 opacity-100' : 'translate-y-8 opacity-0'}`}>
+           {actionButton}
+         </div>
+      )}
+    </div>
+  );
+}
+
+/*
+function ArchetypeCard({ archetype, delayIdx }) {
+  const [ref, inView] = useScrollReveal({ threshold: 0.2 });
+  
+  return (
+    <div 
+      ref={ref} 
+      className={`group relative w-full md:w-[calc(50%-1rem)] lg:w-[calc(33.333%-1.33rem)] max-w-lg flex flex-col p-8 sm:p-10 rounded-[2rem] bg-white/[0.02] border border-white/5 hover:bg-white/[0.04] transition-all duration-700 ease-out will-change-transform overflow-hidden cursor-pointer ${archetype.borderHover} ${inView ? 'opacity-100 translate-y-0 scale-100' : 'opacity-0 translate-y-16 scale-95'}`} 
+      style={{ transitionDelay: `${(delayIdx % 3) * 100}ms` }}
+    >
+      <div className={`absolute inset-0 bg-gradient-to-br ${archetype.gradient} opacity-0 group-hover:opacity-100 transition-opacity duration-700`}></div>
+      <div className={`absolute -top-24 -right-24 w-64 h-64 rounded-full blur-[100px] opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none ${archetype.glow}`}></div>
+      
+      <div className="relative z-10 flex flex-col h-full">
+        <span className="text-5xl sm:text-6xl drop-shadow-2xl block mb-8 transform group-hover:scale-110 group-hover:-translate-y-2 transition-transform duration-500 ease-out">{archetype.icon}</span>
+        <h3 className="text-3xl font-black text-white tracking-tight mb-4 drop-shadow-md">{archetype.name}</h3>
+        <p className="text-slate-400 text-sm sm:text-base leading-relaxed mb-10 group-hover:text-slate-300 transition-colors duration-300 flex-grow">{archetype.description}</p>
+        
+        <div className="space-y-3 mt-auto">
+          {archetype.traits.map((trait, i) => (
+            <div key={trait} className="flex items-center gap-3 text-xs sm:text-sm font-bold uppercase tracking-widest text-slate-500 group-hover:text-white transition-all duration-500 transform translate-x-0 group-hover:translate-x-2" style={{ transitionDelay: `${i * 50}ms` }}>
+              <span className={`w-1.5 h-1.5 rounded-full shadow-[0_0_10px_rgba(255,255,255,0.5)] ${archetype.dot}`}></span>
+              {trait}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+*/
+
+function ProgressionStage({ stage, index, isLast }) {
+  const [ref, inView] = useScrollReveal({ threshold: 0.3 });
+
+  return (
+    <div ref={ref} className="relative flex flex-col items-center text-center w-full pt-16 pb-24 sm:pb-32 z-10">
+      {/* Central Glowing Node */}
+      <div className={`relative z-20 w-8 h-8 sm:w-10 sm:h-10 rounded-full border-4 border-[#020617] bg-[#020617] flex items-center justify-center mb-10 transition-all duration-1000 ease-out will-change-transform ${inView ? 'scale-100 opacity-100 ' + stage.shadowClass : 'scale-50 opacity-0'}`}>
+        <div className={`w-3 h-3 sm:w-4 sm:h-4 rounded-full ${stage.glowClass} ${inView ? 'opacity-100 scale-100' : 'opacity-0 scale-0'} transition-all duration-1000 delay-500`}></div>
+      </div>
+
+      {/* Ambient background glow */}
+      <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] max-w-[600px] max-h-[600px] rounded-full blur-[120px] opacity-0 transition-opacity duration-1000 pointer-events-none ${stage.glowClass} ${inView ? 'opacity-15' : 'opacity-0'}`}></div>
+
+      {/* Text Content */}
+      <div className={`transform transition-all duration-1000 ease-out will-change-transform px-4 ${inView ? 'translate-y-0 opacity-100 scale-100' : 'translate-y-16 opacity-0 scale-95'}`}>
+        <span className={`text-sm sm:text-base font-black uppercase tracking-[0.4em] mb-4 block ${stage.colorClass} drop-shadow-lg`}>{stage.rank}</span>
+        <h3 className="text-5xl sm:text-7xl lg:text-8xl font-black text-white tracking-tighter mb-8 drop-shadow-2xl uppercase">{stage.name}</h3>
+        
+        <div className="flex flex-wrap justify-center gap-3 sm:gap-4 mb-8">
+          {stage.traits.map((trait, i) => (
+            <span key={trait} className="px-4 py-1.5 rounded-full border border-white/10 bg-white/5 text-xs sm:text-sm font-bold uppercase tracking-widest text-slate-300 backdrop-blur-sm transition-all duration-700 ease-out will-change-transform" style={{ transitionDelay: `${inView ? (i * 150) + 300 : 0}ms`, opacity: inView ? 1 : 0, transform: inView ? 'translateY(0)' : 'translateY(16px)' }}>
+              {trait}
+            </span>
+          ))}
+        </div>
+        
+        <p className="text-lg sm:text-xl md:text-2xl text-slate-400 font-medium max-w-2xl mx-auto leading-relaxed">{stage.desc}</p>
+      </div>
+      
+      {/* Vertical connector line pointing down to the next node */}
+      {!isLast && (
+        <div className={`absolute top-20 bottom-[-5rem] left-1/2 -translate-x-1/2 w-[2px] bg-gradient-to-b ${stage.lineGradient} transition-all duration-1000 ease-in-out origin-top -z-10 ${inView ? 'scale-y-100 opacity-100' : 'scale-y-0 opacity-0'}`}></div>
+      )}
     </div>
   );
 }
@@ -101,7 +300,7 @@ export default function Explore() {
           className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 opacity-60 hover:opacity-100 transition-opacity cursor-pointer z-30 group"
           onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
         >
-          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 group-hover:text-cyan-300 transition-colors">Begin Journey</span>
+          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 group-hover:text-cyan-300 transition-colors">Select Domain</span>
           <div className="w-6 h-10 border-2 border-slate-500 group-hover:border-cyan-400 rounded-full flex justify-center p-1 transition-colors">
             <div className="w-1 h-2 bg-cyan-400 rounded-full animate-bounce mt-1"></div>
           </div>
@@ -112,7 +311,7 @@ export default function Explore() {
       </div>
 
       {/* Identity Experience Scroll Journey */}
-      <div className="relative z-20">
+      <div className="relative z-20 bg-[#020617] flex flex-col pb-20">
         <IdentityPanel 
            subtitle="The Physical Vessel"
            title={<>The Disciplined<br/>Athlete.</>}
@@ -144,49 +343,158 @@ export default function Explore() {
            align="center"
            gradient="from-[#020617] via-purple-950/30 to-[#020617]"
            glow="bg-purple-600/20"
-           isLast={true}
         />
       </div>
 
-      <div className="relative z-30 bg-[#020617] pt-20 sm:pt-32 pb-24 shadow-[0_-40px_100px_rgba(2,6,23,1)]">
-        <div className="max-w-7xl mx-auto px-4 relative">
-          <div className="text-center mb-16 relative">
-            <h2 className="text-4xl sm:text-5xl font-black tracking-tight text-white mb-4">Choose Your Domain</h2>
-            <p className="text-lg text-slate-400 font-medium max-w-2xl mx-auto">Where will your transformation begin?</p>
+      {/* Transformation Timeline Section */}
+      <div className="relative z-20 bg-[#020617] pt-24 pb-40 overflow-hidden border-t border-white/5">
+        {/* Ambient background glow */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[80%] bg-gradient-to-b from-transparent via-cyan-900/5 to-transparent pointer-events-none"></div>
+        
+        <div className="max-w-7xl mx-auto px-4 relative z-10">
+          <div className="text-center mb-32">
+            {/* <span className="text-xs sm:text-sm font-black uppercase tracking-[0.4em] text-slate-500 mb-6 block">The Timeline</span> */}
+            <h2 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-white mb-8 drop-shadow-2xl">The Anatomy of <br className="hidden sm:block"/>Transformation</h2>
+            <p className="text-lg sm:text-xl text-slate-400 font-medium max-w-2xl mx-auto leading-relaxed">It doesn't happen overnight. It happens day by day, choice by choice.</p>
           </div>
-
-          {/* Domains Grid */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 relative">
-          {/* Ambient glow behind grid */}
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-purple-900/10 rounded-full blur-[120px] pointer-events-none"></div>
           
-          {DOMAINS.map((domain) => (
-            <div
-              key={domain.id}
-              onClick={() => navigate(`/explore/${domain.id}`)}
-              className="group relative overflow-hidden p-8 sm:p-10 rounded-[2rem] cursor-pointer transition-all duration-500 transform hover:-translate-y-2 hover:scale-[1.02] bg-slate-800/40 border border-slate-700/50 hover:border-purple-500/50 shadow-2xl hover:shadow-[0_0_40px_rgba(168,85,247,0.2)] backdrop-blur-xl"
-            >
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-600/10 to-pink-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              
-              <div className="relative z-10">
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-slate-700/50 group-hover:bg-purple-500/20 transition-colors duration-300 border border-slate-500/30 group-hover:border-purple-400/50">
-                    <span className="text-3xl drop-shadow-md transform group-hover:scale-110 transition-transform duration-300">{domain.icon}</span>
-                  </div>
-                  <span className="text-xs font-black text-slate-400 group-hover:text-purple-300 tracking-widest uppercase transition-colors duration-300">
-                    {domain.subtitle}
-                  </span>
-                </div>
-                
-                <h3 className="font-black text-3xl text-white mb-3 tracking-wide drop-shadow-lg">{domain.title}</h3>
-                <p className="text-sm sm:text-base text-purple-200/70 font-medium leading-relaxed group-hover:text-purple-100 transition-colors duration-300">
-                  {domain.tagline}
-                </p>
-              </div>
-            </div>
-          ))}
+          <div className="relative max-w-5xl mx-auto">
+            {/* Master Vertical Line */}
+            <div className="absolute left-8 md:left-1/2 top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-slate-700 to-transparent -translate-x-1/2 z-0"></div>
+            
+            <TimelineMilestone 
+              day="Day 1"
+              title="The Decision."
+              description="Motivation is high, but discipline is zero. You face the resistance of your old habits. The hardest part is simply starting."
+              align="left"
+              glowColor="cyan"
+            />
+            <TimelineMilestone 
+              day="Day 14"
+              title="The Resistance."
+              description="The initial excitement fades. Your mind begs you to quit, to return to comfort. Pushing through this phase builds the foundation of your new character."
+              align="right"
+              glowColor="purple"
+            />
+            <TimelineMilestone 
+              day="Day 45"
+              title="The Shift."
+              description="The routine begins to feel natural. You stop negotiating with yourself. Clarity improves, and the compounding effects become undeniable."
+              align="left"
+              glowColor="pink"
+            />
+            <TimelineMilestone 
+              day="Day 90"
+              title="The New Baseline."
+              description="What used to be a challenge is now your standard. You have fundamentally rewired your identity. You are not trying to be disciplined; you ARE disciplined."
+              align="right"
+              glowColor="white"
+            />
+          </div>
         </div>
       </div>
+
+      {/* Cinematic Domain Showcases */}
+      <div id="domains-section" className="relative z-30 bg-[#020617] flex flex-col pb-0">
+        <div className="text-center pt-32 pb-16 relative z-10">
+          <h2 className="text-4xl sm:text-5xl font-black tracking-tight text-white mb-4">Choose Your Path</h2>
+          <p className="text-lg text-slate-400 font-medium max-w-2xl mx-auto">Six domains. Infinite possibilities. Where will your transformation begin?</p>
+        </div>
+
+        {DOMAINS.map((domain) => (
+          <CinematicDomain key={domain.id} domain={domain} />
+        ))}
+      </div>
+
+      {/* Cost of Staying the Same Section */}
+      <div className="relative z-40 bg-black py-20 overflow-hidden border-t border-white/5">
+        {/* Ambient atmospheric gradients */}
+        <div className="absolute inset-0 bg-gradient-to-b from-[#020617] via-black to-[#020617] pointer-events-none"></div>
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[100vw] h-[100vw] max-w-[1200px] bg-red-900/5 rounded-full blur-[150px] pointer-events-none animate-pulse" style={{ animationDuration: '10s' }}></div>
+        <div className="absolute bottom-1/4 left-1/2 -translate-x-1/2 w-[80vw] h-[80vw] max-w-[1000px] bg-cyan-900/5 rounded-full blur-[150px] pointer-events-none animate-pulse" style={{ animationDuration: '15s' }}></div>
+
+        <div className="relative max-w-7xl mx-auto">
+          <ReflectiveText 
+            text="What happens if nothing changes?"
+            subtext="If today becomes your everyday. If the habits you tolerate become the life you are forced to live."
+          />
+          <ReflectiveText 
+            text="1 year from now?"
+            subtext="The same routines. The same excuses. The same energy. The pain of discipline weighs ounces, but the pain of regret weighs tons."
+          />
+          <ReflectiveText 
+            text="5 years from now?"
+            subtext="Time passes regardless of what you do with it. You are either actively building your ideal self, or passively accepting your default self."
+          />
+          <ReflectiveText 
+            text="Your future is being built right now."
+            subtext="Every choice is a brick. Start laying them intentionally."
+            actionButton={
+              <button 
+                onClick={() => document.getElementById('domains-section')?.scrollIntoView({ behavior: 'smooth' })}
+                className="group relative px-10 py-5 bg-white/5 hover:bg-white/10 border border-white/20 hover:border-white/40 rounded-full overflow-hidden transition-all duration-500 transform hover:scale-105 shadow-[0_0_40px_rgba(255,255,255,0.05)] hover:shadow-[0_0_60px_rgba(255,255,255,0.15)]"
+              >
+                <span className="relative z-10 text-sm sm:text-base font-black uppercase tracking-[0.3em] text-white flex items-center gap-4">
+                  Make Your Choice
+                  <span className="group-hover:-translate-y-2 transition-transform duration-500 text-xl">↑</span>
+                </span>
+              </button>
+            }
+          />
+        </div>
+      </div>
+
+      {/* Choose Your Archetype Section 
+      <div className="relative z-50 bg-[#020617] py-32 overflow-hidden border-t border-white/5">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-900/40 via-[#020617] to-[#020617] pointer-events-none"></div>
+        
+        <div className="max-w-7xl mx-auto px-4 relative z-10">
+          <div className="text-center mb-24">
+            <span className="text-xs sm:text-sm font-black uppercase tracking-[0.4em] text-slate-500 mb-6 block">Identity Projection</span>
+            <h2 className="text-4xl sm:text-6xl font-black tracking-tight text-white mb-6 drop-shadow-2xl">Choose Your Archetype</h2>
+            <p className="text-lg text-slate-400 font-medium max-w-2xl mx-auto leading-relaxed">Who do you need to become to achieve your ultimate vision? Claim your identity.</p>
+          </div>
+
+          <div className="flex flex-wrap justify-center gap-6 sm:gap-8">
+            {ARCHETYPES.map((arch, i) => (
+              <ArchetypeCard key={arch.id} archetype={arch} delayIdx={i} />
+            ))}
+          </div>
+        </div>
+      </div>
+      */}
+
+      {/* Progression Universe Section */}
+      <div className="relative z-50 bg-[#020617] py-32 overflow-hidden border-t border-white/5">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900/30 via-[#020617] to-[#020617] pointer-events-none"></div>
+        
+        <div className="max-w-7xl mx-auto px-4 relative z-10">
+          <div className="text-center mb-24">
+            <span className="text-xs sm:text-sm font-black uppercase tracking-[0.4em] text-slate-500 mb-6 block">The Long Game</span>
+            <h2 className="text-4xl sm:text-6xl font-black tracking-tight text-white mb-6 drop-shadow-2xl">Progression Universe</h2>
+            <p className="text-lg text-slate-400 font-medium max-w-2xl mx-auto leading-relaxed">Turn self-improvement into a visible long-term journey. Earn XP, rank up, and evolve.</p>
+          </div>
+
+          <div className="relative flex flex-col items-center max-w-5xl mx-auto">
+            <div className="w-[2px] h-24 bg-gradient-to-b from-transparent to-slate-500/50 mb-0 -z-10"></div>
+            {PROGRESSION_STAGES.map((stage, i) => (
+              <ProgressionStage key={stage.id} stage={stage} index={i} isLast={i === PROGRESSION_STAGES.length - 1} />
+            ))}
+          </div>
+
+          <div className="mt-24 sm:mt-32 text-center flex flex-col items-center">
+            <p className="text-slate-500 font-medium mb-8 text-lg">The path is long. The reward is everything.</p>
+            <button 
+              onClick={() => document.getElementById('domains-section')?.scrollIntoView({ behavior: 'smooth' })}
+              className="group relative px-10 py-5 bg-white/5 hover:bg-white/10 border border-white/20 hover:border-white/40 rounded-full overflow-hidden transition-all duration-500 transform hover:scale-105 shadow-[0_0_40px_rgba(255,255,255,0.05)] hover:shadow-[0_0_60px_rgba(255,255,255,0.15)]"
+            >
+              <span className="relative z-10 text-sm sm:text-base font-black uppercase tracking-[0.3em] text-white flex items-center gap-4">
+                Begin Your Progression
+                <span className="group-hover:-translate-y-2 transition-transform duration-500 text-xl">↑</span>
+              </span>
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );
