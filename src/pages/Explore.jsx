@@ -394,7 +394,7 @@ export default function Explore() {
         </div>
 
         {/* Right Side Quick Jump */}
-        <div className="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 hidden md:flex flex-col items-center z-40 opacity-60 hover:opacity-100 transition-opacity duration-500">
+        <div className="absolute right-2 sm:right-6 md:right-8 top-1/2 -translate-y-1/2 flex flex-col items-center z-40 opacity-60 hover:opacity-100 transition-opacity duration-500">
           <style>{`
             @keyframes glow-flow {
               0% { top: -10%; opacity: 0; }
@@ -412,24 +412,24 @@ export default function Explore() {
             <div className="absolute top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-white/20 to-transparent -z-10"></div>
             
             {/* The traveling glow drop */}
-            <div className="absolute left-1/2 -translate-x-1/2 w-[2px] h-20 bg-gradient-to-b from-transparent via-cyan-400 to-transparent shadow-[0_0_12px_rgba(34,211,238,0.8)] animate-glow-flow z-0"></div>
+            <div className="absolute left-1/2 -translate-x-1/2 w-[2px] h-16 md:h-20 bg-gradient-to-b from-transparent via-cyan-400 to-transparent shadow-[0_0_12px_rgba(34,211,238,0.8)] animate-glow-flow z-0"></div>
             
-            <div className="h-24"></div>
+            <div className="h-16 md:h-24"></div>
 
             <button 
               onClick={() => document.getElementById('domains-section')?.scrollIntoView({ behavior: 'smooth' })}
-              className="group flex flex-col items-center gap-4 focus:outline-none py-2 relative z-10"
+              className="group flex flex-col items-center gap-2 md:gap-4 focus:outline-none py-2 relative z-10"
               title="Jump to Domains"
             >
-              <span className="text-[9px] font-black uppercase tracking-[0.4em] text-white/50 group-hover:text-cyan-400 transition-colors duration-500" style={{ writingMode: 'vertical-rl' }}>
+              <span className="text-[7px] md:text-[9px] font-black uppercase tracking-[0.4em] text-white/50 group-hover:text-cyan-400 transition-colors duration-500" style={{ writingMode: 'vertical-rl' }}>
                 Explore Domains
               </span>
-              <div className="w-8 h-8 rounded-full border border-white/10 group-hover:border-cyan-400 flex items-center justify-center transition-all duration-500 bg-[#020617] group-hover:shadow-[0_0_20px_rgba(34,211,238,0.4)] group-hover:bg-cyan-900/20">
-                <span className="text-white/50 group-hover:text-cyan-400 group-hover:translate-y-1 transition-all duration-500 text-xs">↓</span>
+              <div className="w-6 h-6 md:w-8 md:h-8 rounded-full border border-white/10 group-hover:border-cyan-400 flex items-center justify-center transition-all duration-500 bg-[#020617] group-hover:shadow-[0_0_20px_rgba(34,211,238,0.4)] group-hover:bg-cyan-900/20">
+                <span className="text-white/50 group-hover:text-cyan-400 group-hover:translate-y-1 transition-all duration-500 text-[10px] md:text-xs">↓</span>
               </div>
             </button>
 
-            <div className="h-24"></div>
+            <div className="h-16 md:h-24"></div>
           </div>
         </div>
         

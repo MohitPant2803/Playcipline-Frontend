@@ -157,11 +157,17 @@ export default function Header() {
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6">
           <div className={`flex items-center justify-between transition-all duration-500 ${isScrolled ? 'h-16' : 'h-24'}`}>
             
-            {/* Left side: Logo & Nav */}
-            <div className="flex items-center gap-8">
-              <Link to={user ? '/dashboard' : '/explore'} className="flex items-center gap-3 group">
-                <span className="text-3xl drop-shadow-[0_0_10px_theme(colors.purple.500)] transition-transform duration-300 group-hover:scale-110 motion-reduce:animate-none">🎮</span>
-                <h1 className="text-2xl font-black text-white tracking-wider drop-shadow-lg hidden sm:block">Playcipline</h1>
+            {/* Left side: Hamburger, Logo & Nav */}
+            <div className="flex items-center gap-2 sm:gap-4 lg:gap-8">
+              <div className="lg:hidden flex items-center">
+                <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-slate-300 hover:text-white p-1 -ml-1">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-7 h-7"><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
+                </button>
+              </div>
+
+              <Link to={user ? '/dashboard' : '/explore'} className="flex items-center gap-2 sm:gap-3 group shrink-0">
+                <span className="text-2xl sm:text-3xl drop-shadow-[0_0_10px_theme(colors.purple.500)] transition-transform duration-300 group-hover:scale-110 motion-reduce:animate-none">🎮</span>
+                <h1 className="text-lg sm:text-2xl font-black text-white tracking-wider drop-shadow-lg hidden min-[300px]:block">Playcipline</h1>
               </Link>
               <nav className="hidden lg:flex items-center gap-4">
                 <NavLink to="/explore">Explore</NavLink>
@@ -217,12 +223,6 @@ export default function Header() {
               ) : (
                 <a href={`${API_BASE_URL}/api/auth/google`} className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-purple-600 to-pink-500 px-5 py-2 text-sm font-bold text-white shadow-lg transition-transform hover:scale-105 motion-reduce:transform-none">Login</a>
               )}
-              
-              <div className="lg:hidden">
-                <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-slate-300 hover:text-white p-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-6 h-6"><path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" /></svg>
-                </button>
-              </div>
             </div>
           </div>
         </div>

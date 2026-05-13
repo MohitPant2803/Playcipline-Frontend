@@ -102,6 +102,7 @@ const ARCHETYPES = [
 export default function Login() {
   const { user, loading, error } = useAuth();
   const navigate = useNavigate();
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   React.useEffect(() => {
     if (user && !loading) {
@@ -155,6 +156,33 @@ export default function Login() {
     </div>
   );
 
+  if (!showOnboarding) {
+    return (
+      <div className="min-h-screen bg-[#020617] text-white font-sans flex flex-col items-center justify-center relative overflow-hidden selection:bg-purple-500/30">
+        {/* Ambient background */}
+        <div className="absolute inset-0 bg-gradient-to-b from-purple-900/10 via-[#020617] to-[#020617] -z-10"></div>
+        <ParallaxOrb speed={0.05} className="w-[50vw] h-[50vw] max-w-[500px] bg-purple-600/10 blur-[120px] absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2" animationDuration="10s" />
+
+        <div className="w-full max-w-md relative z-10 px-4 mt-8">
+          <LoginPanel />
+          
+          <div className="mt-8 text-center border-t border-white/10 pt-8">
+            <button 
+              onClick={() => {
+                setShowOnboarding(true);
+                window.scrollTo(0, 0);
+              }}
+              className="group relative inline-flex items-center gap-3 px-8 py-3.5 bg-white/10 hover:bg-white/20 border border-white/20 hover:border-cyan-500/50 rounded-full transition-all duration-300 shadow-lg hover:shadow-[0_0_30px_rgba(34,211,238,0.2)]"
+            >
+              <span className="text-sm font-black uppercase tracking-[0.15em] text-cyan-300 group-hover:text-cyan-200">Why join?</span>
+              <span className="group-hover:translate-x-1 transition-transform text-cyan-300 group-hover:text-cyan-200">→</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#020617] text-white font-sans flex flex-col lg:flex-row selection:bg-purple-500/30 overflow-x-hidden">
       
@@ -170,6 +198,16 @@ export default function Login() {
       {/* LEFT SIDE: Cinematic Onboarding Scroll */}
       <div className="flex-1 w-full lg:w-[calc(100%-450px)] xl:w-[calc(100%-550px)] relative">
         
+        <button 
+          onClick={() => {
+            setShowOnboarding(false);
+            window.scrollTo(0, 0);
+          }}
+          className="absolute top-6 left-6 z-50 text-white/50 hover:text-white flex items-center gap-2 text-sm font-bold uppercase tracking-widest transition-colors cursor-pointer"
+        >
+          ← Back
+        </button>
+
         {/* Section 1: Opening Atmosphere */}
         <div className="min-h-screen flex flex-col items-center justify-center text-center px-4 relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-b from-purple-900/20 via-[#020617] to-[#020617] -z-10"></div>
