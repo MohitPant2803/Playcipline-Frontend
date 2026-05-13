@@ -151,7 +151,7 @@ export default function UserProfile() {
   if (!profile) return <div className="flex items-center justify-center h-screen bg-slate-900"><div className="text-2xl font-black text-white">User not found</div></div>;
 
   return (
-    <div className="pt-24 pb-20 sm:pb-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white font-sans min-h-screen">
+    <div className="pt-24 pb-20 sm:pb-0 bg-[#020617] text-white font-sans min-h-screen relative selection:bg-purple-500/30 overflow-hidden">
       <ProfileView
         profile={profile}
         stats={stats}
@@ -165,10 +165,10 @@ export default function UserProfile() {
                 type="button"
                 onClick={handleFollow}
                 disabled={followLoading}
-                className={`px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg transition uppercase tracking-wide ${
+                className={`px-6 py-2 rounded-full text-xs font-black shadow-[0_0_15px_rgba(255,255,255,0.05)] transition-all uppercase tracking-widest ${
                   isFollowing
-                    ? 'border-2 border-purple-500 bg-slate-700 text-purple-300 hover:bg-slate-600'
-                    : 'bg-gradient-to-r from-purple-600 to-pink-500 text-white hover:from-purple-700 hover:to-pink-600'
+                    ? 'border border-white/20 bg-white/5 text-slate-300 hover:bg-white/10'
+                    : 'bg-cyan-500 text-[#020617] hover:bg-cyan-400 hover:shadow-[0_0_20px_rgba(34,211,238,0.4)]'
                 } disabled:opacity-50`}
               >
                 {!user ? 'Login required' : followLoading ? 'Processing...' : isFollowing ? 'Following' : 'Follow'}
@@ -177,7 +177,7 @@ export default function UserProfile() {
             <button
               type="button"
               onClick={() => navigate('/leaderboard')}
-              className="rounded-xl border-2 border-purple-500 bg-slate-700 px-5 py-2.5 text-sm font-bold text-purple-300 transition hover:bg-slate-600 shadow-lg uppercase tracking-wide"
+              className="border border-white/10 bg-white/[0.02] hover:bg-white/[0.05] px-6 py-2 rounded-full text-xs font-black text-slate-300 hover:text-white transition-all shadow-lg uppercase tracking-widest"
             >
               Back
             </button>

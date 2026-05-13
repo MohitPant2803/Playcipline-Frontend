@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Card, Badge } from './UI';
 import { getLevelInfo } from '../utils/leveling';
 import IdentityGraph from '../pages/IdentityGraph';
@@ -33,6 +33,32 @@ function getActivityText(activity) {
   return 'did something awesome';
 }
 
+// High-Performance Cinematic Motion System (Ported from Explore)
+function useScrollReveal(options = { threshold: 0.2 }) {
+  const [inView, setInView] = useState(false);
+  const ref = useRef(null);
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (mediaQuery.matches) { setInView(true); return; }
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) setInView(true);
+    }, options);
+    if (ref.current) observer.observe(ref.current);
+    return () => { if (ref.current) observer.unobserve(ref.current); };
+  }, [options.threshold]);
+  return [ref, inView];
+}
+
+function Reveal({ children, delay = 0, className = '' }) {
+  const [ref, inView] = useScrollReveal({ threshold: 0.1 });
+  const baseClass = "transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform";
+  return (
+    <div ref={ref} className={`${baseClass} ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'} ${className}`} style={{ transitionDelay: `${delay}ms` }}>
+      {children}
+    </div>
+  );
+}
+
 export default function ProfileView({
   profile,
   stats,
@@ -61,214 +87,208 @@ export default function ProfileView({
     ? Math.min(100, Math.max(0, (levelInfo.xpIntoLevel / levelInfo.xpRange) * 100))
     : 100;
 
+  // Profile Power Score calculation
+  const powerScore = Math.floor(((profile?.totalXP || 0) * 0.1) + (currentStreak * 15) + (completedCount * 50));
+  const circumference = 2 * Math.PI * 48; // r=48
+  const strokeDashoffset = circumference - (levelProgress / 100) * circumference;
+
   return (
-    <div>
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="mb-6">
-          <h1 className="text-4xl font-black text-white tracking-wider drop-shadow-lg">👤 PROFILE</h1>
-        </div>
-
-        <div className="bg-gradient-to-br from-slate-700 to-slate-800 border-2 border-purple-500 rounded-2xl p-8 shadow-2xl mb-8">
-          <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1.1fr_1fr] lg:items-start">
-            <div>
-              <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
-                <div className="relative flex w-28 shrink-0 justify-center pb-5">
-                  {profile?.avatar ? (
-                    <img
-                      src={profile.avatar}
-                      alt={profile.name}
-                      className="h-24 w-24 rounded-full object-cover border-2 border-purple-400 shadow-lg"
-                    />
-                  ) : (
-                    <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-r from-purple-600 to-pink-500 text-3xl font-black text-white shadow-lg">
-                      {(profile?.name || 'U').charAt(0).toUpperCase()}
-                    </div>
-                  )}
-                  <div
-                    className="group absolute bottom-0 left-1/2 w-24 -translate-x-1/2 rounded-full border-2 border-purple-400 bg-gradient-to-r from-slate-800 to-slate-700 px-2 py-1 shadow-lg"
-                    aria-label={`${levelInfo.totalXP}/${levelInfo.nextLevelXp} XP to next level`}
-                  >
-                    <div className="mb-0.5 text-center text-[10px] font-black text-purple-300 uppercase tracking-wider">
-                      Level {levelInfo.level}
-                    </div>
-                    <div className="h-1.5 overflow-hidden rounded-full bg-slate-600 border border-slate-500">
-                      <div
-                        className="h-full rounded-full bg-gradient-to-r from-purple-500 to-pink-500 shadow-lg"
-                        style={{ width: `${levelProgress}%` }}
-                      />
-                    </div>
-                    <div className="pointer-events-none absolute left-1/2 top-full z-20 mt-2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-purple-600 px-2 py-1 text-[11px] font-black text-white opacity-0 shadow-xl transition group-hover:opacity-100">
-                      {levelInfo.totalXP}/{levelInfo.nextLevelXp} XP
-                    </div>
+    <div className="relative">
+      {/* Ambient Global Glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[600px] bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-purple-900/20 via-transparent to-transparent pointer-events-none -z-10"></div>
+      
+      <div className="max-w-6xl mx-auto px-4 py-8">
+        
+        {/* Cinematic Hero Section */}
+        <Reveal delay={0}>
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-16 relative z-10">
+            
+            {/* LEFT: Avatar & Info */}
+            <div className="lg:col-span-4 bg-white/[0.02] border border-white/5 rounded-[2rem] p-8 flex flex-col items-center justify-center text-center backdrop-blur-xl relative overflow-hidden group hover:bg-white/[0.04] transition-colors duration-500">
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-600/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"></div>
+              
+              {/* Glowing Avatar Ring */}
+              <div className="relative w-32 h-32 mb-6 group-hover:scale-105 transition-transform duration-500">
+                <svg className="absolute inset-0 w-full h-full -rotate-90 drop-shadow-[0_0_15px_rgba(168,85,247,0.5)]" viewBox="0 0 100 100">
+                  <circle cx="50" cy="50" r="48" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="4" />
+                  <circle 
+                    cx="50" cy="50" r="48" fill="none" 
+                    stroke="url(#purpleGradient)" strokeWidth="4" 
+                    strokeDasharray={circumference} 
+                    strokeDashoffset={strokeDashoffset} 
+                    strokeLinecap="round" 
+                    className="transition-all duration-1000 ease-out" 
+                  />
+                  <defs>
+                    <linearGradient id="purpleGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stopColor="#a855f7" />
+                      <stop offset="100%" stopColor="#06b6d4" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+                {profile?.avatar ? (
+                  <img src={profile.avatar} alt={profile.name} className="absolute inset-1 w-[calc(100%-8px)] h-[calc(100%-8px)] rounded-full object-cover border-4 border-[#020617] bg-[#020617]" />
+                ) : (
+                  <div className="absolute inset-1 w-[calc(100%-8px)] h-[calc(100%-8px)] rounded-full bg-gradient-to-br from-purple-600 to-cyan-500 flex items-center justify-center text-4xl font-black text-white border-4 border-[#020617]">
+                    {(profile?.name || 'U').charAt(0).toUpperCase()}
                   </div>
-                </div>
-                <div>
-                  <h1 className="text-2xl font-black mb-1 text-white drop-shadow-lg">{profile?.name}</h1>
-                  <p className="text-sm text-purple-300 font-semibold">{profile?.location || 'Location not added'}</p>
-                  <p className="mt-3 max-w-xs text-sm leading-relaxed text-purple-200 line-clamp-3 break-words font-semibold">
-                    {profile?.bio || 'No bio added yet.'}
-                  </p>
-                  <div className="mt-4 flex flex-wrap gap-5 text-sm">
-                    <button
-                      type="button"
-                      onClick={() => onSocialClick?.('followers')}
-                      className="text-left text-xs font-bold text-purple-300 hover:text-cyan-300 transition-colors uppercase tracking-wide"
-                    >
-                      <span className="block text-xl text-white mb-1 tabular-nums font-black drop-shadow-lg">{followerCount}</span>
-                      followers
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => onSocialClick?.('following')}
-                      className="text-left text-xs font-bold text-purple-300 hover:text-cyan-300 transition-colors uppercase tracking-wide"
-                    >
-                      <span className="block text-xl text-white mb-1 tabular-nums font-black drop-shadow-lg">{followingCount}</span>
-                      following
-                    </button>
-                  </div>
+                )}
+                <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-[#020617] border border-purple-500/50 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-[0_0_15px_rgba(168,85,247,0.4)]">
+                  Lvl {levelInfo.level}
                 </div>
               </div>
 
-              {actions && (
-                <div className="mt-6 flex flex-wrap gap-3">
-                  {actions}
-                </div>
-              )}
+              <h1 className="text-3xl font-black text-white tracking-tight drop-shadow-md mb-1">{profile?.name}</h1>
+              <p className="text-xs text-cyan-400 font-bold uppercase tracking-widest mb-4">{profile?.location || 'Location Unknown'}</p>
+              <p className="text-sm text-slate-400 font-medium leading-relaxed max-w-[250px] mb-6 line-clamp-2">
+                {profile?.bio || 'Building discipline, one day at a time.'}
+              </p>
 
-              {isEditing && form && (
-                <form onSubmit={onSaveProfile} className="mt-6 grid gap-4">
-                  <label className="grid gap-2 text-xs font-bold text-purple-300 uppercase tracking-wide">
-                    Username
-                    <input
-                      type="text"
-                      value={form.name}
-                      onChange={(event) => onFormChange?.({ ...form, name: event.target.value })}
-                      placeholder={profile?.name || 'Your name'}
-                      className="rounded-xl bg-slate-600 border-2 border-purple-500 text-white placeholder-purple-300 px-4 py-3 font-bold outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
-                    />
-                  </label>
-                  <label className="grid gap-2 text-xs font-bold text-purple-300 uppercase tracking-wide">
-                    Profile picture URL
-                    <input
-                      type="url"
-                      value={form.avatar}
-                      onChange={(event) => onFormChange?.({ ...form, avatar: event.target.value })}
-                      placeholder={profile?.avatar || 'Google picture will be used if empty'}
-                      className="rounded-xl bg-slate-600 border-2 border-purple-500 text-white placeholder-purple-300 px-4 py-3 font-bold outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
-                    />
-                  </label>
-                  <label className="grid gap-2 text-xs font-bold text-purple-300 uppercase tracking-wide">
-                    Where are you from?
-                    <input
-                      type="text"
-                      value={form.location}
-                      onChange={(event) => onFormChange?.({ ...form, location: event.target.value })}
-                      placeholder="City, Country"
-                      className="rounded-xl bg-slate-600 border-2 border-purple-500 text-white placeholder-purple-300 px-4 py-3 font-bold outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
-                    />
-                  </label>
-                  <label className="grid gap-2 text-xs font-bold text-purple-300 uppercase tracking-wide">
-                    Bio
-                    <textarea
-                      value={form.bio}
-                      onChange={(event) => onFormChange?.({ ...form, bio: event.target.value.slice(0, 100) })}
-                      placeholder="A short note about your habits, goals, or progress (max 100 characters)"
-                      maxLength={100}
-                      rows={3}
-                      className="resize-none rounded-xl bg-slate-600 border-2 border-purple-500 text-white placeholder-purple-300 px-4 py-3 font-bold outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
-                    />
-                  </label>
-                  <button
-                    type="submit"
-                    disabled={saving}
-                    className="w-fit rounded-xl bg-gradient-to-r from-purple-600 to-pink-500 text-white px-6 py-2 text-sm font-black transition hover:from-purple-700 hover:to-pink-600 disabled:opacity-50 mt-2 shadow-lg uppercase tracking-wide"
-                  >
-                    {saving ? '⏳ Saving...' : '💾 Save Changes'}
-                  </button>
-                </form>
-              )}
+              <div className="flex items-center gap-6 text-sm">
+                <button onClick={() => onSocialClick?.('followers')} className="flex flex-col items-center group/btn focus:outline-none">
+                  <span className="text-2xl font-black text-white drop-shadow-md group-hover/btn:text-purple-400 transition-colors">{followerCount}</span>
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Followers</span>
+                </button>
+                <div className="w-px h-8 bg-white/10"></div>
+                <button onClick={() => onSocialClick?.('following')} className="flex flex-col items-center group/btn focus:outline-none">
+                  <span className="text-2xl font-black text-white drop-shadow-md group-hover/btn:text-cyan-400 transition-colors">{followingCount}</span>
+                  <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Following</span>
+                </button>
+              </div>
+
+              {actions && <div className="mt-8 flex flex-wrap justify-center gap-3 w-full">{actions}</div>}
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="text-center bg-gradient-to-br from-blue-600 to-cyan-500 rounded-2xl p-5 border-2 border-cyan-400 shadow-lg">
-                <p className="text-xs font-bold text-cyan-100 uppercase tracking-wide">🏆 Badges Earned</p>
-                <p className="text-3xl font-black text-white mt-2 drop-shadow-lg">{earnedBadges.length}</p>
+            {/* CENTER: 3 Premium Stats */}
+            <div className="lg:col-span-5 grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="sm:col-span-2 bg-white/[0.02] border border-white/5 rounded-3xl p-6 backdrop-blur-xl relative overflow-hidden group hover:bg-white/[0.04] transition-colors duration-500">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-orange-500/10 rounded-full blur-[40px] -mr-10 -mt-10 group-hover:bg-orange-500/20 transition-colors duration-500"></div>
+                <p className="text-[10px] font-black text-orange-400 uppercase tracking-widest mb-2 flex items-center gap-2"><span>🔥</span> Current Streak</p>
+                <div className="flex items-baseline gap-2">
+                  <p className="text-5xl font-black text-white tracking-tighter drop-shadow-lg">{currentStreak}</p>
+                  <p className="text-sm font-bold text-slate-400 uppercase">Days</p>
+                </div>
+                <p className="text-xs text-slate-500 font-bold mt-4">Longest: {longestStreak} days</p>
               </div>
-              <div className="text-center bg-gradient-to-br from-purple-600 to-pink-500 rounded-2xl p-5 border-2 border-pink-400 shadow-lg">
-                <p className="text-xs font-bold text-pink-100 uppercase tracking-wide">✅ Completed</p>
-                <p className="text-3xl font-black text-white mt-2 drop-shadow-lg">{completedCount}</p>
+              
+              <div className="bg-white/[0.02] border border-white/5 rounded-3xl p-6 backdrop-blur-xl relative overflow-hidden group hover:bg-white/[0.04] transition-colors duration-500">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-purple-500/10 rounded-full blur-[40px] -mr-10 -mt-10 group-hover:bg-purple-500/20 transition-colors duration-500"></div>
+                <p className="text-[10px] font-black text-purple-400 uppercase tracking-widest mb-2 flex items-center gap-2"><span>⚡</span> Total XP</p>
+                <p className="text-4xl font-black text-white tracking-tighter drop-shadow-lg">{profile?.totalXP || 0}</p>
               </div>
-              <div className="text-center bg-gradient-to-br from-orange-600 to-red-500 rounded-2xl p-5 border-2 border-orange-400 shadow-lg">
-                <p className="text-xs font-bold text-orange-100 uppercase tracking-wide">🔥 Current Streak</p>
-                <p className="text-3xl font-black text-white mt-2 drop-shadow-lg">{currentStreak}</p>
-              </div>
-              <div className="text-center bg-gradient-to-br from-green-600 to-emerald-500 rounded-2xl p-5 border-2 border-green-400 shadow-lg">
-                <p className="text-xs font-bold text-green-100 uppercase tracking-wide">⭐ Longest</p>
-                <p className="text-3xl font-black text-white mt-2 drop-shadow-lg">{longestStreak}</p>
+
+              <div className="bg-white/[0.02] border border-white/5 rounded-3xl p-6 backdrop-blur-xl relative overflow-hidden group hover:bg-white/[0.04] transition-colors duration-500">
+                <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/10 rounded-full blur-[40px] -mr-10 -mt-10 group-hover:bg-emerald-500/20 transition-colors duration-500"></div>
+                <p className="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-2 flex items-center gap-2"><span>✅</span> Completed</p>
+                <p className="text-4xl font-black text-white tracking-tighter drop-shadow-lg">{completedCount}</p>
               </div>
             </div>
+
+            {/* RIGHT: Power Score */}
+            <div className="lg:col-span-3 bg-gradient-to-br from-indigo-900/40 to-purple-900/20 border border-white/10 rounded-[2rem] p-8 flex flex-col items-center justify-center text-center backdrop-blur-xl shadow-[0_0_40px_rgba(79,70,229,0.15)] relative overflow-hidden group">
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,_var(--tw-gradient-stops))] from-cyan-500/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none"></div>
+              <p className="text-[10px] font-black text-cyan-400 uppercase tracking-widest mb-2 relative z-10">Profile Power Score</p>
+              <h3 className="text-6xl font-black text-white tracking-tighter mb-4 drop-shadow-[0_0_15px_rgba(34,211,238,0.5)] relative z-10">{powerScore}</h3>
+              <p className="text-xs text-slate-300 font-medium leading-relaxed relative z-10">Calculated by combining consistency, challenge difficulty, and lifetime experience.</p>
+            </div>
+
           </div>
-        </div>
+        </Reveal>
+
+        {isEditing && form && (
+          <Reveal delay={100}>
+            <form onSubmit={onSaveProfile} className="bg-white/[0.02] border border-white/10 rounded-3xl p-8 mb-16 backdrop-blur-xl max-w-2xl mx-auto shadow-2xl">
+              <h3 className="text-xl font-black text-white uppercase tracking-wider mb-6">Edit Profile Settings</h3>
+              <div className="grid gap-5">
+                <label className="grid gap-2 text-[10px] font-black text-purple-400 uppercase tracking-widest">
+                  Username
+                  <input type="text" value={form.name} onChange={(e) => onFormChange?.({ ...form, name: e.target.value })} placeholder={profile?.name || 'Your name'} className="rounded-xl bg-[#020617]/50 border border-white/10 text-white placeholder-slate-500 px-4 py-3 font-bold outline-none focus:border-purple-500 focus:bg-white/5 transition-colors" />
+                </label>
+                <label className="grid gap-2 text-[10px] font-black text-cyan-400 uppercase tracking-widest">
+                  Profile picture URL
+                  <input type="url" value={form.avatar} onChange={(e) => onFormChange?.({ ...form, avatar: e.target.value })} placeholder={profile?.avatar || 'Leave empty for Google picture'} className="rounded-xl bg-[#020617]/50 border border-white/10 text-white placeholder-slate-500 px-4 py-3 font-bold outline-none focus:border-cyan-500 focus:bg-white/5 transition-colors" />
+                </label>
+                <label className="grid gap-2 text-[10px] font-black text-pink-400 uppercase tracking-widest">
+                  Location
+                  <input type="text" value={form.location} onChange={(e) => onFormChange?.({ ...form, location: e.target.value })} placeholder="City, Country" className="rounded-xl bg-[#020617]/50 border border-white/10 text-white placeholder-slate-500 px-4 py-3 font-bold outline-none focus:border-pink-500 focus:bg-white/5 transition-colors" />
+                </label>
+                <label className="grid gap-2 text-[10px] font-black text-emerald-400 uppercase tracking-widest">
+                  Bio
+                  <textarea value={form.bio} onChange={(e) => onFormChange?.({ ...form, bio: e.target.value.slice(0, 100) })} placeholder="A short note about your goals (max 100 chars)" maxLength={100} rows={3} className="resize-none rounded-xl bg-[#020617]/50 border border-white/10 text-white placeholder-slate-500 px-4 py-3 font-bold outline-none focus:border-emerald-500 focus:bg-white/5 transition-colors" />
+                </label>
+                <div className="flex justify-end gap-3 mt-4">
+                  <button type="submit" disabled={saving} className="rounded-full bg-white/10 hover:bg-white/20 text-white px-8 py-3 text-xs font-black transition-colors disabled:opacity-50 uppercase tracking-widest border border-white/10">
+                    {saving ? '⏳ Saving...' : 'Save Changes'}
+                  </button>
+                </div>
+              </div>
+            </form>
+          </Reveal>
+        )}
 
         {/* Premium Life Identity Graph Component */}
-        <IdentityGraph stats={stats} />
+        <Reveal delay={200}>
+          <IdentityGraph stats={stats} />
+        </Reveal>
 
-        <div className="mb-8">
-          <h2 className="text-3xl font-black text-white mb-6 tracking-wider drop-shadow-lg">🎖️ BADGES</h2>
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-            {earnedBadges.map(badge => (
-              <div key={badge} className="text-center bg-gradient-to-br from-yellow-600 to-yellow-500 rounded-2xl p-6 shadow-lg border-2 border-yellow-400">
-                <p className="text-4xl mb-2 drop-shadow-lg">🏆</p>
-                <p className="font-black text-white text-sm capitalize uppercase tracking-wide">{formatBadgeName(badge)}</p>
-              </div>
-            ))}
-            {unearnedBadges.map(badge => (
-              <div key={badge} className="text-center bg-slate-700 rounded-2xl p-6 opacity-50 border-2 border-slate-600">
-                <p className="text-4xl mb-2 grayscale">🏆</p>
-                <p className="font-bold text-purple-300 text-sm capitalize uppercase tracking-wide">{formatBadgeName(badge)}</p>
-              </div>
-            ))}
+        {/* Horizontal Badge Showcase */}
+        <Reveal delay={300}>
+          <div className="mb-16">
+            <h2 className="text-2xl font-black text-white tracking-wider drop-shadow-lg uppercase mb-6">🎖️ Achievement Showcase</h2>
+            <div className="flex overflow-x-auto gap-4 pb-4 snap-x hide-scrollbar">
+              {ALL_BADGES.map((badge) => {
+                const isEarned = earnedBadges.includes(badge);
+                
+                // Determine Rarity Colors
+                let border = 'border-slate-600'; let bg = 'bg-slate-800/50'; let glow = ''; let text = 'text-slate-400'; let icon = '🏆';
+                if (badge.includes('75-hard')) { border = 'border-yellow-500/50'; bg = 'bg-yellow-900/20'; glow = 'hover:shadow-[0_0_30px_rgba(234,179,8,0.3)]'; text = 'text-yellow-400'; icon = '👑'; }
+                else if (badge.includes('perfect-streak')) { border = 'border-purple-500/50'; bg = 'bg-purple-900/20'; glow = 'hover:shadow-[0_0_30px_rgba(168,85,247,0.3)]'; text = 'text-purple-400'; icon = '⚡'; }
+                else if (badge.includes('21-day') || badge.includes('hard-mode')) { border = 'border-cyan-500/50'; bg = 'bg-cyan-900/20'; glow = 'hover:shadow-[0_0_30px_rgba(6,182,212,0.3)]'; text = 'text-cyan-400'; icon = '💎'; }
+                else { border = 'border-emerald-500/50'; bg = 'bg-emerald-900/20'; glow = 'hover:shadow-[0_0_30px_rgba(16,185,129,0.3)]'; text = 'text-emerald-400'; icon = '🏅'; }
+
+                if (!isEarned) { border = 'border-white/5'; bg = 'bg-white/[0.02]'; glow = ''; text = 'text-slate-600'; icon = '🔒'; }
+
+                return (
+                  <div key={badge} className={`shrink-0 w-48 text-center rounded-[2rem] p-6 border transition-all duration-500 backdrop-blur-md snap-center ${border} ${bg} ${glow} ${isEarned ? 'opacity-100 transform hover:-translate-y-2' : 'opacity-50 grayscale'}`}>
+                    <p className={`text-4xl mb-4 ${isEarned ? 'drop-shadow-lg' : ''}`}>{icon}</p>
+                    <p className={`font-black text-[11px] uppercase tracking-widest ${text}`}>{formatBadgeName(badge)}</p>
+                    {!isEarned && <p className="text-[9px] text-slate-500 font-bold uppercase mt-2">Locked</p>}
+                  </div>
+                );
+              })}
+            </div>
           </div>
-        </div>
+        </Reveal>
 
         {showActivities && (
-          <div className="mb-8">
+          <Reveal delay={400} className="mb-16">
             <div className="flex justify-between items-center mb-6">
-              <h2 className="text-3xl font-black text-white tracking-wider drop-shadow-lg">📋 RECENT ACTIVITY</h2>
+              <h2 className="text-2xl font-black text-white tracking-wider drop-shadow-lg uppercase">📋 Timeline</h2>
               {activities.length > 3 && (
                 <button
                   onClick={() => setShowActivitiesModal(true)}
-                  className="text-sm font-bold text-cyan-300 hover:text-cyan-200 transition uppercase tracking-wide"
+                  className="text-xs font-black text-cyan-400 hover:text-cyan-300 transition-colors uppercase tracking-widest"
                 >
                   View All
                 </button>
               )}
             </div>
             {activities.length === 0 ? (
-              <div className="text-center py-8 bg-gradient-to-br from-slate-800 to-slate-700 rounded-2xl border-2 border-purple-500 shadow-2xl">
-                <p className="text-purple-300 text-sm font-bold">📭 No actions recorded.</p>
+              <div className="text-center py-12 bg-white/[0.02] border border-white/5 rounded-3xl backdrop-blur-sm">
+                <p className="text-slate-400 text-sm font-bold uppercase tracking-widest">📭 No journey recorded yet.</p>
               </div>
             ) : (
-              <div
-                className={`space-y-3 ${activities.length > 0 ? 'cursor-pointer' : ''}`}
-                onClick={() => activities.length > 0 && setShowActivitiesModal(true)}
-              >
-                {displayedActivities.map(activity => (
-                  <div key={activity._id} className="bg-gradient-to-br from-slate-700 to-slate-800 rounded-xl p-5 shadow-lg border-2 border-purple-500 hover:border-pink-500 transition-all duration-200 transform hover:-translate-y-1">
-                    <p className="font-bold text-white text-sm">{getActivityText(activity)}</p>
-                    <p className="mt-1 text-xs text-purple-300 font-semibold uppercase tracking-wide">{timeAgo(activity.createdAt)}</p>
+              <div className={`relative border-l border-white/10 ml-4 py-4 space-y-8 ${activities.length > 0 ? 'cursor-pointer group/timeline' : ''}`} onClick={() => activities.length > 0 && setShowActivitiesModal(true)}>
+                {displayedActivities.map((activity, i) => (
+                  <div key={activity._id} className="relative pl-8 group/item transition-all duration-300 hover:translate-x-2">
+                    <div className="absolute -left-[6px] top-1.5 w-3 h-3 rounded-full bg-purple-500 border-2 border-[#020617] group-hover/item:scale-150 group-hover/item:shadow-[0_0_10px_rgba(168,85,247,0.8)] transition-all duration-300"></div>
+                    <p className="font-bold text-white text-sm leading-snug">{getActivityText(activity)}</p>
+                    <p className="mt-1 text-[10px] text-cyan-400 font-black uppercase tracking-widest">{timeAgo(activity.createdAt)}</p>
                   </div>
                 ))}
-                {activities.length > 3 && (
-                  <div className="text-center py-2">
-                    <span className="text-sm font-bold text-cyan-300 uppercase tracking-wide opacity-80 hover:opacity-100 transition-opacity">
-                      Click to see {activities.length - 3} more...
-                    </span>
-                  </div>
-                )}
               </div>
             )}
-          </div>
+          </Reveal>
         )}
 
         {showActivitiesModal && (
@@ -277,24 +297,25 @@ export default function ProfileView({
             onClick={() => setShowActivitiesModal(false)}
           >
             <div
-              className="w-full max-w-2xl bg-gradient-to-br from-slate-800 to-slate-900 border-2 border-purple-500 rounded-2xl shadow-2xl flex flex-col"
+              className="w-full max-w-2xl bg-slate-900/90 border border-white/10 rounded-[2rem] shadow-2xl flex flex-col backdrop-blur-xl"
               style={{ maxHeight: '60vh' }}
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="p-6 border-b-2 border-purple-500 border-opacity-50 flex justify-between items-center sticky top-0 bg-slate-800 bg-opacity-90 backdrop-blur-md rounded-t-2xl z-10">
-                <h2 className="text-2xl font-black text-white tracking-wider drop-shadow-lg">📋 ALL ACTIVITY</h2>
+              <div className="p-6 border-b border-white/10 flex justify-between items-center sticky top-0 bg-transparent z-10">
+                <h2 className="text-xl font-black text-white tracking-widest uppercase">📋 Full History</h2>
                 <button
                   onClick={() => setShowActivitiesModal(false)}
-                  className="text-purple-300 hover:text-white transition-colors text-2xl font-bold"
+                  className="text-slate-400 hover:text-white transition-colors text-2xl font-bold"
                 >
                   ✕
                 </button>
               </div>
-              <div className="p-6 overflow-y-auto space-y-3 scrollbar-thin scrollbar-thumb-purple-500 scrollbar-track-transparent">
-                {activities.map(activity => (
-                  <div key={activity._id} className="bg-gradient-to-br from-slate-700 to-slate-800 rounded-xl p-5 shadow-lg border-2 border-purple-500 hover:border-pink-500 transition-all">
+              <div className="p-8 overflow-y-auto relative border-l border-white/10 ml-8 my-4 space-y-8 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
+                {activities.map((activity, i) => (
+                  <div key={activity._id} className="relative pl-8 group/item transition-all duration-300 hover:translate-x-2">
+                    <div className="absolute -left-[6px] top-1.5 w-3 h-3 rounded-full bg-cyan-500 border-2 border-[#020617] group-hover/item:scale-150 group-hover/item:shadow-[0_0_10px_rgba(34,211,238,0.8)] transition-all duration-300"></div>
                     <p className="font-bold text-white text-sm">{getActivityText(activity)}</p>
-                    <p className="mt-1 text-xs text-purple-300 font-semibold uppercase tracking-wide">{timeAgo(activity.createdAt)}</p>
+                    <p className="mt-1 text-[10px] text-purple-400 font-black uppercase tracking-widest">{timeAgo(activity.createdAt)}</p>
                   </div>
                 ))}
               </div>
@@ -303,36 +324,37 @@ export default function ProfileView({
         )}
 
         {stats?.allChallenges && (
-          <div>
-            <h2 className="text-3xl font-black text-white mb-6 tracking-wider drop-shadow-lg">🎯 COMPLETED CHALLENGES</h2>
-            <div className="space-y-3">
+          <Reveal delay={500} className="mb-12">
+            <h2 className="text-2xl font-black text-white mb-6 tracking-wider drop-shadow-lg uppercase">🎯 Trophies</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {completedChallenges.map(challenge => (
-                <div key={challenge._id} className="bg-gradient-to-br from-slate-700 to-slate-800 rounded-xl p-5 shadow-lg border-2 border-purple-500 hover:border-pink-500 transition-all">
+                <div key={challenge._id} className="bg-white/[0.02] border border-white/5 rounded-[2rem] p-6 backdrop-blur-sm hover:bg-white/[0.04] hover:border-white/10 transition-all duration-300 group">
                   <div className="flex justify-between items-start gap-4">
                     <div>
-                      <h3 className="font-black text-white text-sm mb-2 drop-shadow-lg">{challenge.challengeId?.title}</h3>
-                      <span className={`px-3 py-1.5 text-xs font-bold rounded-lg uppercase tracking-wide text-white ${
-                        challenge.mode === 'easy' ? 'bg-green-600' : challenge.mode === 'medium' ? 'bg-yellow-600' : 'bg-red-600'
+                      <h3 className="font-black text-white text-lg mb-3 drop-shadow-lg">{challenge.challengeId?.title}</h3>
+                      <span className={`px-3 py-1 text-[9px] font-black rounded-full uppercase tracking-widest ${
+                        challenge.mode === 'easy' ? 'bg-emerald-900/40 text-emerald-400 border border-emerald-500/30' : challenge.mode === 'medium' ? 'bg-yellow-900/40 text-yellow-400 border border-yellow-500/30' : 'bg-red-900/40 text-red-400 border border-red-500/30'
                       }`}>
                         {challenge.mode} Mode
                       </span>
-                      <p className="mt-3 text-xs text-purple-300 font-semibold">
-                        ✅ Executed {challenge.completedDays || 0} times
-                      </p>
                     </div>
-                    <p className="text-xs font-bold text-cyan-300 bg-slate-600 px-3 py-1.5 rounded-lg uppercase tracking-wide">
-                      {challenge.challengeId?.duration} days
-                    </p>
+                    <div className="w-12 h-12 rounded-full bg-cyan-900/20 border border-cyan-500/30 flex items-center justify-center text-cyan-400 font-black shadow-[0_0_15px_rgba(34,211,238,0.2)] group-hover:scale-110 transition-transform">
+                      🏆
+                    </div>
+                  </div>
+                  <div className="mt-6 pt-4 border-t border-white/5 flex justify-between items-center">
+                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-widest">Executed {challenge.completedDays || 0} days</p>
+                    <p className="text-[10px] text-purple-400 font-black uppercase tracking-widest">+{challenge.challengeId?.duration} Mastery</p>
                   </div>
                 </div>
               ))}
               {completedChallenges.length === 0 && (
-                <div className="text-center py-8 bg-gradient-to-br from-slate-800 to-slate-700 rounded-2xl border-2 border-purple-500 shadow-2xl">
-                  <p className="text-purple-300 text-sm font-bold">🎪 No completed challenges found.</p>
+                <div className="col-span-full text-center py-12 bg-white/[0.02] border border-white/5 rounded-3xl backdrop-blur-sm">
+                  <p className="text-slate-400 text-sm font-bold uppercase tracking-widest">🎪 Journey just beginning.</p>
                 </div>
               )}
             </div>
-          </div>
+          </Reveal>
         )}
       </div>
     </div>

@@ -109,7 +109,7 @@ export default function Profile() {
   if (loading) return <div className="flex items-center justify-center h-screen"><div className="animate-bounce text-2xl font-black text-white">Loading...</div></div>;
 
   return (
-    <div className="pt-24 pb-20 sm:pb-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white font-sans min-h-screen">
+    <div className="pt-24 pb-20 sm:pb-0 bg-[#020617] text-white font-sans min-h-screen relative selection:bg-purple-500/30 overflow-hidden">
       <ProfileView
         profile={user}
         stats={stats}
@@ -126,14 +126,14 @@ export default function Profile() {
             <button
               type="button"
               onClick={() => setIsEditing(!isEditing)}
-              className="bg-gradient-to-r from-purple-600 to-pink-500 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:from-purple-700 hover:to-pink-600 shadow-lg transition uppercase tracking-wide"
+              className="bg-white/10 border border-white/20 text-white px-6 py-2 rounded-full text-xs font-black hover:bg-white/20 transition-all uppercase tracking-widest shadow-[0_0_15px_rgba(255,255,255,0.05)]"
             >
               {isEditing ? 'Cancel' : 'Edit Profile'}
             </button>
             <button
               type="button"
               onClick={() => setShowLogoutConfirm(true)}
-              className="bg-gradient-to-r from-red-600 to-orange-500 text-white hover:from-red-700 hover:to-orange-600 px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg transition uppercase tracking-wide"
+              className="bg-red-900/30 border border-red-500/30 text-red-400 hover:bg-red-900/50 px-6 py-2 rounded-full text-xs font-black transition-all uppercase tracking-widest shadow-[0_0_15px_rgba(239,68,68,0.1)]"
             >
               Sign Out
             </button>
@@ -156,35 +156,36 @@ export default function Profile() {
       )}
 
       {/* Active Challenges Section */}
-      <div className="max-w-4xl mx-auto px-4 pb-12 mt-8">
-        <h2 className="text-3xl font-black text-white mb-6 tracking-wider drop-shadow-lg">⚔️ ACTIVE CHALLENGES</h2>
+      <div className="max-w-6xl mx-auto px-4 pb-24 mt-8 relative z-10">
+        <h2 className="text-2xl font-black text-white mb-8 tracking-wider drop-shadow-lg uppercase">⚔️ Active Evolutions</h2>
         {stats?.allChallenges?.filter(c => c.status === 'active').length === 0 ? (
-          <div className="bg-gradient-to-br from-slate-800 to-slate-700 p-8 rounded-2xl border-2 border-purple-500 text-center text-purple-300 shadow-2xl font-bold text-lg">
-            🎯 No active challenges currently. Head to Explore to begin your evolution.
+          <div className="bg-white/[0.02] border border-white/5 p-12 rounded-[2rem] text-center text-slate-400 backdrop-blur-xl font-bold text-sm uppercase tracking-widest">
+            🎯 Enter a domain to begin your evolution.
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {stats?.allChallenges?.filter(c => c.status === 'active').map(uc => (
-              <div key={uc._id} className="bg-gradient-to-br from-slate-700 to-slate-800 p-6 rounded-2xl border-2 border-purple-500 shadow-2xl hover:border-pink-500 transition-all duration-200">
+              <div key={uc._id} className="bg-white/[0.02] border border-white/5 p-8 rounded-[2rem] shadow-2xl hover:bg-white/[0.04] hover:border-cyan-500/30 transition-all duration-500 group relative overflow-hidden backdrop-blur-xl">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/10 rounded-full blur-[50px] -mr-16 -mt-16 group-hover:bg-cyan-500/20 transition-colors duration-700 pointer-events-none"></div>
                 <div className="flex justify-between items-start mb-3">
-                  <span className={`text-xs font-bold text-white px-3 py-1.5 rounded-lg uppercase tracking-wide ${
-                    uc.mode === 'easy' ? 'bg-green-500' : uc.mode === 'medium' ? 'bg-yellow-500' : 'bg-red-500'
+                  <span className={`text-[9px] font-black px-3 py-1 rounded-full uppercase tracking-widest border ${
+                    uc.mode === 'easy' ? 'bg-emerald-900/30 text-emerald-400 border-emerald-500/30' : uc.mode === 'medium' ? 'bg-yellow-900/30 text-yellow-400 border-yellow-500/30' : 'bg-red-900/30 text-red-400 border-red-500/30'
                   }`}>
                     {uc.mode} Mode
                   </span>
-                  <span className="text-xs font-bold text-cyan-300 bg-slate-600 px-3 py-1.5 rounded-lg uppercase tracking-wide">
+                  <span className="text-[10px] font-black text-cyan-400 bg-cyan-900/20 border border-cyan-500/20 px-3 py-1 rounded-full uppercase tracking-widest shadow-[0_0_10px_rgba(34,211,238,0.1)]">
                     Day {uc.completedDays} / {uc.requiredDays}
                   </span>
                 </div>
-                <h3 className="font-black text-lg text-white mb-2 drop-shadow-lg">{uc.challengeId?.title || 'Unknown Challenge'}</h3>
-                <p className="text-sm text-purple-200 mb-4 line-clamp-2 font-semibold">{uc.challengeId?.description || 'No description available.'}</p>
-                <div className="w-full bg-slate-600 rounded-full h-2 mb-2 overflow-hidden border border-slate-500">
+                <h3 className="font-black text-2xl text-white mb-2 drop-shadow-lg tracking-tight mt-6">{uc.challengeId?.title || 'Unknown Challenge'}</h3>
+                <p className="text-sm text-slate-400 mb-8 line-clamp-2 font-medium leading-relaxed">{uc.challengeId?.description || 'No description available.'}</p>
+                <div className="w-full bg-white/5 rounded-full h-1.5 mb-3 overflow-hidden">
                   <div 
-                    className="bg-gradient-to-r from-purple-500 to-pink-500 h-full rounded-full transition-all duration-[800ms] ease-out shadow-lg" 
+                    className="bg-gradient-to-r from-cyan-400 to-blue-500 h-full rounded-full transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(34,211,238,0.5)]" 
                     style={{ width: `${Math.min(100, Math.max(0, (uc.completedDays / uc.requiredDays) * 100))}%` }}
                   />
                 </div>
-                <p className="text-xs text-right text-purple-300 font-bold uppercase tracking-wide">{Math.round((uc.completedDays / uc.requiredDays) * 100)}% Completed</p>
+                <p className="text-[10px] text-right text-cyan-500 font-black uppercase tracking-widest">{Math.round((uc.completedDays / uc.requiredDays) * 100)}% Engaged</p>
               </div>
             ))}
           </div>
