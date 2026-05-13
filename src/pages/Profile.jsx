@@ -22,6 +22,30 @@ export default function Profile() {
     bio: user?.bio || ''
   });
 
+  const getEffectiveStreak = () => {
+    if (!user || !user.globalStreak) return 0;
+    if (!user.lastActiveDate) return user.globalStreak;
+    
+    const now = new Date();
+    const dateToUse = new Date(now);
+    if (now.getHours() === 0 && now.getMinutes() < 1) {
+      dateToUse.setDate(dateToUse.getDate() - 1);
+    }
+    const todayStr = dateToUse.toISOString().slice(0, 10);
+    
+    const todayDate = new Date(todayStr + 'T00:00:00Z');
+    const yesterday = new Date(todayDate);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr = yesterday.toISOString().slice(0, 10);
+    
+    const lastActiveStr = new Date(user.lastActiveDate).toISOString().slice(0, 10);
+    
+    if (lastActiveStr === todayStr || lastActiveStr === yesterdayStr) {
+      return user.globalStreak;
+    }
+    return 0;
+  };
+
   useEffect(() => {
     const fetchStats = async () => {
       try {
@@ -29,12 +53,10 @@ export default function Profile() {
         const allChallenges = res.data;
         const active = allChallenges.filter(challenge => challenge.status === 'active').length;
         const completed = allChallenges.filter(challenge => challenge.status === 'completed').length;
-        const longestStreak = Math.max(...allChallenges.map(challenge => challenge.longestStreak || 0), 0);
-        const currentStreak = Math.max(...allChallenges.map(challenge => challenge.currentStreak || 0), user?.globalStreak || 0);
 
         setStats({
-          currentStreak: user?.globalStreak || currentStreak,
-          longestStreak: user?.longestStreak || longestStreak,
+          currentStreak: getEffectiveStreak(),
+          longestStreak: user?.longestStreak || 0,
           activeChallenges: active,
           completedChallenges: completed,
           allChallenges
@@ -47,7 +69,7 @@ export default function Profile() {
     };
 
     fetchStats();
-  }, [user?.globalStreak]);
+  }, [user?.globalStreak, user?.lastActiveDate]);
 
   useEffect(() => {
     setForm({
@@ -81,7 +103,7 @@ export default function Profile() {
   if (loading) return <div className="flex items-center justify-center h-screen">Loading...</div>;
 
   return (
-    <>
+    <div className="pb-20 sm:pb-0 bg-[#FAFAF8] text-gray-900 font-sans min-h-screen">
       <ProfileView
         profile={user}
         stats={stats}
@@ -96,14 +118,14 @@ export default function Profile() {
             <button
               type="button"
               onClick={() => setIsEditing(!isEditing)}
-              className="bg-blue-500 text-white px-5 py-2 rounded-lg font-semibold hover:bg-blue-600 transition"
+              className="bg-[#6366F1] text-white px-5 py-2 rounded-xl text-sm font-medium hover:bg-indigo-700 shadow-sm transition"
             >
-              {isEditing ? 'Cancel edit' : 'Edit profile'}
+              {isEditing ? 'Cancel' : 'Edit Profile'}
             </button>
             <button
               type="button"
               onClick={() => setShowLogoutConfirm(true)}
-              className="bg-red-500 text-white px-5 py-2 rounded-lg font-semibold hover:bg-red-600 transition"
+              className="bg-white border border-[#ECECEC] text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 px-5 py-2 rounded-xl text-sm font-medium transition"
             >
               Sign Out
             </button>
@@ -124,6 +146,40 @@ export default function Profile() {
           onClose={() => setSocialModalType(null)}
         />
       )}
-    </>
+
+      {/* Active Challenges Section */}
+      <div className="max-w-4xl mx-auto px-4 pb-12 mt-8">
+        <h2 className="text-2xl font-semibold text-gray-900 mb-6 tracking-tight">Active Challenges</h2>
+        {stats?.allChallenges?.filter(c => c.status === 'active').length === 0 ? (
+          <div className="bg-white p-6 rounded-[24px] border border-[#ECECEC] text-center text-gray-500 shadow-sm">
+            No active challenges currently. Head to Explore to begin your evolution.
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            {stats?.allChallenges?.filter(c => c.status === 'active').map(uc => (
+              <div key={uc._id} className="bg-white p-6 rounded-[24px] border border-[#ECECEC] shadow-sm hover:shadow-md transition-all duration-200">
+                <div className="flex justify-between items-start mb-3">
+                  <span className="text-xs font-medium text-gray-600 bg-gray-50 px-2.5 py-1 rounded-lg">
+                    {uc.mode} Mode
+                  </span>
+                  <span className="text-xs font-medium text-gray-500 bg-gray-50 px-2.5 py-1 rounded-lg">
+                    Day {uc.completedDays} / {uc.requiredDays}
+                  </span>
+                </div>
+                <h3 className="font-semibold text-lg text-gray-900 mb-2">{uc.challengeId?.title || 'Unknown Challenge'}</h3>
+                <p className="text-sm text-gray-500 mb-4 line-clamp-2">{uc.challengeId?.description || 'No description available.'}</p>
+                <div className="w-full bg-gray-100 rounded-full h-1.5 mb-2 overflow-hidden">
+                  <div 
+                    className="bg-[#6366F1] h-full rounded-full transition-all duration-[800ms] ease-out" 
+                    style={{ width: `${Math.min(100, Math.max(0, (uc.completedDays / uc.requiredDays) * 100))}%` }}
+                  />
+                </div>
+                <p className="text-xs text-right text-gray-500 font-medium">{Math.round((uc.completedDays / uc.requiredDays) * 100)}% Completed</p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
   );
 }

@@ -111,61 +111,61 @@ export default function Feed() {
   if (loading) return <div className="flex items-center justify-center h-screen">Loading...</div>;
 
   return (
-    <div className="pb-20 sm:pb-0">
+    <div className="pb-20 sm:pb-0 bg-[#FAFAF8] text-gray-900 font-sans min-h-screen">
       <div className="max-w-2xl mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold">Activity Feed</h1>
-          <p className="mt-2 text-gray-600">Your activity and updates from people you follow.</p>
+          <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Activity Feed</h1>
+          <p className="mt-2 text-gray-500">See what others are accomplishing.</p>
         </div>
 
         <div className="space-y-4">
           {activities.length === 0 ? (
-            <Card className="text-center py-12">
-              <p className="text-gray-600 text-lg">No activities yet. Start completing challenges!</p>
-            </Card>
+            <div className="text-center py-12 bg-white border border-[#ECECEC] rounded-[24px]">
+              <p className="text-gray-500 text-lg font-medium">No recent activity found.</p>
+            </div>
           ) : (
             activities.map(activity => (
-              <Card key={activity._id}>
+              <div key={activity._id} className="bg-white border border-[#ECECEC] rounded-[24px] p-6 shadow-sm">
                 {/* Activity Header */}
                 <div className="flex gap-4 mb-3">
                   {activity.userId?.avatar && (
                     <img
                       src={activity.userId.avatar}
                       alt={activity.userId.name}
-                      className="w-10 h-10 rounded-full"
+                      className="w-10 h-10 rounded-full border border-[#ECECEC]"
                     />
                   )}
                   <div className="flex-grow">
-                    <p className="font-bold">{activity.userId?.name || 'User'}</p>
-                    <p className="text-sm text-gray-600 capitalize">
+                    <p className="font-semibold text-gray-900">{activity.userId?.name || 'User'}</p>
+                    <p className="text-sm text-gray-500 capitalize">
                       {getActivityText(activity)}
                     </p>
-                    <p className="text-xs text-gray-500 mt-1">{timeAgo(activity.createdAt)}</p>
+                    <p className="text-xs text-gray-400 mt-1">{timeAgo(activity.createdAt)}</p>
                   </div>
                 </div>
 
                 {/* Like Button */}
-                <div className="border-t border-gray-200 pt-3 mb-3">
+                <div className="border-t border-[#ECECEC] pt-4 mb-4 mt-2">
                   <button
                     onClick={() => handleLike(activity._id)}
                     disabled={!user}
                     className={`transition font-medium text-sm flex items-center gap-2 ${
                       user
-                        ? 'text-gray-600 hover:text-red-500 cursor-pointer'
-                        : 'text-gray-400 cursor-not-allowed opacity-60'
+                        ? 'text-gray-500 hover:text-red-500 cursor-pointer'
+                        : 'text-gray-400 cursor-not-allowed'
                     }`}
                   >
-                    <span>♥️</span> {activity.likes?.length || 0}
+                    <span className={activity.likes?.includes(user?._id) ? "text-red-500" : ""}>♥️</span> {activity.likes?.length || 0}
                   </button>
                 </div>
 
                 {/* Comments */}
                 {activity.comments && activity.comments.length > 0 && (
-                  <div className="mb-3 space-y-2 bg-gray-50 p-3 rounded">
+                  <div className="mb-4 space-y-2 bg-gray-50 border border-[#ECECEC] p-4 rounded-xl">
                     {activity.comments.map((comment, idx) => (
                       <div key={idx} className="text-sm">
-                        <p className="font-bold text-gray-800">{comment.userId?.name || 'User'}</p>
-                        <p className="text-gray-700">{comment.text}</p>
+                        <p className="font-semibold text-gray-800 text-xs">{comment.userId?.name || 'User'}</p>
+                        <p className="text-gray-600 mt-0.5">{comment.text}</p>
                       </div>
                     ))}
                   </div>
@@ -175,7 +175,7 @@ export default function Feed() {
                 <div className="flex gap-2">
                   <input
                     type="text"
-                    placeholder={user ? "Add a comment..." : "Login to comment"}
+                    placeholder={user ? "Write a comment..." : "Log in to comment"}
                     value={commentText[activity._id] || ''}
                     onChange={(e) => setCommentText({ ...commentText, [activity._id]: e.target.value })}
                     onKeyPress={(e) => {
@@ -184,25 +184,25 @@ export default function Feed() {
                       }
                     }}
                     disabled={!user}
-                    className={`flex-grow px-3 py-2 border rounded-lg text-sm focus:outline-none ${
+                    className={`flex-grow px-4 py-2 border rounded-xl text-sm focus:outline-none placeholder-gray-400 text-gray-900 ${
                       user
-                        ? 'border-gray-300 focus:border-blue-500'
-                        : 'border-gray-200 bg-gray-50 cursor-not-allowed'
+                        ? 'border-[#ECECEC] bg-white focus:border-[#6366F1] focus:ring-1 focus:ring-[#6366F1]'
+                        : 'border-[#ECECEC] bg-gray-50 cursor-not-allowed'
                     }`}
                   />
                   <button
                     onClick={() => handleComment(activity._id)}
                     disabled={!user}
-                    className={`px-4 py-2 rounded-lg transition text-sm font-medium ${
+                    className={`px-5 py-2 rounded-xl transition text-sm font-medium ${
                       user
-                        ? 'bg-blue-500 text-white hover:bg-blue-600'
-                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                        ? 'bg-[#6366F1] text-white hover:bg-indigo-700 shadow-sm'
+                        : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                     }`}
                   >
                     Post
                   </button>
                 </div>
-              </Card>
+              </div>
             ))
           )}
         </div>

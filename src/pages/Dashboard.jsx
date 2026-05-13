@@ -68,7 +68,8 @@ export default function Dashboard() {
         totalXP: res.data.totalXP,
         level: res.data.level,
         globalStreak: res.data.globalStreak,
-        longestStreak: res.data.longestStreak
+        longestStreak: res.data.longestStreak,
+        lastActiveDate: res.data.lastActiveDate
       });
       
       // Update challenge with new streak and completed days
@@ -112,134 +113,165 @@ export default function Dashboard() {
     }
   };
 
+  const getEffectiveStreak = () => {
+    if (!user || !user.globalStreak) return 0;
+    if (!user.lastActiveDate) return user.globalStreak;
+    
+    const now = new Date();
+    const dateToUse = new Date(now);
+    if (now.getHours() === 0 && now.getMinutes() < 1) {
+      dateToUse.setDate(dateToUse.getDate() - 1);
+    }
+    const todayStr = dateToUse.toISOString().slice(0, 10);
+    
+    const todayDate = new Date(todayStr + 'T00:00:00Z');
+    const yesterday = new Date(todayDate);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr = yesterday.toISOString().slice(0, 10);
+    
+    const lastActiveStr = new Date(user.lastActiveDate).toISOString().slice(0, 10);
+    
+    if (lastActiveStr === todayStr || lastActiveStr === yesterdayStr) {
+      return user.globalStreak;
+    }
+    return 0;
+  };
+
   const levelInfo = getLevelInfo(user?.totalXP || 0);
   const maxActiveChallenges = 3;
   const completedTodayCount = challenges.filter(challenge => checkedInToday.includes(challenge._id)).length;
   const remainingTodayCount = Math.max(0, challenges.length - completedTodayCount);
+  const currentStreak = getEffectiveStreak();
 
   if (loading) return <div className="flex items-center justify-center h-screen">Loading...</div>;
 
   return (
-    <div className="pb-20 sm:pb-0">
+    <div className="pb-20 sm:pb-0 bg-[#FAFAF8] text-gray-900 font-sans min-h-screen">
       <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-slate-950">Dashboard</h1>
+          <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Dashboard</h1>
         </div>
 
         <XPProgressCard totalXP={user?.totalXP || 0} className="mb-8" />
 
         {/* Header Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-          <Card>
-            <p className="text-gray-600 text-sm">Total XP</p>
-            <p className="text-3xl font-bold text-blue-600">{user?.totalXP || 0}</p>
-          </Card>
-          <Card>
-            <p className="text-gray-600 text-sm">Level</p>
-            <p className="text-3xl font-bold text-purple-600">{levelInfo.level}</p>
-          </Card>
-          <Card>
-            <p className="text-gray-600 text-sm">Global Streak</p>
-            <p className="text-3xl font-bold text-orange-600">{user?.globalStreak || 0} 🔥</p>
-          </Card>
-          <Card>
-            <p className="text-gray-600 text-sm">Active Slots</p>
-            <p className="text-3xl font-bold text-green-600">{challenges.length}/{maxActiveChallenges}</p>
-            <p className="mt-1 text-xs font-semibold text-gray-500">Max 3 active challenges</p>
-          </Card>
+          <div className="bg-white border border-[#ECECEC] rounded-[24px] p-6 shadow-sm">
+            <p className="text-xs font-medium text-gray-500">Total XP</p>
+            <p className="text-3xl font-semibold text-gray-900 mt-2 tabular-nums">{user?.totalXP || 0}</p>
+          </div>
+          <div className="bg-white border border-[#ECECEC] rounded-[24px] p-6 shadow-sm">
+            <p className="text-xs font-medium text-gray-500">Level</p>
+            <p className="text-3xl font-semibold text-gray-900 mt-2 tabular-nums">{levelInfo.level}</p>
+          </div>
+          <div className="bg-white border border-[#ECECEC] rounded-[24px] p-6 shadow-sm">
+            <p className="text-xs font-medium text-gray-500">Global Streak</p>
+            <p className="text-3xl font-semibold text-gray-900 mt-2 tabular-nums">{currentStreak} <span className="text-lg font-normal text-gray-400">days</span></p>
+          </div>
+          <div className="bg-white border border-[#ECECEC] rounded-[24px] p-6 shadow-sm relative overflow-hidden">
+            <p className="text-xs font-medium text-gray-500">Active Slots</p>
+            <p className="text-3xl font-semibold text-gray-900 mt-2 tabular-nums">{challenges.length}/{maxActiveChallenges}</p>
+            <p className="mt-1 text-xs text-gray-400 absolute bottom-4 right-5">MAX 3</p>
+          </div>
         </div>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3 mb-8">
-          <Card className="border-l-4 border-blue-500">
-            <p className="text-gray-600 text-sm">Daily Tasks</p>
-            <p className="mt-2 text-2xl font-bold text-slate-950">{remainingTodayCount} remaining</p>
-            <p className="mt-1 text-sm text-gray-600">{completedTodayCount} completed today</p>
-          </Card>
-          <Card className="border-l-4 border-green-500">
-            <p className="text-gray-600 text-sm">Challenge Capacity</p>
-            <p className="mt-2 text-2xl font-bold text-slate-950">
+          <div className="bg-white border border-[#ECECEC] rounded-[24px] p-6 shadow-sm">
+            <p className="text-xs font-medium text-gray-500">Daily Tasks</p>
+            <p className="mt-2 text-2xl font-semibold text-gray-900 tabular-nums">{remainingTodayCount} remaining</p>
+            <p className="mt-1 text-sm text-gray-500">{completedTodayCount} completed today</p>
+          </div>
+          <div className="bg-white border border-[#ECECEC] rounded-[24px] p-6 shadow-sm">
+            <p className="text-xs font-medium text-gray-500">Challenge Capacity</p>
+            <p className="mt-2 text-2xl font-semibold text-gray-900 tabular-nums">
               {Math.max(0, maxActiveChallenges - challenges.length)} slots open
             </p>
-            <p className="mt-1 text-sm text-gray-600">Keep no more than 3 active at once.</p>
-          </Card>
-          <Card className="border-l-4 border-orange-500">
-            <p className="text-gray-600 text-sm">Today Focus</p>
-            <p className="mt-2 text-2xl font-bold text-slate-950">
-              {remainingTodayCount === 0 ? 'Clear' : 'Check in'}
+            <p className="mt-1 text-sm text-gray-500">Keep max 3 active.</p>
+          </div>
+          <div className="bg-white border border-[#ECECEC] rounded-[24px] p-6 shadow-sm">
+            <p className="text-xs font-medium text-gray-500">Daily Focus</p>
+            <p className="mt-2 text-2xl font-semibold text-gray-900">
+              {remainingTodayCount === 0 ? 'All Done' : 'Check In'}
             </p>
-            <p className="mt-1 text-sm text-gray-600">
-              {remainingTodayCount === 0 ? 'All active challenges are done today.' : 'Finish each due challenge below.'}
+            <p className="mt-1 text-sm text-gray-500">
+              {remainingTodayCount === 0 ? 'Great job today.' : 'Complete your pending tasks.'}
             </p>
-          </Card>
+          </div>
         </div>
 
         {/* Today's Challenges */}
-        <h2 className="text-2xl font-bold mb-4">Daily Tasks</h2>
+        <h2 className="text-2xl font-semibold text-gray-900 mb-6 tracking-tight">Active Challenges</h2>
         
         {/* Daily Check-in Timer - Only show if user has active challenges */}
         {challenges.length > 0 && (
-          <div className="mb-6 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-lg border-2 border-blue-200">
+          <div className="mb-6 p-5 bg-white border border-[#ECECEC] shadow-sm rounded-[24px]">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-semibold text-gray-700">Daily Check-in Resets In:</p>
-                <p className="text-2xl font-bold text-blue-600">
+                <p className="text-xs font-medium text-gray-500">Daily Reset in:</p>
+                <p className="text-xl font-semibold text-gray-900 tabular-nums mt-1">
                   {formatTimeUntilReset(timeRemaining)}
                 </p>
-                <p className="text-xs text-gray-600 mt-1">You can check in once per day at any time. Resets every day at 12:01 AM</p>
               </div>
-              <div className="text-4xl">⏱️</div>
             </div>
           </div>
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
           {challenges.length === 0 ? (
-            <Card className="col-span-full text-center py-12">
-              <p className="text-gray-600 text-lg">No active challenges. Start one in Explore!</p>
-            </Card>
+            <div className="col-span-full text-center py-12 bg-white border border-[#ECECEC] rounded-[24px]">
+              <p className="text-gray-500 text-lg font-medium">No active challenges. Start one in Explore.</p>
+            </div>
           ) : (
             challenges.map(uc => {
               const isCheckedInToday = checkedInToday.includes(uc._id);
               
               return (
-              <Card key={uc._id}>
+              <div key={uc._id} className="flex flex-col bg-white border border-[#ECECEC] rounded-[24px] p-6 shadow-sm">
                 <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-lg font-bold">{uc.challengeId?.title || 'Challenge'}</h3>
-                  <Badge text={uc.mode.toUpperCase()} color={getModeColor(uc.mode)} />
+                  <h3 className="text-lg font-semibold text-gray-900">{uc.challengeId?.title || 'Challenge'}</h3>
+                  <span className="px-2.5 py-1 text-xs font-medium rounded-lg bg-gray-50 text-gray-600">
+                    {uc.mode}
+                  </span>
                 </div>
                 
                 <div className="mb-3">
-                  <p className="text-sm text-gray-600 mb-2">
-                    {uc.completedDays} / {uc.requiredDays} days
+                  <p className="text-xs font-medium text-gray-500 mb-2 flex justify-between">
+                    <span>Phase Progress</span>
+                    <span className="text-gray-900">{uc.completedDays} / {uc.requiredDays} days</span>
                   </p>
-                  <ProgressBar current={uc.completedDays} total={uc.requiredDays} />
+                  <div className="h-1.5 overflow-hidden rounded-full bg-gray-100">
+                    <div 
+                      className="h-full rounded-full bg-[#6366F1] transition-all duration-[800ms] ease-out" 
+                      style={{ width: `${Math.min(100, Math.max(0, (uc.completedDays / uc.requiredDays) * 100))}%` }} 
+                    />
+                  </div>
                 </div>
 
                 <div className="mb-4">
-                  <p className="text-sm text-gray-600">Streak: <span className="font-bold text-orange-600">{uc.currentStreak}</span> 🔥</p>
+                  <p className="text-xs font-medium text-gray-500">Streak: <span className="font-semibold text-gray-900 tabular-nums">{uc.currentStreak} days</span></p>
                 </div>
 
-                <div className="grid gap-2">
-                  <Button
+                <div className="grid gap-3 mt-auto pt-2">
+                  <button
                     onClick={() => handleCheckin(uc._id)}
                     disabled={isCheckedInToday || checking[uc._id]}
-                    variant={isCheckedInToday ? 'secondary' : 'primary'}
-                    size="md"
-                    className="w-full"
+                    className={`w-full font-medium rounded-xl py-2.5 transition-colors text-sm ${
+                      isCheckedInToday 
+                        ? 'bg-gray-100 text-gray-500 cursor-not-allowed' 
+                        : 'bg-[#6366F1] text-white hover:bg-indigo-700 shadow-sm'
+                    }`}
                   >
-                    {isCheckedInToday ? 'Done today ✓' : checking[uc._id] ? 'Checking in...' : 'Complete Day'}
-                  </Button>
-                  <Button
+                    {isCheckedInToday ? 'Checked In' : checking[uc._id] ? 'Syncing...' : 'Check In'}
+                  </button>
+                  <button
                     onClick={() => handleLeave(uc._id)}
                     disabled={leaving[uc._id]}
-                    variant="danger"
-                    size="md"
-                    className="w-full"
+                    className="w-full font-medium bg-white border border-[#ECECEC] text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 rounded-xl py-2.5 transition-colors text-sm"
                   >
-                    {leaving[uc._id] ? 'Leaving...' : 'De-enroll'}
-                  </Button>
+                    {leaving[uc._id] ? 'Leaving...' : 'Leave Challenge'}
+                  </button>
                 </div>
-              </Card>
+              </div>
             );
             })
           )}

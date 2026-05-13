@@ -54,8 +54,8 @@ export const authAPI = {
 };
 
 export const challengeAPI = {
-  getAll: () => apiClient.get('/challenges'),
-  getEnrollable: () => apiClient.get('/challenges/enrollable'),
+  getAll: (params) => apiClient.get('/challenges', { params }),
+  getEnrollable: (params) => apiClient.get('/challenges/enrollable', { params }),
   getMyChall: () => apiClient.get('/challenges/my-challenges'),
   getCompletedByUser: (userId) => apiClient.get(`/challenges/user/${userId}/completed`),
   join: async (id, mode) => {

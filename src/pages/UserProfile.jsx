@@ -77,6 +77,30 @@ export default function UserProfile() {
     }
   }, [userId, user, navigate]);
 
+  const getEffectiveStreak = (profileData) => {
+    if (!profileData || !profileData.globalStreak) return 0;
+    if (!profileData.lastActiveDate) return profileData.globalStreak;
+    
+    const now = new Date();
+    const dateToUse = new Date(now);
+    if (now.getHours() === 0 && now.getMinutes() < 1) {
+      dateToUse.setDate(dateToUse.getDate() - 1);
+    }
+    const todayStr = dateToUse.toISOString().slice(0, 10);
+    
+    const todayDate = new Date(todayStr + 'T00:00:00Z');
+    const yesterday = new Date(todayDate);
+    yesterday.setDate(yesterday.getDate() - 1);
+    const yesterdayStr = yesterday.toISOString().slice(0, 10);
+    
+    const lastActiveStr = new Date(profileData.lastActiveDate).toISOString().slice(0, 10);
+    
+    if (lastActiveStr === todayStr || lastActiveStr === yesterdayStr) {
+      return profileData.globalStreak;
+    }
+    return 0;
+  };
+
   useEffect(() => {
     const fetchStats = async () => {
       try {
@@ -85,7 +109,7 @@ export default function UserProfile() {
         const completed = allChallenges.filter(challenge => challenge.status === 'completed').length;
 
         setStats({
-          currentStreak: profile?.globalStreak || 0,
+          currentStreak: getEffectiveStreak(profile),
           longestStreak: profile?.longestStreak || 0,
           activeChallenges: 0,
           completedChallenges: completed,
@@ -99,7 +123,7 @@ export default function UserProfile() {
     if (userId) {
       fetchStats();
     }
-  }, [userId, profile?.globalStreak]);
+  }, [userId, profile]);
 
   useEffect(() => {
     const fetchActivities = async () => {
@@ -153,7 +177,7 @@ export default function UserProfile() {
   if (!profile) return <div className="flex items-center justify-center h-screen">User not found</div>;
 
   return (
-    <>
+    <div className="pb-20 sm:pb-0 bg-[#FAFAF8] text-gray-900 font-sans min-h-screen">
       <ProfileView
         profile={profile}
         stats={stats}
@@ -169,19 +193,19 @@ export default function UserProfile() {
                 type="button"
                 onClick={handleFollow}
                 disabled={followLoading}
-                className={`px-5 py-2 rounded-lg font-semibold transition ${
+                className={`px-5 py-2 rounded-xl text-sm font-medium transition-all ${
                   isFollowing
-                    ? 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
-                    : 'bg-blue-600 text-white hover:bg-blue-700'
-                } disabled:bg-gray-300 disabled:text-gray-500`}
+                    ? 'border border-[#ECECEC] bg-white text-gray-600 hover:bg-gray-50'
+                    : 'bg-[#6366F1] text-white hover:bg-indigo-700 shadow-sm'
+                } disabled:opacity-50`}
               >
-                {!user ? 'Login to Follow' : followLoading ? 'Loading...' : isFollowing ? 'Following' : 'Follow'}
+                {!user ? 'Login required' : followLoading ? 'Processing...' : isFollowing ? 'Following' : 'Follow'}
               </button>
             )}
             <button
               type="button"
               onClick={() => navigate('/leaderboard')}
-              className="rounded-lg border border-gray-300 bg-white px-5 py-2 font-semibold text-gray-700 transition hover:bg-gray-50"
+              className="rounded-xl border border-[#ECECEC] bg-white px-5 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-50"
             >
               Back
             </button>
@@ -227,6 +251,6 @@ export default function UserProfile() {
           </div>
         </div>
       </Modal>
-    </>
+    </div>
   );
 }

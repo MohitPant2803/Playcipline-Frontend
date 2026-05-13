@@ -52,46 +52,47 @@ export default function Login() {
   }
 
   return (
-    <div className="min-h-screen bg-[#f5f7fb] text-slate-950">
-      <header className="border-b border-slate-200 bg-white">
+    <div className="min-h-screen bg-[#FAFAF8] text-gray-900 font-sans relative overflow-hidden">
+      
+      <header className="border-b border-[#ECECEC] bg-white/80 backdrop-blur-md relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-wide text-blue-600">Habit challenge platform</p>
-            <h1 className="text-4xl sm:text-5xl font-bold text-slate-950">Playcipline</h1>
+            <p className="text-xs font-medium text-gray-500">Habit tracking, refined.</p>
+            <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 mt-1">Playcipline</h1>
           </div>
 
           <div className="flex flex-row flex-wrap gap-3 sm:items-center">
             <a
               href={`${API_BASE_URL}/api/auth/google`}
-              className="inline-flex items-center justify-center rounded-lg bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-sm transition hover:bg-blue-700"
+              className="inline-flex items-center justify-center rounded-xl bg-[#6366F1] px-6 py-2.5 text-sm font-medium text-white shadow-sm transition hover:bg-indigo-700"
             >
-              Login / Sign up
+              Get Started
             </a>
           </div>
         </div>
       </header>
 
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8 sm:py-10">
-        <section className="mb-8">
-          <p className="max-w-3xl text-lg text-slate-600">
-            Build steady habits through daily challenges, visible progress, and friendly competition.
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-16 sm:py-24 relative z-10">
+        <section className="mb-16">
+          <p className="max-w-3xl text-2xl sm:text-3xl font-medium text-gray-800 leading-snug border-l-4 border-[#6366F1] pl-6">
+            Build better habits with consistency. <br className="hidden sm:block"/> Track progress, stay accountable, and grow daily.
           </p>
           {error && (
-            <p className="mt-4 max-w-3xl rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+            <p className="mt-6 max-w-3xl rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-600">
               {error}
             </p>
           )}
         </section>
 
-        <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        <section className="grid grid-cols-1 gap-6 md:grid-cols-3">
           {featureCards.map((card) => (
             <article
               key={card.title}
-              className={`rounded-lg border-l-4 ${card.accent} border-y border-r border-slate-200 bg-white p-5 shadow-sm`}
+              className="rounded-[24px] border border-[#ECECEC] bg-white p-8 shadow-sm hover:shadow-md transition-shadow"
             >
-              <p className="text-sm font-semibold uppercase tracking-wide text-slate-500">{card.title}</p>
-              <h2 className="mt-3 text-2xl font-bold text-slate-950">{card.value}</h2>
-              <p className="mt-3 text-sm leading-6 text-slate-600">{card.description}</p>
+              <p className="text-xs font-medium text-[#6366F1]">{card.title}</p>
+              <h2 className="mt-3 text-xl font-semibold text-gray-900">{card.value}</h2>
+              <p className="mt-3 text-sm leading-relaxed text-gray-500">{card.description}</p>
             </article>
           ))}
         </section>

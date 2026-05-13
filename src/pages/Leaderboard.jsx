@@ -75,11 +75,11 @@ export default function Leaderboard() {
   if (loading) return <div className="flex items-center justify-center h-screen">Loading...</div>;
 
   return (
-    <div className="pb-20 sm:pb-0">
+    <div className="pb-20 sm:pb-0 bg-[#FAFAF8] text-gray-900 font-sans min-h-screen">
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <h1 className="text-3xl font-bold">Weekly Leaderboard</h1>
-          <div className="inline-flex rounded-lg border border-gray-200 bg-white p-1 shadow-sm">
+          <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Leaderboard</h1>
+          <div className="inline-flex rounded-xl border border-[#ECECEC] bg-white p-1.5 shadow-sm">
             {['global', 'friends'].map(tab => (
               <button
                 key={tab}
@@ -92,12 +92,12 @@ export default function Leaderboard() {
                   setActiveTab(tab);
                 }}
                 disabled={tab === 'friends' && !user}
-                className={`rounded-md px-4 py-2 text-sm font-bold capitalize transition ${
+                className={`rounded-lg px-4 py-2 text-sm font-medium capitalize transition ${
                   activeTab === tab
-                    ? 'bg-blue-600 text-white'
+                    ? 'bg-[#6366F1] text-white shadow-sm'
                     : tab === 'friends' && !user
-                    ? 'text-gray-400 cursor-not-allowed bg-gray-50'
-                    : 'text-gray-700 hover:bg-gray-50'
+                    ? 'text-gray-400 cursor-not-allowed'
+                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                 }`}
               >
                 {tab}
@@ -107,64 +107,66 @@ export default function Leaderboard() {
         </div>
 
         {/* Week End Countdown */}
-        <div className="mb-6 p-4 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border-2 border-purple-200">
+        <div className="mb-6 p-6 bg-white border border-[#ECECEC] rounded-[24px] shadow-sm relative overflow-hidden">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-semibold text-gray-700">Week Ends In:</p>
-              <p className="text-2xl font-bold text-purple-600">
+              <p className="text-xs font-medium text-gray-500">Weekly Reset:</p>
+              <p className="text-xl font-semibold text-gray-900 mt-1 tabular-nums">
                 {formatTimeRemaining(timeRemaining)}
               </p>
-              <p className="text-xs text-gray-600 mt-1">Scores reset when the week ends</p>
             </div>
-            <div className="text-4xl">⏰</div>
           </div>
         </div>
 
         <div className="space-y-2">
           {leaderboard.length === 0 ? (
-            <Card className="text-center py-12">
-              <p className="text-gray-600 text-lg">
+            <div className="text-center py-12 bg-white border border-[#ECECEC] rounded-[24px]">
+              <p className="text-gray-500 text-lg font-medium">
                 {activeTab === 'friends'
                   ? 'Follow people to build your friends leaderboard.'
-                  : 'No users on the leaderboard yet. Be the first to climb up!'}
+                  : 'No entries found. Be the first to join.'}
               </p>
-            </Card>
+            </div>
           ) : leaderboard.map((user, index) => (
-            <Card
+            <div
               key={user._id}
               onClick={() => navigate(`/user/${user._id}`)}
-              className={`flex items-center gap-4 cursor-pointer hover:shadow-lg transition ${
-                index < 3 ? 'border-2 border-yellow-400' : ''
-              } ${user._id === currentUserId ? 'bg-yellow-200' : ''}`}
+              className={`flex items-center gap-4 cursor-pointer p-4 rounded-[20px] border transition-all duration-200 ${
+                user._id === currentUserId 
+                  ? 'bg-indigo-50 border-[#6366F1] shadow-sm' 
+                  : index === 0 ? 'bg-yellow-50 border-yellow-200 shadow-sm' : 'bg-white border-[#ECECEC] hover:border-gray-300 hover:shadow-sm'
+              }`}
             >
-              <div className="text-2xl font-bold text-gray-400 w-8">#{user.rank}</div>
+              <div className={`text-xl font-bold w-8 ${index === 0 ? 'text-yellow-600' : index === 1 ? 'text-gray-400' : index === 2 ? 'text-amber-700' : 'text-gray-400'}`}>#{user.rank}</div>
               {user.avatar && (
                 <img
                   src={user.avatar}
                   alt={user.name}
-                  className="w-10 h-10 rounded-full"
+                  className="w-10 h-10 rounded-full border border-[#ECECEC]"
                 />
               )}
               <div className="flex-grow">
-                <p className="font-bold">{user.name}</p>
-                <p className="text-sm text-gray-600">Level {user.level}</p>
+                <p className="font-semibold text-gray-900">{user.name}</p>
+                <p className="text-xs font-medium text-gray-500">Level {user.level}</p>
               </div>
               <div className="text-right">
-                <Badge text={`${user.weeklyXP} XP`} color="blue" />
+                <span className="px-3 py-1.5 text-xs font-medium rounded-lg bg-gray-50 text-gray-600">
+                  {user.weeklyXP} XP
+                </span>
               </div>
-            </Card>
+            </div>
           ))}
 
           {userRank && userRank > 50 && (
-            <div className="mt-8 pt-8 border-t-2 border-gray-300">
-              <p className="text-center text-gray-600 font-semibold mb-4">
+            <div className="mt-8 pt-8 border-t border-[#ECECEC]">
+              <p className="text-center text-gray-500 text-xs font-medium mb-4">
                 Your Rank: #{userRank}
               </p>
-              <Card className="bg-blue-50 border-2 border-blue-300">
-                <p className="text-center text-gray-700">
-                  Keep completing challenges to reach the top 50!
+              <div className="bg-gray-50 border border-[#ECECEC] p-4 rounded-[16px]">
+                <p className="text-center text-gray-600 text-sm font-medium">
+                  Keep completing challenges to reach the top 50.
                 </p>
-              </Card>
+              </div>
             </div>
           )}
         </div>
