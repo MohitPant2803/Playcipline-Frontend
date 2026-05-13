@@ -1,12 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { challengeAPI, API_BASE_URL } from '../api/client';
-import { useAuth } from '../context/AuthContext';
-import Modal from '../components/Modal';
-import Toast from '../components/Toast';
-import { Card, Badge, Button } from '../components/UI';
 
-const DOMAINS = [
+export const DOMAINS = [
   { id: 'body', title: 'Body', subtitle: 'Strength', icon: '💪', color: 'bg-gray-100 text-gray-700', tagline: 'Forge your physical vessel.', category: 'Fitness' },
   { id: 'mind', title: 'Mind', subtitle: 'Discipline', icon: '🧠', color: 'bg-gray-100 text-gray-700', tagline: 'Master your inner world.', category: 'Mind' },
   { id: 'work', title: 'Work', subtitle: 'Mastery', icon: '⚡', color: 'bg-gray-100 text-gray-700', tagline: 'Dominate your craft.', category: 'Work' },
@@ -15,1032 +10,183 @@ const DOMAINS = [
   { id: 'purpose', title: 'Purpose', subtitle: 'Meaning', icon: '👁️', color: 'bg-gray-100 text-gray-700', tagline: 'Align with your destiny.', category: 'Purpose' },
 ];
 
-const sampleChallenges = [
-  // BODY -> Fitness
-  {
-    _id: '100000000000000000000001',
-    title: '75 Hard Challenge',
-    description: 'Two workouts, a gallon of water, 10 pages of reading, no cheat meals, progress pic daily. No compromises.',
-    duration: 75,
-    baseDifficulty: 3,
-    category: 'Fitness',
-    tags: ['Hardcore', 'Trending']
-  },
-  {
-    _id: '100000000000000000000002',
-    title: '30-Day Push-Up Progression',
-    description: 'Build upper body strength by following a progressive push-up plan for 30 days.',
-    duration: 30,
-    baseDifficulty: 2,
-    category: 'Fitness',
-    tags: ['Strength']
-  },
-  {
-    _id: '100000000000000000000003',
-    title: 'Cold Shower 21-Day Challenge',
-    description: 'Build mental resilience and boost your energy by taking a cold shower every day for 21 days.',
-    duration: 21,
-    baseDifficulty: 2,
-    category: 'Fitness',
-    tags: ['Discipline', 'Reset']
-  },
-  {
-    _id: '100000000000000000000004',
-    title: '10,000 Steps Daily',
-    description: 'Improve your overall health and activity levels by walking at least 10,000 steps every day.',
-    duration: 30,
-    baseDifficulty: 1,
-    category: 'Fitness',
-    tags: ['Activity', 'Beginner']
-  },
-  {
-    _id: '100000000000000000000005',
-    title: 'No Junk Food 30 Days',
-    description: 'Reset your diet and break bad habits by eliminating all junk food for 30 days.',
-    duration: 30,
-    baseDifficulty: 2,
-    category: 'Fitness',
-    tags: ['Nutrition', 'Reset']
-  },
-  {
-    _id: '100000000000000000000006',
-    title: 'Sleep Optimization Protocol',
-    description: 'Improve your sleep quality and energy levels by following a strict sleep hygiene protocol for 21 days.',
-    duration: 21,
-    baseDifficulty: 2,
-    category: 'Fitness',
-    tags: ['Recovery', 'Health']
-  },
-  {
-    _id: '100000000000000000000007',
-    title: 'Morning Workout Streak',
-    description: 'Start your day strong by completing a workout every morning for 30 days straight.',
-    duration: 30,
-    baseDifficulty: 2,
-    category: 'Fitness',
-    tags: ['Habit', 'Fitness']
-  },
-  {
-    _id: '100000000000000000000008',
-    title: 'Winter Arc (Bulk & Build)',
-    description: 'Use the winter season to build serious muscle and strength. A 90-day plan for bulking and building.',
-    duration: 90,
-    baseDifficulty: 3,
-    category: 'Fitness',
-    tags: ['Seasonal', 'Body']
-  },
-  {
-    _id: '100000000000000000000009',
-    title: 'Summer Shred Challenge',
-    description: 'Get lean and defined for the summer. A 90-day challenge focused on fat loss and conditioning.',
-    duration: 90,
-    baseDifficulty: 3,
-    category: 'Fitness',
-    tags: ['Seasonal', 'Body']
-  },
-  {
-    _id: '100000000000000000000010',
-    title: 'Hydration Reset (3L/day)',
-    description: 'Boost your energy and health by ensuring you drink at least 3 liters of water every day.',
-    duration: 14,
-    baseDifficulty: 1,
-    category: 'Fitness',
-    tags: ['Health', 'Beginner']
-  },
-  {
-    _id: '100000000000000000000011',
-    title: 'Intermittent Fasting Sprint',
-    description: 'Experiment with intermittent fasting to improve metabolic health and discipline. 14-day sprint.',
-    duration: 14,
-    baseDifficulty: 2,
-    category: 'Fitness',
-    tags: ['Nutrition', 'Intermediate']
-  },
-  {
-    _id: '100000000000000000000012',
-    title: '6-Week Body Recomposition',
-    description: 'A 6-week intensive program to simultaneously build muscle and lose fat.',
-    duration: 42,
-    baseDifficulty: 3,
-    category: 'Fitness',
-    tags: ['Transformation', 'Hardcore']
-  },
+function useScrollReveal(options = { threshold: 0.3 }) {
+  const [inView, setInView] = useState(false);
+  const ref = useRef(null);
 
-  // MIND -> Mind
-  {
-    _id: '100000000000000000000013',
-    title: 'Dopamine Detox',
-    description: 'Starve your brain of cheap pleasure. No scrolling, junk food, or mindless entertainment. Reset your receptors.',
-    duration: 7,
-    baseDifficulty: 2,
-    category: 'Mind',
-    tags: ['Reset', 'Discipline']
-  },
-  {
-    _id: '100000000000000000000014',
-    title: 'No Social Media 30-Day Challenge',
-    description: 'Delete the apps. Reclaim your attention span and reconnect with the real world around you.',
-    duration: 30,
-    baseDifficulty: 2,
-    category: 'Mind',
-    tags: ['Digital Minimalism']
-  },
-  {
-    _id: '100000000000000000000015',
-    title: '30-Day Meditation Streak',
-    description: 'Cultivate inner peace and focus by meditating every day for 30 days.',
-    duration: 30,
-    baseDifficulty: 1,
-    category: 'Mind',
-    tags: ['Habit', 'Mindfulness']
-  },
-  {
-    _id: '100000000000000000000016',
-    title: 'Journaling Every Day for 21 Days',
-    description: 'Gain mental clarity and self-awareness by journaling your thoughts every day for 21 days.',
-    duration: 21,
-    baseDifficulty: 1,
-    category: 'Mind',
-    tags: ['Clarity', 'Habit']
-  },
-  {
-    _id: '100000000000000000000017',
-    title: 'Digital Minimalism Challenge',
-    description: 'Radically reduce your digital consumption and reclaim your time and attention.',
-    duration: 30,
-    baseDifficulty: 2,
-    category: 'Mind',
-    tags: ['Focus', 'Lifestyle']
-  },
-  {
-    _id: '100000000000000000000018',
-    title: 'Read 1 Book Per Week',
-    description: 'Expand your mind by committing to reading one full book every week for a month.',
-    duration: 28,
-    baseDifficulty: 2,
-    category: 'Mind',
-    tags: ['Learning', 'Knowledge']
-  },
-  {
-    _id: '100000000000000000000019',
-    title: 'Focus Blocks (90-min deep sessions)',
-    description: 'Train your focus by completing one uninterrupted 90-minute deep work session daily.',
-    duration: 14,
-    baseDifficulty: 2,
-    category: 'Mind',
-    tags: ['Productivity', 'Deep Work']
-  },
-  {
-    _id: '100000000000000000000020',
-    title: 'No Negativity 30 Days',
-    description: 'Rewire your brain for positivity by consciously avoiding all forms of negative self-talk and complaining.',
-    duration: 30,
-    baseDifficulty: 2,
-    category: 'Mind',
-    tags: ['Mindset', 'Positive Psychology']
-  },
-  {
-    _id: '100000000000000000000021',
-    title: 'Gratitude Practice 21 Days',
-    description: 'Improve your well-being by writing down three things you are grateful for each day.',
-    duration: 21,
-    baseDifficulty: 1,
-    category: 'Mind',
-    tags: ['Mindset', 'Beginner']
-  },
-  {
-    _id: '100000000000000000000022',
-    title: 'Stoicism 30-Day Practice',
-    description: 'Apply stoic principles to your daily life to build emotional resilience and wisdom.',
-    duration: 30,
-    baseDifficulty: 2,
-    category: 'Mind',
-    tags: ['Philosophy', 'Resilience']
-  },
-  {
-    _id: '100000000000000000000023',
-    title: 'Brain Dump + Mental Clarity Reset',
-    description: 'A 7-day challenge to clear your mind by externalizing all your thoughts, tasks, and worries.',
-    duration: 7,
-    baseDifficulty: 1,
-    category: 'Mind',
-    tags: ['Clarity', 'Reset']
-  },
-  {
-    _id: '100000000000000000000024',
-    title: '7-Day Silence Challenge',
-    description: 'Experience profound inner quiet and self-reflection by committing to a week of silence.',
-    duration: 7,
-    baseDifficulty: 3,
-    category: 'Mind',
-    tags: ['Hardcore', 'Mindfulness']
-  },
+  useEffect(() => {
+    const observer = new IntersectionObserver(([entry]) => {
+      setInView(entry.isIntersecting);
+    }, options);
 
-  // WORK -> Work
-  {
-    _id: '100000000000000000000025',
-    title: 'Deep Work Sprint',
-    description: 'Achieve massive output by dedicating 4 hours to uninterrupted deep work every day for 30 days.',
-    duration: 30,
-    baseDifficulty: 3,
-    category: 'Work',
-    tags: ['Productivity', 'Hardcore']
-  },
-  {
-    _id: '100000000000000000000026',
-    title: 'Learn One Skill in 30 Days',
-    description: 'Dedicate focused effort to acquiring a new valuable skill in just 30 days.',
-    duration: 30,
-    baseDifficulty: 2,
-    category: 'Work',
-    tags: ['Skill', 'Growth']
-  },
-  {
-    _id: '100000000000000000000027',
-    title: 'Ship One Project in 30 Days',
-    description: 'Go from idea to launch. Build and ship a personal or professional project in 30 days.',
-    duration: 30,
-    baseDifficulty: 2,
-    category: 'Work',
-    tags: ['Execution', 'Project']
-  },
-  {
-    _id: '100000000000000000000028',
-    title: 'No Procrastination Week',
-    description: 'Break the cycle of procrastination by tackling tasks immediately for one full week.',
-    duration: 7,
-    baseDifficulty: 2,
-    category: 'Work',
-    tags: ['Productivity', 'Reset']
-  },
-  {
-    _id: '100000000000000000000029',
-    title: 'Inbox Zero Challenge',
-    description: 'Reclaim control over your email by achieving and maintaining an empty inbox for 7 days.',
-    duration: 7,
-    baseDifficulty: 1,
-    category: 'Work',
-    tags: ['Organization', 'Productivity']
-  },
-  {
-    _id: '100000000000000000000030',
-    title: '90-Day Career Leveling Plan',
-    description: 'Execute a 90-day strategic plan to significantly advance your career and skills.',
-    duration: 90,
-    baseDifficulty: 3,
-    category: 'Work',
-    tags: ['Career', 'Growth']
-  },
-  {
-    _id: '100000000000000000000031',
-    title: 'Wake Up at 5 AM for 21 Days',
-    description: 'Build an iron will and gain extra productive hours by waking up at 5 AM every day.',
-    duration: 21,
-    baseDifficulty: 2,
-    category: 'Work',
-    tags: ['Discipline', 'Habit']
-  },
-  {
-    _id: '100000000000000000000032',
-    title: 'Time Audit Week',
-    description: 'Track every minute of your time for a week to understand where it goes and how to optimize it.',
-    duration: 7,
-    baseDifficulty: 1,
-    category: 'Work',
-    tags: ['Productivity', 'Clarity']
-  },
-  {
-    _id: '100000000000000000000033',
-    title: 'No Meetings Week (async only)',
-    description: 'Experience a full week of deep work by replacing all meetings with asynchronous communication.',
-    duration: 7,
-    baseDifficulty: 2,
-    category: 'Work',
-    tags: ['Productivity', 'Focus']
-  },
-  {
-    _id: '100000000000000000000034',
-    title: 'Build in Public 30-Day Challenge',
-    description: 'Share your progress, wins, and losses publicly as you build a project for 30 days.',
-    duration: 30,
-    baseDifficulty: 2,
-    category: 'Work',
-    tags: ['Accountability', 'Project']
-  },
-  {
-    _id: '100000000000000000000035',
-    title: 'Side Project Launch Challenge',
-    description: 'Take a side project from concept to launch in 30 days. No excuses.',
-    duration: 30,
-    baseDifficulty: 3,
-    category: 'Work',
-    tags: ['Execution', 'Entrepreneurship']
-  },
-  {
-    _id: '100000000000000000000036',
-    title: '100-Day Consistency Sprint',
-    description: 'Prove your commitment by showing up and doing the work on one key goal for 100 days straight.',
-    duration: 100,
-    baseDifficulty: 3,
-    category: 'Work',
-    tags: ['Discipline', 'Hardcore']
-  },
+    if (ref.current) observer.observe(ref.current);
+    return () => {
+      if (ref.current) observer.unobserve(ref.current);
+    };
+  }, [options.threshold]);
 
-  // SOCIAL -> Social
-  {
-    _id: '100000000000000000000037',
-    title: 'Reach Out to 1 Person Daily',
-    description: 'Strengthen your network and relationships by intentionally reaching out to one person every day.',
-    duration: 30,
-    baseDifficulty: 1,
-    category: 'Social',
-    tags: ['Networking', 'Connection']
-  },
-  {
-    _id: '100000000000000000000038',
-    title: 'No Phone During Meals (30 Days)',
-    description: 'Be more present with your food and companions by putting your phone away during all meals.',
-    duration: 30,
-    baseDifficulty: 1,
-    category: 'Social',
-    tags: ['Presence', 'Habit']
-  },
-  {
-    _id: '100000000000000000000039',
-    title: 'Compliment Someone Every Day',
-    description: 'Brighten someone\'s day and build positive social habits by giving a genuine compliment daily.',
-    duration: 21,
-    baseDifficulty: 1,
-    category: 'Social',
-    tags: ['Positivity', 'Connection']
-  },
-  {
-    _id: '100000000000000000000040',
-    title: 'Reconnect with 5 Old Friends',
-    description: 'Rekindle old friendships by reaching out to 5 people you\'ve lost touch with over 14 days.',
-    duration: 14,
-    baseDifficulty: 1,
-    category: 'Social',
-    tags: ['Relationships', 'Connection']
-  },
-  {
-    _id: '100000000000000000000041',
-    title: 'Say No 30-Day Boundary Challenge',
-    description: 'Learn to protect your time and energy by practicing saying \'no\' to non-essential requests.',
-    duration: 30,
-    baseDifficulty: 2,
-    category: 'Social',
-    tags: ['Boundaries', 'Self-respect']
-  },
-  {
-    _id: '100000000000000000000042',
-    title: 'Public Speaking Practice (weekly)',
-    description: 'Overcome your fear of public speaking by practicing once a week for a month.',
-    duration: 28,
-    baseDifficulty: 2,
-    category: 'Social',
-    tags: ['Confidence', 'Skill']
-  },
-  {
-    _id: '100000000000000000000043',
-    title: 'Weekly Date/Quality Time Commitment',
-    description: 'Nurture your primary relationship by committing to one dedicated block of quality time each week.',
-    duration: 28,
-    baseDifficulty: 1,
-    category: 'Social',
-    tags: ['Relationships', 'Connection']
-  },
-  {
-    _id: '100000000000000000000044',
-    title: 'Network: Message 1 New Person Daily',
-    description: 'Expand your professional circle by sending a thoughtful message to one new person in your field daily.',
-    duration: 30,
-    baseDifficulty: 2,
-    category: 'Social',
-    tags: ['Networking', 'Career']
-  },
-  {
-    _id: '100000000000000000000045',
-    title: 'Gratitude Letters (write 10 in 30 days)',
-    description: 'Deepen your relationships by writing and sending 10 heartfelt gratitude letters.',
-    duration: 30,
-    baseDifficulty: 1,
-    category: 'Social',
-    tags: ['Relationships', 'Gratitude']
-  },
-  {
-    _id: '100000000000000000000046',
-    title: 'Listen More Challenge (30 days, no interrupting)',
-    description: 'Become a better communicator by practicing active listening and not interrupting others.',
-    duration: 30,
-    baseDifficulty: 2,
-    category: 'Social',
-    tags: ['Communication', 'Presence']
-  },
-  {
-    _id: '100000000000000000000047',
-    title: 'Social Confidence 21-Day Sprint',
-    description: 'Systematically build your social confidence through a series of daily challenges.',
-    duration: 21,
-    baseDifficulty: 2,
-    category: 'Social',
-    tags: ['Confidence', 'Growth']
-  },
-  {
-    _id: '100000000000000000000048',
-    title: 'Mentor Someone for 30 Days',
-    description: 'Give back and develop your leadership skills by mentoring someone for 30 days.',
-    duration: 30,
-    baseDifficulty: 2,
-    category: 'Social',
-    tags: ['Leadership', 'Contribution']
-  },
+  return [ref, inView];
+}
 
-  // LIFESTYLE -> Lifestyle
-  {
-    _id: '100000000000000000000049',
-    title: 'Monk Mode 30-Day Challenge',
-    description: 'A period of intense focus and discipline. Isolate yourself from distractions and work on your goals.',
-    duration: 30,
-    baseDifficulty: 3,
-    category: 'Lifestyle',
-    tags: ['Discipline', 'Hardcore']
-  },
-  {
-    _id: '100000000000000000000050',
-    title: 'Clean Space Every Night (21 Days)',
-    description: 'Bring order to your environment and mind by tidying up your space every night before bed.',
-    duration: 21,
-    baseDifficulty: 1,
-    category: 'Lifestyle',
-    tags: ['Habit', 'Organization']
-  },
-  {
-    _id: '100000000000000000000051',
-    title: 'No Alcohol 30 Days',
-    description: 'Experience improved clarity, energy, and health by abstaining from alcohol for 30 days.',
-    duration: 30,
-    baseDifficulty: 2,
-    category: 'Lifestyle',
-    tags: ['Health', 'Reset']
-  },
-  {
-    _id: '100000000000000000000052',
-    title: 'No Porn / NoFap 90-Day Reset',
-    description: 'Reclaim your focus, energy, and sexual health with a 90-day reset from porn and masturbation.',
-    duration: 90,
-    baseDifficulty: 3,
-    category: 'Lifestyle',
-    tags: ['Discipline', 'Hardcore']
-  },
-  {
-    _id: '100000000000000000000053',
-    title: 'Financial Audit + No Spend Week',
-    description: 'Gain control of your finances by auditing your spending and completing a \'no spend\' week.',
-    duration: 7,
-    baseDifficulty: 2,
-    category: 'Lifestyle',
-    tags: ['Finance', 'Reset']
-  },
-  {
-    _id: '100000000000000000000054',
-    title: 'Morning Routine Lock-In (21 Days)',
-    description: 'Design and execute your ideal morning routine without fail for 21 days to lock it in.',
-    duration: 21,
-    baseDifficulty: 2,
-    category: 'Lifestyle',
-    tags: ['Habit', 'Productivity']
-  },
-  {
-    _id: '100000000000000000000055',
-    title: 'Night Routine Challenge',
-    description: 'Optimize your sleep and recovery by creating and sticking to a relaxing night routine.',
-    duration: 21,
-    baseDifficulty: 1,
-    category: 'Lifestyle',
-    tags: ['Habit', 'Sleep']
-  },
-  {
-    _id: '100000000000000000000056',
-    title: 'Minimalism 30-Day Declutter',
-    description: 'Simplify your life and reduce stress by decluttering one area of your home each day.',
-    duration: 30,
-    baseDifficulty: 2,
-    category: 'Lifestyle',
-    tags: ['Minimalism', 'Organization']
-  },
-  {
-    _id: '100000000000000000000057',
-    title: 'Screen Time Under 2 Hours Daily',
-    description: 'Reclaim your time and attention by limiting non-work screen time to under 2 hours per day.',
-    duration: 30,
-    baseDifficulty: 2,
-    category: 'Lifestyle',
-    tags: ['Digital Minimalism', 'Focus']
-  },
-  {
-    _id: '100000000000000000000058',
-    title: 'Cook Every Meal for 30 Days',
-    description: 'Take full control of your diet and improve your cooking skills by preparing every meal at home.',
-    duration: 30,
-    baseDifficulty: 2,
-    category: 'Lifestyle',
-    tags: ['Nutrition', 'Skill']
-  },
-  {
-    _id: '100000000000000000000059',
-    title: 'No Complaining 21-Day Challenge',
-    description: 'Rewire your brain for proactivity and positivity by eliminating all complaining for 21 days.',
-    duration: 21,
-    baseDifficulty: 2,
-    category: 'Lifestyle',
-    tags: ['Mindset', 'Positivity']
-  },
-  {
-    _id: '100000000000000000000060',
-    title: 'Capsule Wardrobe Challenge',
-    description: 'Simplify your life and reduce decision fatigue by living with a limited, curated wardrobe for 30 days.',
-    duration: 30,
-    baseDifficulty: 1,
-    category: 'Lifestyle',
-    tags: ['Minimalism', 'Simplicity']
-  },
-
-  // PURPOSE -> Purpose
-  {
-    _id: '100000000000000000000061',
-    title: 'Identity Reset 21-Day Challenge',
-    description: 'A 21-day deep dive to consciously redefine and step into your desired identity.',
-    duration: 21,
-    baseDifficulty: 3,
-    category: 'Purpose',
-    tags: ['Transformation', 'Identity']
-  },
-  {
-    _id: '100000000000000000000062',
-    title: 'Hero Arc Journey',
-    description: 'Frame your self-improvement as a hero\'s journey, with clear stages, trials, and triumphs.',
-    duration: 90,
-    baseDifficulty: 3,
-    category: 'Purpose',
-    tags: ['Story', 'Transformation']
-  },
-  {
-    _id: '100000000000000000000063',
-    title: 'Define Your 5-Year Vision',
-    description: 'Dedicate a week of deep work to create a clear and compelling vision for your life in 5 years.',
-    duration: 7,
-    baseDifficulty: 2,
-    category: 'Purpose',
-    tags: ['Clarity', 'Vision']
-  },
-  {
-    _id: '100000000000000000000064',
-    title: 'Ikigai Discovery Challenge',
-    description: 'A 14-day guided process to find your Ikigai - your reason for being.',
-    duration: 14,
-    baseDifficulty: 2,
-    category: 'Purpose',
-    tags: ['Purpose', 'Clarity']
-  },
-  {
-    _id: '100000000000000000000065',
-    title: 'Value Clarification Week',
-    description: 'Spend a week identifying and prioritizing your core values to guide your decisions.',
-    duration: 7,
-    baseDifficulty: 1,
-    category: 'Purpose',
-    tags: ['Clarity', 'Values']
-  },
-  {
-    _id: '100000000000000000000066',
-    title: 'Create Your Personal Mission Statement',
-    description: 'Craft a powerful personal mission statement that acts as your life\'s constitution.',
-    duration: 7,
-    baseDifficulty: 1,
-    category: 'Purpose',
-    tags: ['Vision', 'Clarity']
-  },
-  {
-    _id: '100000000000000000000067',
-    title: 'Fear-Facing 30-Day Challenge',
-    description: 'Systematically identify and face your fears, big and small, every day for 30 days.',
-    duration: 30,
-    baseDifficulty: 3,
-    category: 'Purpose',
-    tags: ['Courage', 'Growth']
-  },
-  {
-    _id: '100000000000000000000068',
-    title: 'Legacy Building 90-Day Plan',
-    description: 'A 90-day sprint to start building a project or body of work that will outlast you.',
-    duration: 90,
-    baseDifficulty: 3,
-    category: 'Purpose',
-    tags: ['Vision', 'Impact']
-  },
-  {
-    _id: '100000000000000000000069',
-    title: 'Gratitude + Abundance Mindset 30 Days',
-    description: 'Shift from a scarcity to an abundance mindset through daily gratitude and visualization practices.',
-    duration: 30,
-    baseDifficulty: 1,
-    category: 'Purpose',
-    tags: ['Mindset', 'Gratitude']
-  },
-  {
-    _id: '100000000000000000000070',
-    title: 'Life Audit (all 6 domains in one week)',
-    description: 'A comprehensive one-week audit of all major life domains to identify strengths and areas for growth.',
-    duration: 7,
-    baseDifficulty: 2,
-    category: 'Purpose',
-    tags: ['Clarity', 'Reset']
-  },
-  {
-    _id: '100000000000000000000071',
-    title: 'Forgiveness & Letting Go 21 Days',
-    description: 'A 21-day practice to release past grudges and emotional baggage for greater peace.',
-    duration: 21,
-    baseDifficulty: 2,
-    category: 'Purpose',
-    tags: ['Healing', 'Mindset']
-  },
-  {
-    _id: '100000000000000000000072',
-    title: 'Design Your Ideal Day',
-    description: 'Consciously design your perfect daily schedule and then live it out for 30 consecutive days.',
-    duration: 30,
-    baseDifficulty: 2,
-    category: 'Purpose',
-    tags: ['Lifestyle', 'Design']
-  },
-];
+function IdentityPanel({ title, subtitle, description, align = 'left', gradient, glow, isLast }) {
+  const [ref, inView] = useScrollReveal({ threshold: 0.4 });
+  
+  const alignClass = align === 'center' ? 'items-center text-center' : align === 'right' ? 'items-end text-right' : 'items-start text-left';
+  
+  return (
+    <div ref={ref} className={`relative w-full ${isLast ? 'h-[120vh]' : 'h-[150vh]'}`}>
+      <div className="sticky top-0 h-screen w-full flex items-center justify-center px-6 sm:px-12 overflow-hidden bg-[#020617]">
+         <div className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${inView ? 'opacity-100' : 'opacity-0'}`}>
+            <div className={`absolute inset-0 bg-gradient-to-b ${gradient}`}></div>
+            <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] max-w-[1000px] max-h-[1000px] rounded-full mix-blend-screen filter blur-[120px] ${glow}`}></div>
+         </div>
+         
+         <div className={`relative z-10 max-w-5xl w-full flex flex-col ${alignClass}`}>
+             <span className={`text-sm md:text-base font-black uppercase tracking-[0.4em] mb-6 text-white/50 transform transition-all duration-1000 ease-out ${inView ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'}`}>{subtitle}</span>
+             <h2 className={`text-5xl sm:text-7xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/70 leading-[1.1] tracking-tight mb-8 transform transition-all duration-1000 delay-200 ease-out ${inView ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'}`}>{title}</h2>
+             <p className={`text-xl sm:text-2xl md:text-3xl text-white/70 max-w-2xl font-medium leading-relaxed transform transition-all duration-1000 delay-400 ease-out ${inView ? 'translate-y-0 opacity-100' : 'translate-y-12 opacity-0'}`}>{description}</p>
+         </div>
+      </div>
+    </div>
+  );
+}
 
 export default function Explore() {
   const navigate = useNavigate();
-  const { user } = useAuth();
-  const [challenges, setChallenges] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedChallenge, setSelectedChallenge] = useState(null);
-  const [selectedMode, setSelectedMode] = useState(null);
-  const [toast, setToast] = useState(null);
-  const [joining, setJoining] = useState(false);
-  const [leavingId, setLeavingId] = useState(null);
-  const [challengeSearch, setChallengeSearch] = useState('');
-  const [activeDomain, setActiveDomain] = useState(null);
-
-  useEffect(() => {
-    const fetchChallenges = async () => {
-      try {
-        let res;
-        try {
-          res = user ? await challengeAPI.getEnrollable() : await challengeAPI.getAll();
-        } catch (err) {
-          res = await challengeAPI.getAll();
-        }
-        // Use API data if available, otherwise use sample challenges
-        let challengesData = sampleChallenges;
-        
-        if (res.data && res.data.length > 0) {
-          challengesData = res.data.map(apiChall => {
-            if (!apiChall.category) {
-              const match = sampleChallenges.find(s => s._id === apiChall._id);
-              return {
-                ...apiChall,
-                category: match ? match.category : 'Lifestyle',
-                tags: match ? match.tags : []
-              };
-            }
-            return apiChall;
-          });
-        }
-
-        setChallenges(challengesData);
-      } catch (err) {
-        console.warn('Failed to load challenges from API, using sample data:', err.message);
-        setChallenges(sampleChallenges);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchChallenges();
-  }, [user]);
-
-  const handleJoin = async () => {
-    setJoining(true);
-    try {
-      const res = await challengeAPI.join(selectedChallenge._id, selectedMode);
-      setChallenges(currentChallenges => currentChallenges.map(challenge => (
-        challenge._id === selectedChallenge._id
-          ? {
-              ...challenge,
-              isJoined: true,
-              enrollmentId: res.data._id,
-              enrollmentMode: res.data.mode
-            }
-          : challenge
-      )));
-      setToast({ message: 'Challenge enrolled! Head to Dashboard.', type: 'success' });
-      setSelectedChallenge(null);
-      setSelectedMode(null);
-    } catch (err) {
-      // Trigger Google auth if unauthorized
-      if (err.response?.status === 401) {
-        window.location.href = `${API_BASE_URL}/api/auth/google`;
-        return;
-      }
-      setToast({ message: err.response?.data?.error || 'Failed to join', type: 'error' });
-    } finally {
-      setJoining(false);
-    }
-  };
-
-  const handleLeave = async (challenge) => {
-    if (!challenge.enrollmentId) return;
-
-    setLeavingId(challenge._id);
-    try {
-      await challengeAPI.leave(challenge.enrollmentId);
-      setChallenges(currentChallenges => currentChallenges.map(item => (
-        item._id === challenge._id
-          ? {
-              ...item,
-              isJoined: false,
-              enrollmentId: null,
-              enrollmentMode: null
-            }
-          : item
-      )));
-      setToast({ message: 'You left the challenge.', type: 'success' });
-    } catch (err) {
-      setToast({ message: err.response?.data?.error || 'Failed to de-enroll', type: 'error' });
-    } finally {
-      setLeavingId(null);
-    }
-  };
-
-  const renderDifficulty = (difficulty) => {
-    if (difficulty === 1) return <span className="px-3 py-1.5 text-xs font-bold rounded-lg bg-green-500 text-white uppercase tracking-wide">Easy</span>;
-    if (difficulty === 2) return <span className="px-3 py-1.5 text-xs font-bold rounded-lg bg-yellow-500 text-white uppercase tracking-wide">Medium</span>;
-    if (difficulty === 3) return <span className="px-3 py-1.5 text-xs font-bold rounded-lg bg-red-500 text-white uppercase tracking-wide">Hard</span>;
-    return <span className="px-3 py-1.5 text-xs font-bold rounded-lg bg-purple-600 text-white uppercase tracking-wide">Hardcore</span>;
-  };
-
-  const getModes = (duration) => [
-    {
-      name: 'Easy',
-      value: 'easy',
-      desc: `${Math.floor(duration * 0.6)} days (60% of ${duration})`,
-      xp: 10
-    },
-    {
-      name: 'Medium',
-      value: 'medium',
-      desc: `${Math.floor(duration * 0.8)} days (80% of ${duration})`,
-      xp: 20
-    },
-    {
-      name: 'Hard',
-      value: 'hard',
-      desc: `${duration} days (100% - no missed days)`,
-      xp: 30
-    }
-  ];
-
-  const filteredChallenges = challenges.filter(challenge => {
-    const query = challengeSearch.trim().toLowerCase();
-    const matchesSearch = !query || (
-      challenge.title.toLowerCase().includes(query) ||
-      challenge.description.toLowerCase().includes(query)
-    );
-    const matchesDomain = !activeDomain || challenge.category?.toLowerCase() === activeDomain.toLowerCase();
-    
-    return matchesSearch && matchesDomain;
-  });
-
-  if (loading) return <div className="flex items-center justify-center h-screen"><div className="animate-bounce text-2xl font-black text-white">Loading...</div></div>;
 
   return (
-    <div className="pb-20 sm:pb-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white font-sans min-h-screen">
-      {/* Hero Section */}
-      <div className="relative border-b-2 border-purple-500 bg-gradient-to-r from-purple-900 to-slate-900 px-4 sm:px-6 lg:px-8 py-20">
-        <div className="max-w-6xl mx-auto relative z-10">
-          <div className="max-w-3xl text-center mx-auto">
-            <span className="inline-block px-4 py-2 text-xs font-bold rounded-full bg-purple-500 bg-opacity-30 text-purple-300 mb-6 uppercase tracking-wide border border-purple-400">
-              🎯 Discover Challenges
+    <div className="pb-20 sm:pb-0 bg-[#020617] text-white font-sans min-h-screen relative selection:bg-purple-500/30">
+      {/* Cinematic Hero Section */}
+      <div className="relative min-h-[90vh] flex flex-col items-center justify-center px-4 sm:px-6 overflow-hidden">
+        {/* Immersive Animated Background */}
+        <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
+          <div className="absolute top-0 left-0 right-0 h-full bg-gradient-to-b from-purple-900/20 via-[#0f172a]/60 to-[#020617] z-10"></div>
+          
+          {/* Floating Atmospheric Orbs */}
+          <div 
+            className="absolute top-1/4 left-1/4 w-[40vw] h-[40vw] max-w-[600px] max-h-[600px] bg-purple-600/20 rounded-full mix-blend-screen filter blur-[100px] animate-pulse" 
+            style={{ animationDuration: '6s' }}
+          ></div>
+          <div 
+            className="absolute bottom-1/4 right-1/4 w-[35vw] h-[35vw] max-w-[500px] max-h-[500px] bg-pink-600/10 rounded-full mix-blend-screen filter blur-[80px] animate-pulse" 
+            style={{ animationDuration: '8s', animationDelay: '1s' }}
+          ></div>
+          <div 
+            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[50vw] h-[50vw] max-w-[800px] max-h-[800px] bg-cyan-900/10 rounded-full mix-blend-screen filter blur-[120px] animate-pulse"
+            style={{ animationDuration: '10s', animationDelay: '2s' }}
+          ></div>
+        </div>
+
+        {/* Hero Content */}
+        <div className="max-w-5xl mx-auto relative z-20 text-center flex flex-col items-center mt-10">
+          <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-8 sm:mb-12 transition-transform hover:scale-105 cursor-default shadow-[0_0_20px_rgba(255,255,255,0.05)]">
+            <span className="relative flex h-2.5 w-2.5">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-cyan-500"></span>
             </span>
-            <h1 className="text-5xl sm:text-6xl font-black tracking-wider mb-6 text-white leading-tight drop-shadow-lg">
-              What will you accomplish <br className="hidden sm:block" /> next?
-            </h1>
-            <p className="text-lg text-purple-200 mb-10 leading-relaxed max-w-2xl mx-auto font-semibold">
-              Find the right path for your personal growth. Choose a category, start a challenge, and build better habits.
-            </p>
+            <span className="text-xs font-bold text-cyan-50 uppercase tracking-[0.25em]">Your Evolution Awaits</span>
+          </div>
+
+          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tighter mb-8 text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-slate-400 leading-[1.1] drop-shadow-2xl uppercase">
+            Focus. Forge. Finish.
+          </h1>
+
+          <p className="text-lg sm:text-2xl text-slate-300 mb-16 leading-relaxed max-w-3xl font-medium tracking-wide drop-shadow-md">
+            Select your domain. Build relentless habits, execute with precision, and become the architect of your own reality.
+          </p>
+        </div>
+
+        {/* Scroll Indicator */}
+        <div 
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-3 opacity-60 hover:opacity-100 transition-opacity cursor-pointer z-30 group"
+          onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
+        >
+          <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 group-hover:text-cyan-300 transition-colors">Begin Journey</span>
+          <div className="w-6 h-10 border-2 border-slate-500 group-hover:border-cyan-400 rounded-full flex justify-center p-1 transition-colors">
+            <div className="w-1 h-2 bg-cyan-400 rounded-full animate-bounce mt-1"></div>
           </div>
         </div>
+        
+        {/* Fade transition to next section */}
+        <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-[#020617] to-transparent z-10 pointer-events-none"></div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 py-12">
-        
-        {/* Domains Section */}
-        <div className="mb-10">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-3xl font-black text-white tracking-wider drop-shadow-lg">📂 CATEGORIES</h2>
-            {activeDomain && (
-              <button onClick={() => setActiveDomain(null)} className="text-sm font-bold text-cyan-300 hover:text-cyan-200 transition uppercase tracking-wide">
-                Clear Filter ✕
-              </button>
-            )}
-          </div>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {DOMAINS.map((domain) => (
-              <div
-                key={domain.id}
-                onClick={() => setActiveDomain(domain.category)}
-                className={`relative overflow-hidden p-6 rounded-2xl cursor-pointer transition-all duration-200 border-2 transform hover:scale-105 ${
-                  activeDomain === domain.category 
-                    ? `border-purple-400 bg-gradient-to-br from-purple-600 to-pink-600 shadow-2xl text-white` 
-                    : `bg-slate-700 border-slate-600 hover:border-purple-500 shadow-lg text-white`
-                }`}
-              >
-                <div className={`flex items-center justify-center w-12 h-12 rounded-xl mb-4 ${activeDomain === domain.category ? 'bg-white bg-opacity-20' : 'bg-slate-600'}`}>
-                  <span className="text-2xl">{domain.icon}</span>
-                </div>
-                <h3 className="font-black text-white mb-1 text-sm uppercase tracking-wide">{domain.title}</h3>
-                <p className="text-xs text-purple-100 leading-tight font-semibold">{domain.tagline}</p>
-              </div>
-            ))}
-          </div>
-        </div>
+      {/* Identity Experience Scroll Journey */}
+      <div className="relative z-20">
+        <IdentityPanel 
+           subtitle="The Physical Vessel"
+           title={<>The Disciplined<br/>Athlete.</>}
+           description="Unbreakable. Relentless. You build energy through motion and prove your commitments through sweat."
+           align="left"
+           gradient="from-[#020617] via-red-950/30 to-[#020617]"
+           glow="bg-red-600/20"
+        />
+        <IdentityPanel 
+           subtitle="The Inner World"
+           title={<>The Calm<br/>Thinker.</>}
+           description="Unbothered by chaos. You master your attention, starve distractions, and cultivate absolute clarity."
+           align="right"
+           gradient="from-[#020617] via-teal-950/20 to-[#020617]"
+           glow="bg-teal-600/20"
+        />
+        <IdentityPanel 
+           subtitle="The Mastery of Craft"
+           title={<>The Unstoppable<br/>Builder.</>}
+           description="You don't wait for inspiration. You execute. You turn ambition into reality, one deep work session at a time."
+           align="left"
+           gradient="from-[#020617] via-indigo-950/30 to-[#020617]"
+           glow="bg-indigo-600/20"
+        />
+        <IdentityPanel 
+           subtitle="The Final Evolution"
+           title={<>The Version of You<br/>That Never Quits.</>}
+           description="This is who you are becoming. The path is mapped. Now, you just have to walk it."
+           align="center"
+           gradient="from-[#020617] via-purple-950/30 to-[#020617]"
+           glow="bg-purple-600/20"
+           isLast={true}
+        />
+      </div>
 
-        {/* Transformation Systems & Trending Grid */}
-        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <h2 className="text-3xl font-black text-white tracking-wider drop-shadow-lg">
-              {activeDomain ? `${activeDomain} Challenges` : '⚡ TRENDING CHALLENGES'}
-            </h2>
-            <p className="text-sm text-purple-300 mt-1 font-semibold">Discover habits hand-crafted for steady growth.</p>
+      <div className="relative z-30 bg-[#020617] pt-20 sm:pt-32 pb-24 shadow-[0_-40px_100px_rgba(2,6,23,1)]">
+        <div className="max-w-7xl mx-auto px-4 relative">
+          <div className="text-center mb-16 relative">
+            <h2 className="text-4xl sm:text-5xl font-black tracking-tight text-white mb-4">Choose Your Domain</h2>
+            <p className="text-lg text-slate-400 font-medium max-w-2xl mx-auto">Where will your transformation begin?</p>
           </div>
-          <div className="w-full sm:max-w-xs relative">
-            <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-purple-300 font-bold text-lg">
-              🔍
-            </div>
-            <input
-              type="search"
-              value={challengeSearch}
-              onChange={(event) => setChallengeSearch(event.target.value)}
-              placeholder="Search challenges..."
-              className="w-full rounded-xl border-2 border-purple-500 bg-slate-700 bg-opacity-50 backdrop-blur-sm pl-10 pr-4 py-2.5 text-sm text-white placeholder-purple-200 outline-none transition focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 shadow-lg"
-            />
-          </div>
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
-          {filteredChallenges.length === 0 ? (
-            <div className="col-span-full text-center py-16 bg-gradient-to-br from-slate-800 to-slate-700 rounded-2xl border-2 border-purple-500 shadow-2xl">
-              <p className="text-white text-lg font-bold">
-                {challengeSearch.trim()
-                  ? '🔍 No challenges match your search.'
-                  : '📭 No challenges available in this category.'}
-              </p>
-              {activeDomain && (
-                <button onClick={() => setActiveDomain(null)} className="mt-4 bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-xl px-6 py-2 font-bold hover:from-purple-700 hover:to-pink-600 transition-all shadow-lg">
-                  View All Challenges
-                </button>
-              )}
-            </div>
-          ) : filteredChallenges.map(challenge => (
-            <div key={challenge._id} className="flex flex-col bg-gradient-to-br from-slate-700 to-slate-800 border-2 border-purple-500 rounded-2xl p-6 shadow-2xl hover:border-pink-500 hover:shadow-2xl transition-all duration-200 transform hover:-translate-y-1">
-              <div className="flex-grow">
-                <div className="flex justify-between items-start mb-3">
-                  <span className="px-3 py-1.5 text-xs font-bold rounded-lg bg-purple-500 bg-opacity-30 text-purple-300 uppercase tracking-wide border border-purple-400">
-                    {challenge.category || 'Challenge'}
-                  </span>
-                  <div className="flex gap-1">
-                    <span className="text-xs font-bold text-cyan-300 bg-slate-600 px-3 py-1.5 rounded-lg uppercase tracking-wide">⏰ {challenge.duration}d</span>
-                  </div>
-                </div>
-                <h3 className="text-xl font-black text-white mb-2 drop-shadow-lg">{challenge.title}</h3>
-                <p className="text-purple-200 text-sm mb-5 leading-relaxed font-semibold">{challenge.description}</p>
-                
-                <div className="flex flex-wrap gap-2 mb-6">
-                  {renderDifficulty(challenge.baseDifficulty)}
-                  {challenge.tags && challenge.tags.map(tag => (
-                    <span key={tag} className="px-2.5 py-1 text-xs font-bold rounded-lg bg-slate-600 text-purple-300 uppercase tracking-wide">
-                      {tag}
-                    </span>
-                  ))}
-                </div>
-              </div>
+          {/* Domains Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 relative">
+          {/* Ambient glow behind grid */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80%] h-[80%] bg-purple-900/10 rounded-full blur-[120px] pointer-events-none"></div>
+          
+          {DOMAINS.map((domain) => (
+            <div
+              key={domain.id}
+              onClick={() => navigate(`/explore/${domain.id}`)}
+              className="group relative overflow-hidden p-8 sm:p-10 rounded-[2rem] cursor-pointer transition-all duration-500 transform hover:-translate-y-2 hover:scale-[1.02] bg-slate-800/40 border border-slate-700/50 hover:border-purple-500/50 shadow-2xl hover:shadow-[0_0_40px_rgba(168,85,247,0.2)] backdrop-blur-xl"
+            >
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-600/10 to-pink-600/10 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
               
-              {challenge.isJoined ? (
-                <div className="grid gap-2">
-                  <button
-                    disabled
-                    className="w-full font-bold bg-gradient-to-r from-green-600 to-emerald-500 text-white rounded-xl py-3 cursor-not-allowed text-sm uppercase tracking-wide shadow-lg"
-                  >
-                     Joined{challenge.enrollmentMode ? ` (${challenge.enrollmentMode})` : ''}
-                  </button>
-                  <button
-                    onClick={() => handleLeave(challenge)}
-                    disabled={leavingId === challenge._id}
-                    className="w-full font-bold bg-gradient-to-r from-red-600 to-orange-500 text-white hover:from-red-700 hover:to-orange-600 rounded-xl py-3 transition-all text-sm uppercase tracking-wide shadow-lg"
-                  >
-                    {leavingId === challenge._id ? '⏳ Leaving...' : 'Leave Challenge'}
-                  </button>
+              <div className="relative z-10">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center justify-center w-16 h-16 rounded-2xl bg-slate-700/50 group-hover:bg-purple-500/20 transition-colors duration-300 border border-slate-500/30 group-hover:border-purple-400/50">
+                    <span className="text-3xl drop-shadow-md transform group-hover:scale-110 transition-transform duration-300">{domain.icon}</span>
+                  </div>
+                  <span className="text-xs font-black text-slate-400 group-hover:text-purple-300 tracking-widest uppercase transition-colors duration-300">
+                    {domain.subtitle}
+                  </span>
                 </div>
-              ) : (
-                <button
-                  onClick={() => setSelectedChallenge(challenge)}
-                  className="w-full font-bold bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-xl py-3 hover:from-purple-700 hover:to-pink-600 transition-all shadow-lg text-sm uppercase tracking-wide"
-                >
-                  View Details →
-                </button>
-              )}
+                
+                <h3 className="font-black text-3xl text-white mb-3 tracking-wide drop-shadow-lg">{domain.title}</h3>
+                <p className="text-sm sm:text-base text-purple-200/70 font-medium leading-relaxed group-hover:text-purple-100 transition-colors duration-300">
+                  {domain.tagline}
+                </p>
+              </div>
             </div>
           ))}
         </div>
-
-        {selectedChallenge && (
-          <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900 bg-opacity-80 backdrop-blur-md p-4"
-            onClick={() => setSelectedChallenge(null)}
-          >
-            <div
-              className="w-full max-w-xl bg-gradient-to-br from-slate-800 to-slate-900 border-2 border-purple-500 rounded-2xl shadow-2xl flex flex-col"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="p-6 border-b-2 border-purple-500 border-opacity-50 flex justify-between items-center rounded-t-2xl">
-                <h2 className="text-2xl font-black text-white tracking-wider drop-shadow-lg uppercase">⚡ COMMITMENT</h2>
-                <button
-                  onClick={() => setSelectedChallenge(null)}
-                  className="text-purple-300 hover:text-white transition-colors text-2xl font-bold"
-                >
-                  ✕
-                </button>
-              </div>
-              <div className="p-6 overflow-y-auto">
-                <h3 className="text-xl font-bold text-cyan-300 mb-4">{selectedChallenge.title}</h3>
-                <div className="space-y-3">
-                  {getModes(selectedChallenge.duration).map(mode => (
-                    <div
-                      key={mode.value}
-                      onClick={() => user && setSelectedMode(mode.value)}
-                      className={`p-4 border-2 rounded-2xl transition-all duration-200 ${
-                        user ? 'cursor-pointer' : 'cursor-not-allowed'
-                      } ${
-                        selectedMode === mode.value
-                          ? 'border-purple-400 bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-xl scale-[1.02]'
-                          : user
-                          ? 'border-slate-600 bg-slate-700 hover:border-purple-500 text-purple-200 hover:shadow-lg'
-                          : 'border-slate-600 bg-slate-800 opacity-50 text-gray-500'
-                      }`}
-                    >
-                      <p className="font-black uppercase tracking-wide">{mode.name}</p>
-                      <p className="text-sm font-semibold mt-1">{mode.desc}</p>
-                      <p className={`text-sm font-bold mt-1 ${selectedMode === mode.value ? 'text-purple-100' : 'text-cyan-300'}`}>+{mode.xp} XP per check-in</p>
-                    </div>
-                  ))}
-                </div>
-                
-                {!user && (
-                  <div className="mt-4 p-4 bg-slate-700 border-2 border-purple-500 rounded-xl">
-                    <p className="text-sm text-purple-300 font-bold">🔐 Log in to select your commitment level and start.</p>
-                  </div>
-                )}
-
-                <div className="mt-6 flex gap-4">
-                  <button
-                    onClick={() => setSelectedChallenge(null)}
-                    className="flex-1 bg-slate-700 border-2 border-slate-600 text-white rounded-xl py-3 font-bold hover:bg-slate-600 hover:border-slate-500 transition-all text-sm uppercase tracking-wide shadow-lg"
-                  >
-                    Cancel
-                  </button>
-                  {user ? (
-                    <button
-                      onClick={handleJoin}
-                      disabled={!selectedMode || joining}
-                      className={`flex-1 rounded-xl py-3 border-2 font-bold transition-all text-sm uppercase tracking-wide ${!selectedMode ? 'bg-slate-700 text-slate-500 cursor-not-allowed border-slate-600' : 'bg-gradient-to-r from-purple-600 to-pink-500 text-white hover:from-purple-700 hover:to-pink-600 shadow-lg border-purple-400'}`}
-                    >
-                      {joining ? '⏳ Starting...' : '🚀 Start Challenge'}
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => {
-                        window.location.href = `${API_BASE_URL}/api/auth/google`;
-                      }}
-                      className="flex-1 bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-xl py-3 font-bold hover:from-purple-700 hover:to-pink-600 transition-all shadow-lg border-2 border-purple-400 text-sm uppercase tracking-wide"
-                    >
-                      Log in to Start
-                    </button>
-                  )}
-                </div>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {toast && <Toast message={toast.message} type={toast.type} />}
+      </div>
       </div>
     </div>
   );
