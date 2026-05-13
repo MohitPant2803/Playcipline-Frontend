@@ -136,8 +136,12 @@ function CinematicDomain({ domain }) {
   
   const flexClass = align === 'right' ? 'justify-end' : align === 'center' ? 'justify-center' : 'justify-start';
 
+  const baseTransition = "transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform";
+  const hiddenState = "opacity-0 translate-y-12";
+  const visibleState = "opacity-100 translate-y-0";
+
   return (
-    <div ref={ref} className="relative w-full min-h-screen flex items-center px-6 sm:px-12 lg:px-24 overflow-hidden border-b border-white/5">
+    <div ref={ref} className="relative w-full py-32 sm:py-48 flex items-center px-6 sm:px-12 lg:px-24 overflow-hidden border-b border-white/5">
          {/* Ambient Backgrounds */}
          <div className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${inView ? 'opacity-100' : 'opacity-0'}`}>
             <div className={`absolute inset-0 bg-gradient-to-b ${gradient}`}></div>
@@ -149,29 +153,29 @@ function CinematicDomain({ domain }) {
          {/* Content */}
          <div className={`relative z-10 w-full flex ${flexClass}`}>
            <div className={`max-w-3xl flex flex-col ${alignClass}`}>
-             <Reveal delay={0} className="flex items-center gap-4 mb-6">
+              <div className={`flex items-center gap-4 mb-6 ${baseTransition} ${inView ? visibleState : hiddenState}`} style={{ transitionDelay: '0ms' }}>
                 <span className="text-5xl sm:text-6xl drop-shadow-2xl">{icon}</span>
                 <span className="text-sm md:text-base font-black uppercase tracking-[0.5em] text-white/50">{subtitle}</span>
-             </Reveal>
+              </div>
              
-             <Reveal delay={100}><h2 className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/60 leading-[0.9] tracking-tighter mb-8 uppercase">{title}</h2></Reveal>
+              <h2 className={`text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/60 leading-[0.9] tracking-tighter mb-8 uppercase ${baseTransition} ${inView ? visibleState : hiddenState}`} style={{ transitionDelay: '100ms' }}>{title}</h2>
              
-             <Reveal delay={200}><p className="text-2xl sm:text-3xl md:text-4xl text-white font-bold leading-tight mb-6">"{quote}"</p></Reveal>
+              <p className={`text-2xl sm:text-3xl md:text-4xl text-white font-bold leading-tight mb-6 ${baseTransition} ${inView ? visibleState : hiddenState}`} style={{ transitionDelay: '200ms' }}>"{quote}"</p>
              
-             <Reveal delay={300}><p className="text-lg sm:text-xl text-slate-400 font-medium leading-relaxed mb-12 max-w-2xl">{description}</p></Reveal>
+              <p className={`text-lg sm:text-xl text-slate-400 font-medium leading-relaxed mb-12 max-w-2xl ${baseTransition} ${inView ? visibleState : hiddenState}`} style={{ transitionDelay: '300ms' }}>{description}</p>
              
-             <Reveal delay={400}>
-               <button 
-                 onClick={() => navigate(`/explore/${id}`)}
-                 className={`group relative px-8 py-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/30 rounded-full overflow-hidden transition-all duration-500 transform hover:scale-105 shadow-[0_0_30px_rgba(0,0,0,0.5)]`}
-               >
-                 <div className={`absolute inset-0 opacity-0 group-hover:opacity-30 transition-opacity duration-500 ${glow}`}></div>
-                 <span className="relative z-10 text-sm font-black uppercase tracking-[0.2em] text-white flex items-center gap-3">
-                   Enter Domain 
-                   <span className="group-hover:translate-x-2 transition-transform duration-500">→</span>
-                 </span>
-               </button>
-             </Reveal>
+              <div className={`${baseTransition} ${inView ? visibleState : hiddenState}`} style={{ transitionDelay: '400ms' }}>
+                <button 
+                  onClick={() => navigate(`/explore/${id}`)}
+                  className={`group relative px-8 py-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/30 rounded-full overflow-hidden transition-all duration-500 transform hover:scale-105 shadow-[0_0_30px_rgba(0,0,0,0.5)]`}
+                >
+                  <div className={`absolute inset-0 opacity-0 group-hover:opacity-30 transition-opacity duration-500 ${glow}`}></div>
+                  <span className="relative z-10 text-sm font-black uppercase tracking-[0.2em] text-white flex items-center gap-3">
+                    Enter Domain 
+                    <span className="group-hover:translate-x-2 transition-transform duration-500">→</span>
+                  </span>
+                </button>
+              </div>
            </div>
          </div>
     </div>
