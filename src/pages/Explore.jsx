@@ -791,19 +791,19 @@ export default function Explore() {
     {
       name: 'Easy',
       value: 'easy',
-      desc: `${Math.floor(duration * 0.8)} days (80% of ${duration})`,
+      desc: `${Math.floor(duration * 0.6)} days (60% of ${duration})`,
       xp: 10
     },
     {
       name: 'Medium',
       value: 'medium',
-      desc: `${duration} days (full commitment)`,
+      desc: `${Math.floor(duration * 0.8)} days (80% of ${duration})`,
       xp: 20
     },
     {
       name: 'Hard',
       value: 'hard',
-      desc: `${duration} days (no missed days allowed)`,
+      desc: `${duration} days (100% - no missed days)`,
       xp: 30
     }
   ];
@@ -939,14 +939,14 @@ export default function Explore() {
                     disabled
                     className="w-full font-bold bg-gradient-to-r from-green-600 to-emerald-500 text-white rounded-xl py-3 cursor-not-allowed text-sm uppercase tracking-wide shadow-lg"
                   >
-                    ✅ Joined{challenge.enrollmentMode ? ` (${challenge.enrollmentMode})` : ''}
+                     Joined{challenge.enrollmentMode ? ` (${challenge.enrollmentMode})` : ''}
                   </button>
                   <button
                     onClick={() => handleLeave(challenge)}
                     disabled={leavingId === challenge._id}
                     className="w-full font-bold bg-gradient-to-r from-red-600 to-orange-500 text-white hover:from-red-700 hover:to-orange-600 rounded-xl py-3 transition-all text-sm uppercase tracking-wide shadow-lg"
                   >
-                    {leavingId === challenge._id ? '⏳ Leaving...' : '🚫 Leave Challenge'}
+                    {leavingId === challenge._id ? '⏳ Leaving...' : 'Leave Challenge'}
                   </button>
                 </div>
               ) : (
@@ -962,66 +962,82 @@ export default function Explore() {
         </div>
 
         {selectedChallenge && (
-          <Modal
-            isOpen={!!selectedChallenge}
-            onClose={() => setSelectedChallenge(null)}
-            title={`⚡ SELECT COMMITMENT: ${selectedChallenge.title}`}
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900 bg-opacity-80 backdrop-blur-md p-4"
+            onClick={() => setSelectedChallenge(null)}
           >
-            <div className="space-y-3">
-              {getModes(selectedChallenge.duration).map(mode => (
-                <div
-                  key={mode.value}
-                  onClick={() => user && setSelectedMode(mode.value)}
-                  className={`p-4 border-2 rounded-2xl transition-all ${
-                    user ? 'cursor-pointer' : 'cursor-not-allowed'
-                  } ${
-                    selectedMode === mode.value
-                      ? 'border-purple-400 bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-2xl'
-                      : user
-                      ? 'border-slate-600 bg-slate-700 hover:border-purple-500 text-purple-200'
-                      : 'border-slate-600 bg-slate-800 opacity-50 text-gray-500'
-                  }`}
+            <div
+              className="w-full max-w-xl bg-gradient-to-br from-slate-800 to-slate-900 border-2 border-purple-500 rounded-2xl shadow-2xl flex flex-col"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-6 border-b-2 border-purple-500 border-opacity-50 flex justify-between items-center rounded-t-2xl">
+                <h2 className="text-2xl font-black text-white tracking-wider drop-shadow-lg uppercase">⚡ COMMITMENT</h2>
+                <button
+                  onClick={() => setSelectedChallenge(null)}
+                  className="text-purple-300 hover:text-white transition-colors text-2xl font-bold"
                 >
-                  <p className="font-black uppercase tracking-wide">{mode.name}</p>
-                  <p className="text-sm font-semibold mt-1">{mode.desc}</p>
-                  <p className="text-sm font-bold mt-1">+{mode.xp} XP per check-in</p>
-                </div>
-              ))}
-            </div>
-            
-            {!user && (
-              <div className="mt-4 p-4 bg-slate-700 border-2 border-purple-500 rounded-xl">
-                <p className="text-sm text-purple-300 font-bold">🔐 Log in to select your commitment level and start.</p>
+                  ✕
+                </button>
               </div>
-            )}
+              <div className="p-6 overflow-y-auto">
+                <h3 className="text-xl font-bold text-cyan-300 mb-4">{selectedChallenge.title}</h3>
+                <div className="space-y-3">
+                  {getModes(selectedChallenge.duration).map(mode => (
+                    <div
+                      key={mode.value}
+                      onClick={() => user && setSelectedMode(mode.value)}
+                      className={`p-4 border-2 rounded-2xl transition-all duration-200 ${
+                        user ? 'cursor-pointer' : 'cursor-not-allowed'
+                      } ${
+                        selectedMode === mode.value
+                          ? 'border-purple-400 bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-xl scale-[1.02]'
+                          : user
+                          ? 'border-slate-600 bg-slate-700 hover:border-purple-500 text-purple-200 hover:shadow-lg'
+                          : 'border-slate-600 bg-slate-800 opacity-50 text-gray-500'
+                      }`}
+                    >
+                      <p className="font-black uppercase tracking-wide">{mode.name}</p>
+                      <p className="text-sm font-semibold mt-1">{mode.desc}</p>
+                      <p className={`text-sm font-bold mt-1 ${selectedMode === mode.value ? 'text-purple-100' : 'text-cyan-300'}`}>+{mode.xp} XP per check-in</p>
+                    </div>
+                  ))}
+                </div>
+                
+                {!user && (
+                  <div className="mt-4 p-4 bg-slate-700 border-2 border-purple-500 rounded-xl">
+                    <p className="text-sm text-purple-300 font-bold">🔐 Log in to select your commitment level and start.</p>
+                  </div>
+                )}
 
-            <div className="mt-6 flex gap-4">
-              <button
-                onClick={() => setSelectedChallenge(null)}
-                className="flex-1 bg-gradient-to-r from-red-600 to-orange-500 text-white rounded-xl py-3 font-bold hover:from-red-700 hover:to-orange-600 transition-all text-sm uppercase tracking-wide shadow-lg"
-              >
-                Cancel
-              </button>
-              {user ? (
-                <button
-                  onClick={handleJoin}
-                  disabled={!selectedMode || joining}
-                  className={`flex-1 rounded-xl py-3 font-bold transition-all text-sm uppercase tracking-wide ${!selectedMode ? 'bg-slate-600 text-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-purple-600 to-pink-500 text-white hover:from-purple-700 hover:to-pink-600 shadow-lg'}`}
-                >
-                  {joining ? '⏳ Starting...' : '🚀 Start Challenge'}
-                </button>
-              ) : (
-                <button
-                  onClick={() => {
-                    window.location.href = `${API_BASE_URL}/api/auth/google`;
-                  }}
-                  className="flex-1 bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-xl py-3 font-bold hover:from-purple-700 hover:to-pink-600 transition-all shadow-lg text-sm uppercase tracking-wide"
-                >
-                  Log in to Start
-                </button>
-              )}
+                <div className="mt-6 flex gap-4">
+                  <button
+                    onClick={() => setSelectedChallenge(null)}
+                    className="flex-1 bg-slate-700 border-2 border-slate-600 text-white rounded-xl py-3 font-bold hover:bg-slate-600 hover:border-slate-500 transition-all text-sm uppercase tracking-wide shadow-lg"
+                  >
+                    Cancel
+                  </button>
+                  {user ? (
+                    <button
+                      onClick={handleJoin}
+                      disabled={!selectedMode || joining}
+                      className={`flex-1 rounded-xl py-3 border-2 font-bold transition-all text-sm uppercase tracking-wide ${!selectedMode ? 'bg-slate-700 text-slate-500 cursor-not-allowed border-slate-600' : 'bg-gradient-to-r from-purple-600 to-pink-500 text-white hover:from-purple-700 hover:to-pink-600 shadow-lg border-purple-400'}`}
+                    >
+                      {joining ? '⏳ Starting...' : '🚀 Start Challenge'}
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => {
+                        window.location.href = `${API_BASE_URL}/api/auth/google`;
+                      }}
+                      className="flex-1 bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-xl py-3 font-bold hover:from-purple-700 hover:to-pink-600 transition-all shadow-lg border-2 border-purple-400 text-sm uppercase tracking-wide"
+                    >
+                      Log in to Start
+                    </button>
+                  )}
+                </div>
+              </div>
             </div>
-          </Modal>
+          </div>
         )}
 
         {toast && <Toast message={toast.message} type={toast.type} />}

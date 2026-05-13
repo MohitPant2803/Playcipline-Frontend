@@ -1,11 +1,36 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Card, Badge } from './UI';
 import { getLevelInfo } from '../utils/leveling';
+import IdentityGraph from '../pages/IdentityGraph';
 
 const ALL_BADGES = ['7-day', '21-day', '75-hard', 'hard-mode', 'perfect-streak'];
 
 function formatBadgeName(badge) {
   return String(badge || '').replace(/-/g, ' ');
+}
+
+function timeAgo(date) {
+  if (!date) return '';
+  const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+  if (seconds < 60) return 'just now';
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  return `${days}d ago`;
+}
+
+function getActivityText(activity) {
+  const challenge = activity.challengeId?.title || 'a challenge';
+  if (activity.type === 'checkin') {
+    return `completed Day ${activity.meta?.day} of ${challenge} on ${activity.meta?.mode}`;
+  } else if (activity.type === 'completed_challenge') {
+    return `completed ${challenge} challenge on ${activity.meta?.mode}`;
+  } else if (activity.type === 'badge_earned') {
+    return `earned the ${activity.meta?.badge} badge`;
+  }
+  return 'did something awesome';
 }
 
 export default function ProfileView({
@@ -19,10 +44,10 @@ export default function ProfileView({
   onSaveProfile,
   onSocialClick,
   activities = [],
-  showActivities = false,
-  getActivityText,
-  timeAgo
+  showActivities = false
 }) {
+  const [showActivitiesModal, setShowActivitiesModal] = useState(false);
+  const displayedActivities = activities.slice(0, 3);
   const earnedBadges = profile?.badges || [];
   const unearnedBadges = ALL_BADGES.filter(badge => !earnedBadges.includes(badge));
   const followerCount = profile?.followerCount ?? profile?.followers ?? 0;
@@ -185,6 +210,9 @@ export default function ProfileView({
           </div>
         </div>
 
+        {/* Premium Life Identity Graph Component */}
+        <IdentityGraph stats={stats} />
+
         <div className="mb-8">
           <h2 className="text-3xl font-black text-white mb-6 tracking-wider drop-shadow-lg">🎖️ BADGES</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
@@ -205,21 +233,72 @@ export default function ProfileView({
 
         {showActivities && (
           <div className="mb-8">
-            <h2 className="text-3xl font-black text-white mb-6 tracking-wider drop-shadow-lg">📋 RECENT ACTIVITY</h2>
+            <div className="flex justify-between items-center mb-6">
+              <h2 className="text-3xl font-black text-white tracking-wider drop-shadow-lg">📋 RECENT ACTIVITY</h2>
+              {activities.length > 3 && (
+                <button
+                  onClick={() => setShowActivitiesModal(true)}
+                  className="text-sm font-bold text-cyan-300 hover:text-cyan-200 transition uppercase tracking-wide"
+                >
+                  View All
+                </button>
+              )}
+            </div>
             {activities.length === 0 ? (
               <div className="text-center py-8 bg-gradient-to-br from-slate-800 to-slate-700 rounded-2xl border-2 border-purple-500 shadow-2xl">
                 <p className="text-purple-300 text-sm font-bold">📭 No actions recorded.</p>
               </div>
             ) : (
-              <div className="space-y-3">
+              <div
+                className={`space-y-3 ${activities.length > 0 ? 'cursor-pointer' : ''}`}
+                onClick={() => activities.length > 0 && setShowActivitiesModal(true)}
+              >
+                {displayedActivities.map(activity => (
+                  <div key={activity._id} className="bg-gradient-to-br from-slate-700 to-slate-800 rounded-xl p-5 shadow-lg border-2 border-purple-500 hover:border-pink-500 transition-all duration-200 transform hover:-translate-y-1">
+                    <p className="font-bold text-white text-sm">{getActivityText(activity)}</p>
+                    <p className="mt-1 text-xs text-purple-300 font-semibold uppercase tracking-wide">{timeAgo(activity.createdAt)}</p>
+                  </div>
+                ))}
+                {activities.length > 3 && (
+                  <div className="text-center py-2">
+                    <span className="text-sm font-bold text-cyan-300 uppercase tracking-wide opacity-80 hover:opacity-100 transition-opacity">
+                      Click to see {activities.length - 3} more...
+                    </span>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        )}
+
+        {showActivitiesModal && (
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900 bg-opacity-60 backdrop-blur-sm p-4"
+            onClick={() => setShowActivitiesModal(false)}
+          >
+            <div
+              className="w-full max-w-2xl bg-gradient-to-br from-slate-800 to-slate-900 border-2 border-purple-500 rounded-2xl shadow-2xl flex flex-col"
+              style={{ maxHeight: '60vh' }}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-6 border-b-2 border-purple-500 border-opacity-50 flex justify-between items-center sticky top-0 bg-slate-800 bg-opacity-90 backdrop-blur-md rounded-t-2xl z-10">
+                <h2 className="text-2xl font-black text-white tracking-wider drop-shadow-lg">📋 ALL ACTIVITY</h2>
+                <button
+                  onClick={() => setShowActivitiesModal(false)}
+                  className="text-purple-300 hover:text-white transition-colors text-2xl font-bold"
+                >
+                  ✕
+                </button>
+              </div>
+              <div className="p-6 overflow-y-auto space-y-3 scrollbar-thin scrollbar-thumb-purple-500 scrollbar-track-transparent">
                 {activities.map(activity => (
                   <div key={activity._id} className="bg-gradient-to-br from-slate-700 to-slate-800 rounded-xl p-5 shadow-lg border-2 border-purple-500 hover:border-pink-500 transition-all">
-                    <p className="font-bold text-white text-sm">{getActivityText?.(activity) || 'Action logged'}</p>
-                    <p className="mt-1 text-xs text-purple-300 font-semibold uppercase tracking-wide">{timeAgo?.(activity.createdAt) || ''}</p>
+                    <p className="font-bold text-white text-sm">{getActivityText(activity)}</p>
+                    <p className="mt-1 text-xs text-purple-300 font-semibold uppercase tracking-wide">{timeAgo(activity.createdAt)}</p>
                   </div>
                 ))}
               </div>
-            )}
+            </div>
           </div>
         )}
 

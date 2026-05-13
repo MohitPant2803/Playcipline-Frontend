@@ -7,32 +7,6 @@ import FollowersModal from '../components/FollowersModal';
 import Modal from '../components/Modal';
 import ProfileView from '../components/ProfileView';
 
-function timeAgo(date) {
-  const seconds = Math.floor((new Date() - new Date(date)) / 1000);
-  if (seconds < 60) return 'just now';
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return `${minutes}m ago`;
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours}h ago`;
-  const days = Math.floor(hours / 24);
-  return `${days}d ago`;
-}
-
-function getActivityText(activity) {
-  const challenge = activity.challengeId?.title || 'a challenge';
-
-  if (activity.type === 'checkin') {
-    return `completed Day ${activity.meta?.day} of ${challenge} on ${activity.meta?.mode}`;
-  }
-  if (activity.type === 'completed_challenge') {
-    return `completed ${challenge} challenge on ${activity.meta?.mode}`;
-  }
-  if (activity.type === 'badge_earned') {
-    return `earned the ${activity.meta?.badge} badge`;
-  }
-  return 'did something awesome';
-}
-
 export default function UserProfile() {
   const { userId } = useParams();
   const navigate = useNavigate();
@@ -173,18 +147,16 @@ export default function UserProfile() {
     }
   };
 
-  if (loading) return <div className="flex items-center justify-center h-screen">Loading...</div>;
-  if (!profile) return <div className="flex items-center justify-center h-screen">User not found</div>;
+  if (loading) return <div className="flex items-center justify-center h-screen bg-slate-900"><div className="animate-bounce text-2xl font-black text-white">Loading...</div></div>;
+  if (!profile) return <div className="flex items-center justify-center h-screen bg-slate-900"><div className="text-2xl font-black text-white">User not found</div></div>;
 
   return (
-    <div className="pb-20 sm:pb-0 bg-[#FAFAF8] text-gray-900 font-sans min-h-screen">
+    <div className="pb-20 sm:pb-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white font-sans min-h-screen">
       <ProfileView
         profile={profile}
         stats={stats}
         activities={activities}
         showActivities
-        getActivityText={getActivityText}
-        timeAgo={timeAgo}
         onSocialClick={setSocialModalType}
         actions={
           <>
@@ -193,10 +165,10 @@ export default function UserProfile() {
                 type="button"
                 onClick={handleFollow}
                 disabled={followLoading}
-                className={`px-5 py-2 rounded-xl text-sm font-medium transition-all ${
+                className={`px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg transition uppercase tracking-wide ${
                   isFollowing
-                    ? 'border border-[#ECECEC] bg-white text-gray-600 hover:bg-gray-50'
-                    : 'bg-[#6366F1] text-white hover:bg-indigo-700 shadow-sm'
+                    ? 'border-2 border-purple-500 bg-slate-700 text-purple-300 hover:bg-slate-600'
+                    : 'bg-gradient-to-r from-purple-600 to-pink-500 text-white hover:from-purple-700 hover:to-pink-600'
                 } disabled:opacity-50`}
               >
                 {!user ? 'Login required' : followLoading ? 'Processing...' : isFollowing ? 'Following' : 'Follow'}
@@ -205,7 +177,7 @@ export default function UserProfile() {
             <button
               type="button"
               onClick={() => navigate('/leaderboard')}
-              className="rounded-xl border border-[#ECECEC] bg-white px-5 py-2 text-sm font-medium text-gray-600 transition hover:bg-gray-50"
+              className="rounded-xl border-2 border-purple-500 bg-slate-700 px-5 py-2.5 text-sm font-bold text-purple-300 transition hover:bg-slate-600 shadow-lg uppercase tracking-wide"
             >
               Back
             </button>
@@ -226,15 +198,15 @@ export default function UserProfile() {
       <Modal
         isOpen={showLoginPrompt}
         onClose={() => setShowLoginPrompt(false)}
-        title="Login Required"
+        title="🔐 LOGIN REQUIRED"
       >
         <div className="space-y-4">
-          <p className="text-gray-600">You need to be logged in to follow users.</p>
+          <p className="text-gray-700 font-semibold">You need to be logged in to follow users.</p>
           <div className="flex gap-3">
             <button
               type="button"
               onClick={() => setShowLoginPrompt(false)}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="flex-1 px-4 py-3 border-2 border-gray-300 rounded-lg hover:bg-gray-100 font-bold uppercase tracking-wide"
             >
               Continue Browsing
             </button>
@@ -244,7 +216,7 @@ export default function UserProfile() {
                 setShowLoginPrompt(false);
                 navigate('/');
               }}
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-center font-medium"
+              className="flex-1 px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-lg hover:from-purple-700 hover:to-pink-600 text-center font-bold uppercase tracking-wide shadow-lg"
             >
               Login
             </button>

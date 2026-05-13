@@ -6,6 +6,31 @@ import Toast from '../components/Toast';
 import { Card, Badge } from '../components/UI';
 import { getTimeUntilWeekEnd, formatTimeRemaining } from '../utils/weeklyReset';
 
+function WeeklyCountdown() {
+  const [timeRemaining, setTimeRemaining] = useState(() => {
+    try {
+      return getTimeUntilWeekEnd();
+    } catch (err) {
+      console.error('Error initializing week timer:', err);
+      return { days: 0, hours: 0, minutes: 0, seconds: 0, total: 0 };
+    }
+  });
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeRemaining(getTimeUntilWeekEnd());
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  return (
+    <p className="text-2xl font-black mt-1 tabular-nums text-white drop-shadow-lg">
+      {formatTimeRemaining(timeRemaining)}
+    </p>
+  );
+}
+
 export default function Leaderboard() {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -15,14 +40,6 @@ export default function Leaderboard() {
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState(null);
   const [activeTab, setActiveTab] = useState('global');
-  const [timeRemaining, setTimeRemaining] = useState(() => {
-    try {
-      return getTimeUntilWeekEnd();
-    } catch (err) {
-      console.error('Error initializing week timer:', err);
-      return { days: 0, hours: 0, minutes: 0, seconds: 0, total: 0 };
-    }
-  });
 
   // Filter out demo/test users from leaderboard
   const isDemoUser = (user) => {
@@ -62,17 +79,6 @@ export default function Leaderboard() {
     };
     fetchLeaderboard();
   }, [activeTab]);
-
-  // Update countdown timer every second
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeRemaining(getTimeUntilWeekEnd());
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
-
-  if (loading) return <div className="flex items-center justify-center h-screen text-white text-xl font-bold"><div className="animate-bounce">Loading...</div></div>;
 
   return (
     <div className="pb-20 sm:pb-0 bg-gradient-to-br from-purple-900 via-slate-900 to-slate-800 text-white font-sans min-h-screen">
@@ -114,15 +120,17 @@ export default function Leaderboard() {
           <div className="relative flex items-center justify-between">
             <div>
               <p className="text-xs font-bold uppercase tracking-widest text-cyan-100">⏱️ Weekly Reset:</p>
-              <p className="text-2xl font-black mt-1 tabular-nums text-white drop-shadow-lg">
-                {formatTimeRemaining(timeRemaining)}
-              </p>
+              <WeeklyCountdown />
             </div>
           </div>
         </div>
 
-        <div className="space-y-3">
-          {leaderboard.length === 0 ? (
+        <div className={`space-y-3 transition-opacity duration-300 will-change-opacity ${loading ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
+          {loading && leaderboard.length === 0 ? (
+            <div className="text-center py-16">
+              <div className="animate-bounce text-xl font-bold text-purple-300 tracking-widest uppercase">Loading...</div>
+            </div>
+          ) : leaderboard.length === 0 ? (
             <div className="text-center py-16 bg-gradient-to-br from-slate-800 to-slate-700 rounded-2xl border-2 border-purple-500 shadow-2xl">
               <p className="text-white text-lg font-bold">
                 {activeTab === 'friends'

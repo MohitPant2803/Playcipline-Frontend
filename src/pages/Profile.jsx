@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { challengeAPI } from '../api/client';
+import { challengeAPI, feedAPI } from '../api/client';
 import Toast from '../components/Toast';
 import LogoutConfirmModal from '../components/LogoutConfirmModal';
 import FollowersModal from '../components/FollowersModal';
@@ -9,6 +9,7 @@ import ProfileView from '../components/ProfileView';
 export default function Profile() {
   const { user, logout, updateProfile } = useAuth();
   const [stats, setStats] = useState(null);
+  const [activities, setActivities] = useState([]);
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -49,8 +50,11 @@ export default function Profile() {
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await challengeAPI.getMyChall();
-        const allChallenges = res.data;
+        const [chalRes, actsRes] = await Promise.all([
+          challengeAPI.getMyChall(),
+          user?._id ? feedAPI.getUserActivities(user._id) : Promise.resolve({ data: [] })
+        ]);
+        const allChallenges = chalRes.data;
         const active = allChallenges.filter(challenge => challenge.status === 'active').length;
         const completed = allChallenges.filter(challenge => challenge.status === 'completed').length;
 
@@ -61,6 +65,8 @@ export default function Profile() {
           completedChallenges: completed,
           allChallenges
         });
+
+        setActivities(actsRes.data);
       } catch (err) {
         setToast({ message: 'Failed to load profile', type: 'error' });
       } finally {
@@ -69,7 +75,7 @@ export default function Profile() {
     };
 
     fetchStats();
-  }, [user?.globalStreak, user?.lastActiveDate]);
+  }, [user?.globalStreak, user?.lastActiveDate, user?._id]);
 
   useEffect(() => {
     setForm({
@@ -107,6 +113,8 @@ export default function Profile() {
       <ProfileView
         profile={user}
         stats={stats}
+        activities={activities}
+        showActivities={true}
         isEditing={isEditing}
         form={form}
         saving={saving}
