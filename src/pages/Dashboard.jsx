@@ -146,7 +146,7 @@ export default function Dashboard() {
   if (loading) return <div className="flex items-center justify-center h-screen"><div className="animate-bounce text-2xl font-black">Loading...</div></div>;
 
   return (
-    <div className="pb-20 sm:pb-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white font-sans min-h-screen">
+    <div className="pt-24 pb-20 sm:pb-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white font-sans min-h-screen">
       <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="mb-6">
           <h1 className="text-4xl font-black tracking-wider drop-shadow-lg">⚡ DASHBOARD</h1>

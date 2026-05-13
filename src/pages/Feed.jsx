@@ -111,7 +111,7 @@ export default function Feed() {
   if (loading) return <div className="flex items-center justify-center h-screen"><div className="animate-bounce text-2xl font-black text-white">Loading...</div></div>;
 
   return (
-    <div className="pb-20 sm:pb-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white font-sans min-h-screen">
+    <div className="pt-24 pb-20 sm:pb-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white font-sans min-h-screen">
       <div className="max-w-2xl mx-auto px-4 py-8">
         <div className="mb-8">
           <h1 className="text-4xl font-black text-white tracking-wider drop-shadow-lg">📢 ACTIVITY FEED</h1>

@@ -81,7 +81,7 @@ export default function Leaderboard() {
   }, [activeTab]);
 
   return (
-    <div className="pb-20 sm:pb-0 bg-gradient-to-br from-purple-900 via-slate-900 to-slate-800 text-white font-sans min-h-screen">
+    <div className="pt-24 pb-20 sm:pb-0 bg-gradient-to-br from-purple-900 via-slate-900 to-slate-800 text-white font-sans min-h-screen">
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="text-4xl font-black tracking-wider drop-shadow-lg">🏆 LEADERBOARD</h1>

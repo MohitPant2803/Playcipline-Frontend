@@ -151,7 +151,7 @@ export default function UserProfile() {
   if (!profile) return <div className="flex items-center justify-center h-screen bg-slate-900"><div className="text-2xl font-black text-white">User not found</div></div>;
 
   return (
-    <div className="pb-20 sm:pb-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white font-sans min-h-screen">
+    <div className="pt-24 pb-20 sm:pb-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white font-sans min-h-screen">
       <ProfileView
         profile={profile}
         stats={stats}
