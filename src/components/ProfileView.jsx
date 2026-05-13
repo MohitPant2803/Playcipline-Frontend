@@ -40,10 +40,10 @@ export default function ProfileView({
     <div>
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Profile</h1>
+          <h1 className="text-4xl font-black text-white tracking-wider drop-shadow-lg">👤 PROFILE</h1>
         </div>
 
-        <div className="bg-white border border-[#ECECEC] rounded-[24px] p-8 shadow-sm mb-8">
+        <div className="bg-gradient-to-br from-slate-700 to-slate-800 border-2 border-purple-500 rounded-2xl p-8 shadow-2xl mb-8">
           <div className="grid grid-cols-1 gap-8 lg:grid-cols-[1.1fr_1fr] lg:items-start">
             <div>
               <div className="flex flex-col gap-5 sm:flex-row sm:items-center">
@@ -52,52 +52,52 @@ export default function ProfileView({
                     <img
                       src={profile.avatar}
                       alt={profile.name}
-                      className="h-24 w-24 rounded-full object-cover border border-[#ECECEC]"
+                      className="h-24 w-24 rounded-full object-cover border-2 border-purple-400 shadow-lg"
                     />
                   ) : (
-                    <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gray-100 text-3xl font-bold text-gray-600">
+                    <div className="flex h-24 w-24 items-center justify-center rounded-full bg-gradient-to-r from-purple-600 to-pink-500 text-3xl font-black text-white shadow-lg">
                       {(profile?.name || 'U').charAt(0).toUpperCase()}
                     </div>
                   )}
                   <div
-                    className="group absolute bottom-0 left-1/2 w-24 -translate-x-1/2 rounded-full border border-[#ECECEC] bg-white px-2 py-1 shadow-sm"
+                    className="group absolute bottom-0 left-1/2 w-24 -translate-x-1/2 rounded-full border-2 border-purple-400 bg-gradient-to-r from-slate-800 to-slate-700 px-2 py-1 shadow-lg"
                     aria-label={`${levelInfo.totalXP}/${levelInfo.nextLevelXp} XP to next level`}
                   >
-                    <div className="mb-0.5 text-center text-[10px] font-semibold text-gray-900">
+                    <div className="mb-0.5 text-center text-[10px] font-black text-purple-300 uppercase tracking-wider">
                       Level {levelInfo.level}
                     </div>
-                    <div className="h-1.5 overflow-hidden rounded-full bg-gray-100">
+                    <div className="h-1.5 overflow-hidden rounded-full bg-slate-600 border border-slate-500">
                       <div
-                        className="h-full rounded-full bg-[#6366F1]"
+                        className="h-full rounded-full bg-gradient-to-r from-purple-500 to-pink-500 shadow-lg"
                         style={{ width: `${levelProgress}%` }}
                       />
                     </div>
-                    <div className="pointer-events-none absolute left-1/2 top-full z-20 mt-2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-gray-900 px-2 py-1 text-[11px] font-medium text-white opacity-0 shadow-md transition group-hover:opacity-100">
+                    <div className="pointer-events-none absolute left-1/2 top-full z-20 mt-2 -translate-x-1/2 whitespace-nowrap rounded-lg bg-purple-600 px-2 py-1 text-[11px] font-black text-white opacity-0 shadow-xl transition group-hover:opacity-100">
                       {levelInfo.totalXP}/{levelInfo.nextLevelXp} XP
                     </div>
                   </div>
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold mb-1 text-gray-900">{profile?.name}</h1>
-                  <p className="text-sm text-gray-500">{profile?.location || 'Location not added'}</p>
-                  <p className="mt-3 max-w-xs text-sm leading-relaxed text-gray-600 line-clamp-3 break-words">
+                  <h1 className="text-2xl font-black mb-1 text-white drop-shadow-lg">{profile?.name}</h1>
+                  <p className="text-sm text-purple-300 font-semibold">{profile?.location || 'Location not added'}</p>
+                  <p className="mt-3 max-w-xs text-sm leading-relaxed text-purple-200 line-clamp-3 break-words font-semibold">
                     {profile?.bio || 'No bio added yet.'}
                   </p>
                   <div className="mt-4 flex flex-wrap gap-5 text-sm">
                     <button
                       type="button"
                       onClick={() => onSocialClick?.('followers')}
-                      className="text-left text-xs font-medium text-gray-500 hover:text-indigo-600 transition-colors"
+                      className="text-left text-xs font-bold text-purple-300 hover:text-cyan-300 transition-colors uppercase tracking-wide"
                     >
-                      <span className="block text-xl text-gray-900 mb-1 tabular-nums font-semibold">{followerCount}</span>
+                      <span className="block text-xl text-white mb-1 tabular-nums font-black drop-shadow-lg">{followerCount}</span>
                       followers
                     </button>
                     <button
                       type="button"
                       onClick={() => onSocialClick?.('following')}
-                      className="text-left text-xs font-medium text-gray-500 hover:text-indigo-600 transition-colors"
+                      className="text-left text-xs font-bold text-purple-300 hover:text-cyan-300 transition-colors uppercase tracking-wide"
                     >
-                      <span className="block text-xl text-gray-900 mb-1 tabular-nums font-semibold">{followingCount}</span>
+                      <span className="block text-xl text-white mb-1 tabular-nums font-black drop-shadow-lg">{followingCount}</span>
                       following
                     </button>
                   </div>
@@ -112,37 +112,37 @@ export default function ProfileView({
 
               {isEditing && form && (
                 <form onSubmit={onSaveProfile} className="mt-6 grid gap-4">
-                  <label className="grid gap-2 text-xs font-medium text-gray-700">
+                  <label className="grid gap-2 text-xs font-bold text-purple-300 uppercase tracking-wide">
                     Username
                     <input
                       type="text"
                       value={form.name}
                       onChange={(event) => onFormChange?.({ ...form, name: event.target.value })}
                       placeholder={profile?.name || 'Your name'}
-                      className="rounded-xl bg-gray-50 border border-[#ECECEC] text-gray-900 placeholder-gray-400 px-4 py-3 font-normal outline-none focus:border-[#6366F1] focus:ring-1 focus:ring-[#6366F1]"
+                      className="rounded-xl bg-slate-600 border-2 border-purple-500 text-white placeholder-purple-300 px-4 py-3 font-bold outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
                     />
                   </label>
-                  <label className="grid gap-2 text-xs font-medium text-gray-700">
+                  <label className="grid gap-2 text-xs font-bold text-purple-300 uppercase tracking-wide">
                     Profile picture URL
                     <input
                       type="url"
                       value={form.avatar}
                       onChange={(event) => onFormChange?.({ ...form, avatar: event.target.value })}
                       placeholder={profile?.avatar || 'Google picture will be used if empty'}
-                      className="rounded-xl bg-gray-50 border border-[#ECECEC] text-gray-900 placeholder-gray-400 px-4 py-3 font-normal outline-none focus:border-[#6366F1] focus:ring-1 focus:ring-[#6366F1]"
+                      className="rounded-xl bg-slate-600 border-2 border-purple-500 text-white placeholder-purple-300 px-4 py-3 font-bold outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
                     />
                   </label>
-                  <label className="grid gap-2 text-xs font-medium text-gray-700">
+                  <label className="grid gap-2 text-xs font-bold text-purple-300 uppercase tracking-wide">
                     Where are you from?
                     <input
                       type="text"
                       value={form.location}
                       onChange={(event) => onFormChange?.({ ...form, location: event.target.value })}
                       placeholder="City, Country"
-                      className="rounded-xl bg-gray-50 border border-[#ECECEC] text-gray-900 placeholder-gray-400 px-4 py-3 font-normal outline-none focus:border-[#6366F1] focus:ring-1 focus:ring-[#6366F1]"
+                      className="rounded-xl bg-slate-600 border-2 border-purple-500 text-white placeholder-purple-300 px-4 py-3 font-bold outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
                     />
                   </label>
-                  <label className="grid gap-2 text-xs font-medium text-gray-700">
+                  <label className="grid gap-2 text-xs font-bold text-purple-300 uppercase tracking-wide">
                     Bio
                     <textarea
                       value={form.bio}
@@ -150,54 +150,54 @@ export default function ProfileView({
                       placeholder="A short note about your habits, goals, or progress (max 100 characters)"
                       maxLength={100}
                       rows={3}
-                      className="resize-none rounded-xl bg-gray-50 border border-[#ECECEC] text-gray-900 placeholder-gray-400 px-4 py-3 font-normal outline-none focus:border-[#6366F1] focus:ring-1 focus:ring-[#6366F1]"
+                      className="resize-none rounded-xl bg-slate-600 border-2 border-purple-500 text-white placeholder-purple-300 px-4 py-3 font-bold outline-none focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400"
                     />
                   </label>
                   <button
                     type="submit"
                     disabled={saving}
-                    className="w-fit rounded-xl bg-[#6366F1] text-white px-6 py-2 text-sm font-medium transition hover:bg-indigo-700 disabled:opacity-50 mt-2 shadow-sm"
+                    className="w-fit rounded-xl bg-gradient-to-r from-purple-600 to-pink-500 text-white px-6 py-2 text-sm font-black transition hover:from-purple-700 hover:to-pink-600 disabled:opacity-50 mt-2 shadow-lg uppercase tracking-wide"
                   >
-                    {saving ? 'Saving...' : 'Save Changes'}
+                    {saving ? '⏳ Saving...' : '💾 Save Changes'}
                   </button>
                 </form>
               )}
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <div className="text-center bg-gray-50 rounded-2xl p-5">
-                <p className="text-gray-500 text-xs font-medium">Badges Earned</p>
-                <p className="text-3xl font-semibold text-gray-900 mt-2">{earnedBadges.length}</p>
+              <div className="text-center bg-gradient-to-br from-blue-600 to-cyan-500 rounded-2xl p-5 border-2 border-cyan-400 shadow-lg">
+                <p className="text-xs font-bold text-cyan-100 uppercase tracking-wide">🏆 Badges Earned</p>
+                <p className="text-3xl font-black text-white mt-2 drop-shadow-lg">{earnedBadges.length}</p>
               </div>
-              <div className="text-center bg-gray-50 rounded-2xl p-5">
-                <p className="text-gray-500 text-xs font-medium">Completed Challenges</p>
-                <p className="text-3xl font-semibold text-gray-900 mt-2">{completedCount}</p>
+              <div className="text-center bg-gradient-to-br from-purple-600 to-pink-500 rounded-2xl p-5 border-2 border-pink-400 shadow-lg">
+                <p className="text-xs font-bold text-pink-100 uppercase tracking-wide">✅ Completed</p>
+                <p className="text-3xl font-black text-white mt-2 drop-shadow-lg">{completedCount}</p>
               </div>
-              <div className="text-center bg-gray-50 rounded-2xl p-5">
-                <p className="text-gray-500 text-xs font-medium">Current Streak</p>
-                <p className="text-3xl font-semibold text-gray-900 mt-2">{currentStreak}</p>
+              <div className="text-center bg-gradient-to-br from-orange-600 to-red-500 rounded-2xl p-5 border-2 border-orange-400 shadow-lg">
+                <p className="text-xs font-bold text-orange-100 uppercase tracking-wide">🔥 Current Streak</p>
+                <p className="text-3xl font-black text-white mt-2 drop-shadow-lg">{currentStreak}</p>
               </div>
-              <div className="text-center bg-gray-50 rounded-2xl p-5">
-                <p className="text-gray-500 text-xs font-medium">Longest Streak</p>
-                <p className="text-3xl font-semibold text-gray-900 mt-2">{longestStreak}</p>
+              <div className="text-center bg-gradient-to-br from-green-600 to-emerald-500 rounded-2xl p-5 border-2 border-green-400 shadow-lg">
+                <p className="text-xs font-bold text-green-100 uppercase tracking-wide">⭐ Longest</p>
+                <p className="text-3xl font-black text-white mt-2 drop-shadow-lg">{longestStreak}</p>
               </div>
             </div>
           </div>
         </div>
 
         <div className="mb-8">
-          <h2 className="text-2xl font-semibold text-gray-900 mb-6 tracking-tight">Badges</h2>
+          <h2 className="text-3xl font-black text-white mb-6 tracking-wider drop-shadow-lg">🎖️ BADGES</h2>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
             {earnedBadges.map(badge => (
-              <div key={badge} className="text-center bg-white border border-[#ECECEC] rounded-[20px] p-6 shadow-sm">
-                <p className="text-3xl mb-2">Trophy</p>
-                <p className="font-medium text-gray-900 text-sm capitalize">{formatBadgeName(badge)}</p>
+              <div key={badge} className="text-center bg-gradient-to-br from-yellow-600 to-yellow-500 rounded-2xl p-6 shadow-lg border-2 border-yellow-400">
+                <p className="text-4xl mb-2 drop-shadow-lg">🏆</p>
+                <p className="font-black text-white text-sm capitalize uppercase tracking-wide">{formatBadgeName(badge)}</p>
               </div>
             ))}
             {unearnedBadges.map(badge => (
-              <div key={badge} className="text-center bg-gray-50 border border-[#ECECEC] rounded-[20px] p-6 opacity-50">
-                <p className="text-3xl mb-2 grayscale">Trophy</p>
-                <p className="font-medium text-gray-500 text-sm capitalize">{formatBadgeName(badge)}</p>
+              <div key={badge} className="text-center bg-slate-700 rounded-2xl p-6 opacity-50 border-2 border-slate-600">
+                <p className="text-4xl mb-2 grayscale">🏆</p>
+                <p className="font-bold text-purple-300 text-sm capitalize uppercase tracking-wide">{formatBadgeName(badge)}</p>
               </div>
             ))}
           </div>
@@ -205,17 +205,17 @@ export default function ProfileView({
 
         {showActivities && (
           <div className="mb-8">
-            <h2 className="text-2xl font-semibold text-gray-900 mb-6 tracking-tight">Recent Activity</h2>
+            <h2 className="text-3xl font-black text-white mb-6 tracking-wider drop-shadow-lg">📋 RECENT ACTIVITY</h2>
             {activities.length === 0 ? (
-              <div className="text-center py-8 bg-white border border-[#ECECEC] rounded-[24px]">
-                <p className="text-gray-500 text-sm">No actions recorded.</p>
+              <div className="text-center py-8 bg-gradient-to-br from-slate-800 to-slate-700 rounded-2xl border-2 border-purple-500 shadow-2xl">
+                <p className="text-purple-300 text-sm font-bold">📭 No actions recorded.</p>
               </div>
             ) : (
               <div className="space-y-3">
                 {activities.map(activity => (
-                  <div key={activity._id} className="bg-white border border-[#ECECEC] rounded-[20px] p-5 shadow-sm">
-                    <p className="font-medium text-gray-800 text-sm">{getActivityText?.(activity) || 'Action logged'}</p>
-                    <p className="mt-1 text-xs text-gray-500">{timeAgo?.(activity.createdAt) || ''}</p>
+                  <div key={activity._id} className="bg-gradient-to-br from-slate-700 to-slate-800 rounded-xl p-5 shadow-lg border-2 border-purple-500 hover:border-pink-500 transition-all">
+                    <p className="font-bold text-white text-sm">{getActivityText?.(activity) || 'Action logged'}</p>
+                    <p className="mt-1 text-xs text-purple-300 font-semibold uppercase tracking-wide">{timeAgo?.(activity.createdAt) || ''}</p>
                   </div>
                 ))}
               </div>
@@ -225,29 +225,31 @@ export default function ProfileView({
 
         {stats?.allChallenges && (
           <div>
-            <h2 className="text-2xl font-semibold text-gray-900 mb-6 tracking-tight">Completed Challenges</h2>
+            <h2 className="text-3xl font-black text-white mb-6 tracking-wider drop-shadow-lg">🎯 COMPLETED CHALLENGES</h2>
             <div className="space-y-3">
               {completedChallenges.map(challenge => (
-                <div key={challenge._id} className="bg-white border border-[#ECECEC] rounded-[20px] p-5 shadow-sm">
+                <div key={challenge._id} className="bg-gradient-to-br from-slate-700 to-slate-800 rounded-xl p-5 shadow-lg border-2 border-purple-500 hover:border-pink-500 transition-all">
                   <div className="flex justify-between items-start gap-4">
                     <div>
-                      <h3 className="font-semibold text-gray-900 mb-2">{challenge.challengeId?.title}</h3>
-                      <span className="px-2.5 py-1 text-xs font-medium rounded-lg bg-gray-50 text-gray-600">
+                      <h3 className="font-black text-white text-sm mb-2 drop-shadow-lg">{challenge.challengeId?.title}</h3>
+                      <span className={`px-3 py-1.5 text-xs font-bold rounded-lg uppercase tracking-wide text-white ${
+                        challenge.mode === 'easy' ? 'bg-green-600' : challenge.mode === 'medium' ? 'bg-yellow-600' : 'bg-red-600'
+                      }`}>
                         {challenge.mode} Mode
                       </span>
-                      <p className="mt-3 text-xs text-gray-500">
-                        Executed {challenge.completedDays || 0} times
+                      <p className="mt-3 text-xs text-purple-300 font-semibold">
+                        ✅ Executed {challenge.completedDays || 0} times
                       </p>
                     </div>
-                    <p className="text-xs font-medium text-gray-500 bg-gray-50 px-2.5 py-1 rounded-lg">
+                    <p className="text-xs font-bold text-cyan-300 bg-slate-600 px-3 py-1.5 rounded-lg uppercase tracking-wide">
                       {challenge.challengeId?.duration} days
                     </p>
                   </div>
                 </div>
               ))}
               {completedChallenges.length === 0 && (
-                <div className="text-center py-8 bg-white border border-[#ECECEC] rounded-[24px]">
-                  <p className="text-gray-500 text-sm">No completed challenges found.</p>
+                <div className="text-center py-8 bg-gradient-to-br from-slate-800 to-slate-700 rounded-2xl border-2 border-purple-500 shadow-2xl">
+                  <p className="text-purple-300 text-sm font-bold">🎪 No completed challenges found.</p>
                 </div>
               )}
             </div>

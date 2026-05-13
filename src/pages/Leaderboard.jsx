@@ -72,14 +72,14 @@ export default function Leaderboard() {
     return () => clearInterval(timer);
   }, []);
 
-  if (loading) return <div className="flex items-center justify-center h-screen">Loading...</div>;
+  if (loading) return <div className="flex items-center justify-center h-screen text-white text-xl font-bold"><div className="animate-bounce">Loading...</div></div>;
 
   return (
-    <div className="pb-20 sm:pb-0 bg-[#FAFAF8] text-gray-900 font-sans min-h-screen">
+    <div className="pb-20 sm:pb-0 bg-gradient-to-br from-purple-900 via-slate-900 to-slate-800 text-white font-sans min-h-screen">
       <div className="max-w-4xl mx-auto px-4 py-8">
         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Leaderboard</h1>
-          <div className="inline-flex rounded-xl border border-[#ECECEC] bg-white p-1.5 shadow-sm">
+          <h1 className="text-4xl font-black tracking-wider drop-shadow-lg">🏆 LEADERBOARD</h1>
+          <div className="inline-flex rounded-2xl border-2 border-purple-500 bg-slate-900 bg-opacity-80 p-1.5 shadow-2xl backdrop-blur-sm">
             {['global', 'friends'].map(tab => (
               <button
                 key={tab}
@@ -92,79 +92,88 @@ export default function Leaderboard() {
                   setActiveTab(tab);
                 }}
                 disabled={tab === 'friends' && !user}
-                className={`rounded-lg px-4 py-2 text-sm font-medium capitalize transition ${
+                className={`rounded-xl px-4 py-2 text-sm font-bold uppercase tracking-wide transition-all ${
                   activeTab === tab
-                    ? 'bg-[#6366F1] text-white shadow-sm'
+                    ? 'bg-gradient-to-r from-purple-600 to-pink-500 text-white shadow-lg'
                     : tab === 'friends' && !user
-                    ? 'text-gray-400 cursor-not-allowed'
-                    : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
+                    ? 'text-gray-500 cursor-not-allowed'
+                    : 'text-gray-300 hover:text-white hover:bg-slate-800'
                 }`}
               >
-                {tab}
+                {tab === 'global' ? '🌍 Global' : '👥 Friends'}
               </button>
             ))}
           </div>
         </div>
 
         {/* Week End Countdown */}
-        <div className="mb-6 p-6 bg-white border border-[#ECECEC] rounded-[24px] shadow-sm relative overflow-hidden">
-          <div className="flex items-center justify-between">
+        <div className="mb-6 p-6 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-2xl shadow-2xl border-2 border-cyan-400 relative overflow-hidden">
+          <div className="absolute inset-0 opacity-20" style={{
+            backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(255,255,255,0.3) 0%, transparent 50%)',
+          }}></div>
+          <div className="relative flex items-center justify-between">
             <div>
-              <p className="text-xs font-medium text-gray-500">Weekly Reset:</p>
-              <p className="text-xl font-semibold text-gray-900 mt-1 tabular-nums">
+              <p className="text-xs font-bold uppercase tracking-widest text-cyan-100">⏱️ Weekly Reset:</p>
+              <p className="text-2xl font-black mt-1 tabular-nums text-white drop-shadow-lg">
                 {formatTimeRemaining(timeRemaining)}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="space-y-2">
+        <div className="space-y-3">
           {leaderboard.length === 0 ? (
-            <div className="text-center py-12 bg-white border border-[#ECECEC] rounded-[24px]">
-              <p className="text-gray-500 text-lg font-medium">
+            <div className="text-center py-16 bg-gradient-to-br from-slate-800 to-slate-700 rounded-2xl border-2 border-purple-500 shadow-2xl">
+              <p className="text-white text-lg font-bold">
                 {activeTab === 'friends'
-                  ? 'Follow people to build your friends leaderboard.'
-                  : 'No entries found. Be the first to join.'}
+                  ? '👥 Follow people to build your friends leaderboard.'
+                  : '🚀 No entries found. Be the first to join.'}
               </p>
             </div>
-          ) : leaderboard.map((user, index) => (
+          ) : leaderboard.map((user, index) => {
+            const medals = ['🥇', '🥈', '🥉'];
+            const medal = medals[index] || `#${index + 1}`;
+            return (
             <div
               key={user._id}
               onClick={() => navigate(`/user/${user._id}`)}
-              className={`flex items-center gap-4 cursor-pointer p-4 rounded-[20px] border transition-all duration-200 ${
+              className={`flex items-center gap-4 cursor-pointer p-5 rounded-2xl border-2 transition-all duration-200 transform hover:scale-102 hover:shadow-2xl ${
                 user._id === currentUserId 
-                  ? 'bg-indigo-50 border-[#6366F1] shadow-sm' 
-                  : index === 0 ? 'bg-yellow-50 border-yellow-200 shadow-sm' : 'bg-white border-[#ECECEC] hover:border-gray-300 hover:shadow-sm'
+                  ? 'bg-gradient-to-r from-purple-600 to-pink-500 border-purple-300 shadow-2xl' 
+                  : index === 0 ? 'bg-gradient-to-r from-yellow-500 to-orange-500 border-yellow-400 shadow-2xl' 
+                  : index === 1 ? 'bg-gradient-to-r from-gray-400 to-gray-500 border-gray-300 shadow-xl'
+                  : index === 2 ? 'bg-gradient-to-r from-orange-600 to-orange-700 border-orange-400 shadow-xl'
+                  : 'bg-slate-700 border-slate-600 hover:border-purple-500 shadow-lg'
               }`}
             >
-              <div className={`text-xl font-bold w-8 ${index === 0 ? 'text-yellow-600' : index === 1 ? 'text-gray-400' : index === 2 ? 'text-amber-700' : 'text-gray-400'}`}>#{user.rank}</div>
+              <div className={`text-3xl font-black w-10 text-center ${index < 3 ? 'drop-shadow-lg' : ''}`}>{medal}</div>
               {user.avatar && (
                 <img
                   src={user.avatar}
                   alt={user.name}
-                  className="w-10 h-10 rounded-full border border-[#ECECEC]"
+                  className="w-12 h-12 rounded-full border-3 border-white shadow-lg"
                 />
               )}
               <div className="flex-grow">
-                <p className="font-semibold text-gray-900">{user.name}</p>
-                <p className="text-xs font-medium text-gray-500">Level {user.level}</p>
+                <p className="font-bold text-lg">{user.name}</p>
+                <p className="text-sm font-semibold opacity-90">⭐ Level {user.level}</p>
               </div>
               <div className="text-right">
-                <span className="px-3 py-1.5 text-xs font-medium rounded-lg bg-gray-50 text-gray-600">
-                  {user.weeklyXP} XP
+                <span className="px-4 py-2 text-sm font-bold rounded-xl bg-black bg-opacity-30 text-white backdrop-blur-sm">
+                  ✨ {user.weeklyXP} XP
                 </span>
               </div>
             </div>
-          ))}
+          )})}
 
           {userRank && userRank > 50 && (
-            <div className="mt-8 pt-8 border-t border-[#ECECEC]">
-              <p className="text-center text-gray-500 text-xs font-medium mb-4">
-                Your Rank: #{userRank}
+            <div className="mt-8 pt-8 border-t-2 border-purple-500">
+              <p className="text-center text-purple-300 text-sm font-bold mb-4 uppercase tracking-wide">
+                📊 Your Rank: #{userRank}
               </p>
-              <div className="bg-gray-50 border border-[#ECECEC] p-4 rounded-[16px]">
-                <p className="text-center text-gray-600 text-sm font-medium">
-                  Keep completing challenges to reach the top 50.
+              <div className="bg-gradient-to-r from-purple-900 to-slate-800 border-2 border-purple-500 p-5 rounded-2xl text-center shadow-2xl">
+                <p className="text-white font-bold text-lg">
+                  🚀 Keep completing challenges to reach the top 50!
                 </p>
               </div>
             </div>

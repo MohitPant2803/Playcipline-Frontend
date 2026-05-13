@@ -781,10 +781,10 @@ export default function Explore() {
   };
 
   const renderDifficulty = (difficulty) => {
-    if (difficulty === 1) return <span className="px-2.5 py-1 text-xs font-medium rounded-lg bg-green-50 text-green-700">Easy</span>;
-    if (difficulty === 2) return <span className="px-2.5 py-1 text-xs font-medium rounded-lg bg-yellow-50 text-yellow-700">Medium</span>;
-    if (difficulty === 3) return <span className="px-2.5 py-1 text-xs font-medium rounded-lg bg-red-50 text-red-700">Hard</span>;
-    return <span className="px-2.5 py-1 text-xs font-medium rounded-lg bg-purple-50 text-purple-700">Hardcore</span>;
+    if (difficulty === 1) return <span className="px-3 py-1.5 text-xs font-bold rounded-lg bg-green-500 text-white uppercase tracking-wide">Easy</span>;
+    if (difficulty === 2) return <span className="px-3 py-1.5 text-xs font-bold rounded-lg bg-yellow-500 text-white uppercase tracking-wide">Medium</span>;
+    if (difficulty === 3) return <span className="px-3 py-1.5 text-xs font-bold rounded-lg bg-red-500 text-white uppercase tracking-wide">Hard</span>;
+    return <span className="px-3 py-1.5 text-xs font-bold rounded-lg bg-purple-600 text-white uppercase tracking-wide">Hardcore</span>;
   };
 
   const getModes = (duration) => [
@@ -819,21 +819,21 @@ export default function Explore() {
     return matchesSearch && matchesDomain;
   });
 
-  if (loading) return <div className="flex items-center justify-center h-screen">Loading...</div>;
+  if (loading) return <div className="flex items-center justify-center h-screen"><div className="animate-bounce text-2xl font-black text-white">Loading...</div></div>;
 
   return (
-    <div className="pb-20 sm:pb-0 bg-[#FAFAF8] text-gray-900 font-sans min-h-screen">
+    <div className="pb-20 sm:pb-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white font-sans min-h-screen">
       {/* Hero Section */}
-      <div className="relative border-b border-[#ECECEC] bg-white px-4 sm:px-6 lg:px-8 py-20">
+      <div className="relative border-b-2 border-purple-500 bg-gradient-to-r from-purple-900 to-slate-900 px-4 sm:px-6 lg:px-8 py-20">
         <div className="max-w-6xl mx-auto relative z-10">
           <div className="max-w-3xl text-center mx-auto">
-            <span className="inline-block px-3 py-1 text-xs font-medium rounded-full bg-gray-100 text-gray-600 mb-6">
-              Discover Challenges
+            <span className="inline-block px-4 py-2 text-xs font-bold rounded-full bg-purple-500 bg-opacity-30 text-purple-300 mb-6 uppercase tracking-wide border border-purple-400">
+              🎯 Discover Challenges
             </span>
-            <h1 className="text-5xl sm:text-6xl font-bold tracking-tight mb-6 text-gray-900 leading-tight">
+            <h1 className="text-5xl sm:text-6xl font-black tracking-wider mb-6 text-white leading-tight drop-shadow-lg">
               What will you accomplish <br className="hidden sm:block" /> next?
             </h1>
-            <p className="text-lg text-gray-500 mb-10 leading-relaxed max-w-2xl mx-auto">
+            <p className="text-lg text-purple-200 mb-10 leading-relaxed max-w-2xl mx-auto font-semibold">
               Find the right path for your personal growth. Choose a category, start a challenge, and build better habits.
             </p>
           </div>
@@ -845,9 +845,9 @@ export default function Explore() {
         {/* Domains Section */}
         <div className="mb-10">
           <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-semibold text-gray-900 tracking-tight">Categories</h2>
+            <h2 className="text-3xl font-black text-white tracking-wider drop-shadow-lg">📂 CATEGORIES</h2>
             {activeDomain && (
-              <button onClick={() => setActiveDomain(null)} className="text-sm font-medium text-[#6366F1] hover:text-indigo-700 transition">
+              <button onClick={() => setActiveDomain(null)} className="text-sm font-bold text-cyan-300 hover:text-cyan-200 transition uppercase tracking-wide">
                 Clear Filter ✕
               </button>
             )}
@@ -857,17 +857,17 @@ export default function Explore() {
               <div
                 key={domain.id}
                 onClick={() => setActiveDomain(domain.category)}
-                className={`relative overflow-hidden p-6 rounded-[24px] cursor-pointer transition-all duration-200 border 
-                  ${activeDomain === domain.category 
-                    ? `border-[#6366F1] bg-indigo-50 shadow-sm` 
-                    : `bg-white border-[#ECECEC] hover:border-gray-300 hover:shadow-sm`}
-                `}
+                className={`relative overflow-hidden p-6 rounded-2xl cursor-pointer transition-all duration-200 border-2 transform hover:scale-105 ${
+                  activeDomain === domain.category 
+                    ? `border-purple-400 bg-gradient-to-br from-purple-600 to-pink-600 shadow-2xl text-white` 
+                    : `bg-slate-700 border-slate-600 hover:border-purple-500 shadow-lg text-white`
+                }`}
               >
-                <div className={`flex items-center justify-center w-12 h-12 rounded-xl mb-4 ${domain.color}`}>
-                  <span className="text-xl">{domain.icon}</span>
+                <div className={`flex items-center justify-center w-12 h-12 rounded-xl mb-4 ${activeDomain === domain.category ? 'bg-white bg-opacity-20' : 'bg-slate-600'}`}>
+                  <span className="text-2xl">{domain.icon}</span>
                 </div>
-                <h3 className="font-semibold text-gray-900 mb-1">{domain.title}</h3>
-                <p className="text-sm text-gray-500 leading-tight">{domain.tagline}</p>
+                <h3 className="font-black text-white mb-1 text-sm uppercase tracking-wide">{domain.title}</h3>
+                <p className="text-xs text-purple-100 leading-tight font-semibold">{domain.tagline}</p>
               </div>
             ))}
           </div>
@@ -876,13 +876,13 @@ export default function Explore() {
         {/* Transformation Systems & Trending Grid */}
         <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <h2 className="text-2xl font-semibold text-gray-900 tracking-tight">
-              {activeDomain ? `${activeDomain} Challenges` : 'Trending Challenges'}
+            <h2 className="text-3xl font-black text-white tracking-wider drop-shadow-lg">
+              {activeDomain ? `${activeDomain} Challenges` : '⚡ TRENDING CHALLENGES'}
             </h2>
-            <p className="text-sm text-gray-500 mt-1">Discover habits hand-crafted for steady growth.</p>
+            <p className="text-sm text-purple-300 mt-1 font-semibold">Discover habits hand-crafted for steady growth.</p>
           </div>
           <div className="w-full sm:max-w-xs relative">
-            <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-gray-400">
+            <div className="absolute inset-y-0 left-3 flex items-center pointer-events-none text-purple-300 font-bold text-lg">
               🔍
             </div>
             <input
@@ -890,43 +890,43 @@ export default function Explore() {
               value={challengeSearch}
               onChange={(event) => setChallengeSearch(event.target.value)}
               placeholder="Search challenges..."
-              className="w-full rounded-xl border border-[#ECECEC] bg-white pl-10 pr-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 outline-none transition focus:border-[#6366F1] focus:ring-1 focus:ring-[#6366F1] shadow-sm"
+              className="w-full rounded-xl border-2 border-purple-500 bg-slate-700 bg-opacity-50 backdrop-blur-sm pl-10 pr-4 py-2.5 text-sm text-white placeholder-purple-200 outline-none transition focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400 shadow-lg"
             />
           </div>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
           {filteredChallenges.length === 0 ? (
-            <div className="col-span-full text-center py-12 bg-white border border-[#ECECEC] rounded-[24px]">
-              <p className="text-gray-500 text-lg font-medium">
+            <div className="col-span-full text-center py-16 bg-gradient-to-br from-slate-800 to-slate-700 rounded-2xl border-2 border-purple-500 shadow-2xl">
+              <p className="text-white text-lg font-bold">
                 {challengeSearch.trim()
-                  ? 'No challenges match your search.'
-                  : 'No challenges available in this category.'}
+                  ? '🔍 No challenges match your search.'
+                  : '📭 No challenges available in this category.'}
               </p>
               {activeDomain && (
-                <button onClick={() => setActiveDomain(null)} className="mt-4 bg-gray-100 text-gray-600 rounded-xl px-6 py-2 font-medium hover:bg-gray-200 transition-all">
+                <button onClick={() => setActiveDomain(null)} className="mt-4 bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-xl px-6 py-2 font-bold hover:from-purple-700 hover:to-pink-600 transition-all shadow-lg">
                   View All Challenges
                 </button>
               )}
             </div>
           ) : filteredChallenges.map(challenge => (
-            <div key={challenge._id} className="flex flex-col bg-white border border-[#ECECEC] rounded-[24px] p-6 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-200">
+            <div key={challenge._id} className="flex flex-col bg-gradient-to-br from-slate-700 to-slate-800 border-2 border-purple-500 rounded-2xl p-6 shadow-2xl hover:border-pink-500 hover:shadow-2xl transition-all duration-200 transform hover:-translate-y-1">
               <div className="flex-grow">
                 <div className="flex justify-between items-start mb-3">
-                  <span className="px-2.5 py-1 text-xs font-medium rounded-lg bg-gray-50 text-gray-600">
+                  <span className="px-3 py-1.5 text-xs font-bold rounded-lg bg-purple-500 bg-opacity-30 text-purple-300 uppercase tracking-wide border border-purple-400">
                     {challenge.category || 'Challenge'}
                   </span>
                   <div className="flex gap-1">
-                    <span className="text-xs font-medium text-gray-500 bg-gray-50 px-2.5 py-1 rounded-lg">{challenge.duration} Days</span>
+                    <span className="text-xs font-bold text-cyan-300 bg-slate-600 px-3 py-1.5 rounded-lg uppercase tracking-wide">⏰ {challenge.duration}d</span>
                   </div>
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">{challenge.title}</h3>
-                <p className="text-gray-500 text-sm mb-5 leading-relaxed">{challenge.description}</p>
+                <h3 className="text-xl font-black text-white mb-2 drop-shadow-lg">{challenge.title}</h3>
+                <p className="text-purple-200 text-sm mb-5 leading-relaxed font-semibold">{challenge.description}</p>
                 
                 <div className="flex flex-wrap gap-2 mb-6">
                   {renderDifficulty(challenge.baseDifficulty)}
                   {challenge.tags && challenge.tags.map(tag => (
-                    <span key={tag} className="px-2.5 py-1 text-xs font-medium rounded-lg bg-gray-50 text-gray-500">
+                    <span key={tag} className="px-2.5 py-1 text-xs font-bold rounded-lg bg-slate-600 text-purple-300 uppercase tracking-wide">
                       {tag}
                     </span>
                   ))}
@@ -937,24 +937,24 @@ export default function Explore() {
                 <div className="grid gap-2">
                   <button
                     disabled
-                    className="w-full font-medium bg-green-50 text-green-700 rounded-xl py-2.5 cursor-not-allowed text-sm"
+                    className="w-full font-bold bg-gradient-to-r from-green-600 to-emerald-500 text-white rounded-xl py-3 cursor-not-allowed text-sm uppercase tracking-wide shadow-lg"
                   >
-                    Joined{challenge.enrollmentMode ? ` (${challenge.enrollmentMode})` : ''}
+                    ✅ Joined{challenge.enrollmentMode ? ` (${challenge.enrollmentMode})` : ''}
                   </button>
                   <button
                     onClick={() => handleLeave(challenge)}
                     disabled={leavingId === challenge._id}
-                    className="w-full font-medium bg-white border border-[#ECECEC] text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 rounded-xl py-2.5 transition-colors text-sm"
+                    className="w-full font-bold bg-gradient-to-r from-red-600 to-orange-500 text-white hover:from-red-700 hover:to-orange-600 rounded-xl py-3 transition-all text-sm uppercase tracking-wide shadow-lg"
                   >
-                    {leavingId === challenge._id ? 'Leaving...' : 'Leave Challenge'}
+                    {leavingId === challenge._id ? '⏳ Leaving...' : '🚫 Leave Challenge'}
                   </button>
                 </div>
               ) : (
                 <button
                   onClick={() => setSelectedChallenge(challenge)}
-                  className="w-full font-medium bg-[#6366F1] text-white rounded-xl py-2.5 hover:bg-indigo-700 transition-colors shadow-sm text-sm"
+                  className="w-full font-bold bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-xl py-3 hover:from-purple-700 hover:to-pink-600 transition-all shadow-lg text-sm uppercase tracking-wide"
                 >
-                  View Details
+                  View Details →
                 </button>
               )}
             </div>
@@ -965,40 +965,40 @@ export default function Explore() {
           <Modal
             isOpen={!!selectedChallenge}
             onClose={() => setSelectedChallenge(null)}
-            title={`Select Commitment: ${selectedChallenge.title}`}
+            title={`⚡ SELECT COMMITMENT: ${selectedChallenge.title}`}
           >
             <div className="space-y-3">
               {getModes(selectedChallenge.duration).map(mode => (
                 <div
                   key={mode.value}
                   onClick={() => user && setSelectedMode(mode.value)}
-                  className={`p-4 border rounded-2xl transition-all ${
+                  className={`p-4 border-2 rounded-2xl transition-all ${
                     user ? 'cursor-pointer' : 'cursor-not-allowed'
                   } ${
                     selectedMode === mode.value
-                      ? 'border-[#6366F1] bg-indigo-50 shadow-sm'
+                      ? 'border-purple-400 bg-gradient-to-r from-purple-600 to-pink-600 text-white shadow-2xl'
                       : user
-                      ? 'border-[#ECECEC] bg-white hover:border-gray-300'
-                      : 'border-[#ECECEC] bg-gray-50 opacity-50'
+                      ? 'border-slate-600 bg-slate-700 hover:border-purple-500 text-purple-200'
+                      : 'border-slate-600 bg-slate-800 opacity-50 text-gray-500'
                   }`}
                 >
-                  <p className="font-semibold text-gray-900">{mode.name}</p>
-                  <p className="text-sm text-gray-500">{mode.desc}</p>
-                  <p className="text-sm text-[#6366F1] font-medium mt-1">+{mode.xp} XP per check-in</p>
+                  <p className="font-black uppercase tracking-wide">{mode.name}</p>
+                  <p className="text-sm font-semibold mt-1">{mode.desc}</p>
+                  <p className="text-sm font-bold mt-1">+{mode.xp} XP per check-in</p>
                 </div>
               ))}
             </div>
             
             {!user && (
-              <div className="mt-4 p-4 bg-gray-50 border border-[#ECECEC] rounded-xl">
-                <p className="text-sm text-gray-600 font-medium">Log in to select your commitment level and start.</p>
+              <div className="mt-4 p-4 bg-slate-700 border-2 border-purple-500 rounded-xl">
+                <p className="text-sm text-purple-300 font-bold">🔐 Log in to select your commitment level and start.</p>
               </div>
             )}
 
             <div className="mt-6 flex gap-4">
               <button
                 onClick={() => setSelectedChallenge(null)}
-                className="flex-1 bg-white border border-[#ECECEC] text-gray-700 rounded-xl py-2.5 font-medium hover:bg-gray-50 transition-colors text-sm"
+                className="flex-1 bg-gradient-to-r from-red-600 to-orange-500 text-white rounded-xl py-3 font-bold hover:from-red-700 hover:to-orange-600 transition-all text-sm uppercase tracking-wide shadow-lg"
               >
                 Cancel
               </button>
@@ -1006,16 +1006,16 @@ export default function Explore() {
                 <button
                   onClick={handleJoin}
                   disabled={!selectedMode || joining}
-                  className={`flex-1 rounded-xl py-2.5 font-medium transition-colors text-sm ${!selectedMode ? 'bg-gray-100 text-gray-400 cursor-not-allowed' : 'bg-[#6366F1] text-white hover:bg-indigo-700 shadow-sm'}`}
+                  className={`flex-1 rounded-xl py-3 font-bold transition-all text-sm uppercase tracking-wide ${!selectedMode ? 'bg-slate-600 text-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-purple-600 to-pink-500 text-white hover:from-purple-700 hover:to-pink-600 shadow-lg'}`}
                 >
-                  {joining ? 'Starting...' : 'Start Challenge'}
+                  {joining ? '⏳ Starting...' : '🚀 Start Challenge'}
                 </button>
               ) : (
                 <button
                   onClick={() => {
                     window.location.href = `${API_BASE_URL}/api/auth/google`;
                   }}
-                  className="flex-1 bg-[#6366F1] text-white rounded-xl py-2.5 font-medium hover:bg-indigo-700 transition-colors shadow-sm text-sm"
+                  className="flex-1 bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-xl py-3 font-bold hover:from-purple-700 hover:to-pink-600 transition-all shadow-lg text-sm uppercase tracking-wide"
                 >
                   Log in to Start
                 </button>

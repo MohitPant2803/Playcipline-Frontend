@@ -143,72 +143,72 @@ export default function Dashboard() {
   const remainingTodayCount = Math.max(0, challenges.length - completedTodayCount);
   const currentStreak = getEffectiveStreak();
 
-  if (loading) return <div className="flex items-center justify-center h-screen">Loading...</div>;
+  if (loading) return <div className="flex items-center justify-center h-screen"><div className="animate-bounce text-2xl font-black">Loading...</div></div>;
 
   return (
-    <div className="pb-20 sm:pb-0 bg-[#FAFAF8] text-gray-900 font-sans min-h-screen">
+    <div className="pb-20 sm:pb-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white font-sans min-h-screen">
       <div className="max-w-6xl mx-auto px-4 py-8">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Dashboard</h1>
+          <h1 className="text-4xl font-black tracking-wider drop-shadow-lg">⚡ DASHBOARD</h1>
         </div>
 
         <XPProgressCard totalXP={user?.totalXP || 0} className="mb-8" />
 
         {/* Header Stats */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-          <div className="bg-white border border-[#ECECEC] rounded-[24px] p-6 shadow-sm">
-            <p className="text-xs font-medium text-gray-500">Total XP</p>
-            <p className="text-3xl font-semibold text-gray-900 mt-2 tabular-nums">{user?.totalXP || 0}</p>
+          <div className="bg-gradient-to-br from-blue-600 to-cyan-500 rounded-2xl p-6 shadow-2xl border-2 border-cyan-400">
+            <p className="text-xs font-bold uppercase tracking-widest text-cyan-100">📊 Total XP</p>
+            <p className="text-3xl font-black mt-2 tabular-nums text-white drop-shadow-lg">{user?.totalXP || 0}</p>
           </div>
-          <div className="bg-white border border-[#ECECEC] rounded-[24px] p-6 shadow-sm">
-            <p className="text-xs font-medium text-gray-500">Level</p>
-            <p className="text-3xl font-semibold text-gray-900 mt-2 tabular-nums">{levelInfo.level}</p>
+          <div className="bg-gradient-to-br from-purple-600 to-pink-500 rounded-2xl p-6 shadow-2xl border-2 border-pink-400">
+            <p className="text-xs font-bold uppercase tracking-widest text-pink-100">🎯 Level</p>
+            <p className="text-3xl font-black mt-2 tabular-nums text-white drop-shadow-lg">{levelInfo.level}</p>
           </div>
-          <div className="bg-white border border-[#ECECEC] rounded-[24px] p-6 shadow-sm">
-            <p className="text-xs font-medium text-gray-500">Global Streak</p>
-            <p className="text-3xl font-semibold text-gray-900 mt-2 tabular-nums">{currentStreak} <span className="text-lg font-normal text-gray-400">days</span></p>
+          <div className="bg-gradient-to-br from-orange-600 to-red-500 rounded-2xl p-6 shadow-2xl border-2 border-orange-400">
+            <p className="text-xs font-bold uppercase tracking-widest text-orange-100">🔥 Global Streak</p>
+            <p className="text-3xl font-black mt-2 tabular-nums text-white drop-shadow-lg">{currentStreak} <span className="text-lg font-bold text-orange-100">days</span></p>
           </div>
-          <div className="bg-white border border-[#ECECEC] rounded-[24px] p-6 shadow-sm relative overflow-hidden">
-            <p className="text-xs font-medium text-gray-500">Active Slots</p>
-            <p className="text-3xl font-semibold text-gray-900 mt-2 tabular-nums">{challenges.length}/{maxActiveChallenges}</p>
-            <p className="mt-1 text-xs text-gray-400 absolute bottom-4 right-5">MAX 3</p>
+          <div className="bg-gradient-to-br from-green-600 to-emerald-500 rounded-2xl p-6 shadow-2xl border-2 border-green-400 relative overflow-hidden">
+            <p className="text-xs font-bold uppercase tracking-widest text-green-100">💪 Active Slots</p>
+            <p className="text-3xl font-black mt-2 tabular-nums text-white drop-shadow-lg">{challenges.length}/{maxActiveChallenges}</p>
+            <p className="mt-1 text-xs text-green-100 absolute bottom-4 right-5 font-bold">MAX 3</p>
           </div>
         </div>
 
         <div className="grid grid-cols-1 gap-4 md:grid-cols-3 mb-8">
-          <div className="bg-white border border-[#ECECEC] rounded-[24px] p-6 shadow-sm">
-            <p className="text-xs font-medium text-gray-500">Daily Tasks</p>
-            <p className="mt-2 text-2xl font-semibold text-gray-900 tabular-nums">{remainingTodayCount} remaining</p>
-            <p className="mt-1 text-sm text-gray-500">{completedTodayCount} completed today</p>
+          <div className="bg-gradient-to-br from-indigo-600 to-blue-500 rounded-2xl p-6 shadow-2xl border-2 border-blue-400">
+            <p className="text-xs font-bold uppercase tracking-widest text-blue-100">✅ Daily Tasks</p>
+            <p className="mt-2 text-2xl font-black tabular-nums text-white drop-shadow-lg">{remainingTodayCount} remaining</p>
+            <p className="mt-1 text-sm text-blue-100 font-semibold">{completedTodayCount} completed today</p>
           </div>
-          <div className="bg-white border border-[#ECECEC] rounded-[24px] p-6 shadow-sm">
-            <p className="text-xs font-medium text-gray-500">Challenge Capacity</p>
-            <p className="mt-2 text-2xl font-semibold text-gray-900 tabular-nums">
+          <div className="bg-gradient-to-br from-rose-600 to-pink-500 rounded-2xl p-6 shadow-2xl border-2 border-pink-400">
+            <p className="text-xs font-bold uppercase tracking-widest text-pink-100">📈 Challenge Capacity</p>
+            <p className="mt-2 text-2xl font-black tabular-nums text-white drop-shadow-lg">
               {Math.max(0, maxActiveChallenges - challenges.length)} slots open
             </p>
-            <p className="mt-1 text-sm text-gray-500">Keep max 3 active.</p>
+            <p className="mt-1 text-sm text-pink-100 font-semibold">Keep max 3 active.</p>
           </div>
-          <div className="bg-white border border-[#ECECEC] rounded-[24px] p-6 shadow-sm">
-            <p className="text-xs font-medium text-gray-500">Daily Focus</p>
-            <p className="mt-2 text-2xl font-semibold text-gray-900">
+          <div className="bg-gradient-to-br from-amber-600 to-orange-500 rounded-2xl p-6 shadow-2xl border-2 border-amber-400">
+            <p className="text-xs font-bold uppercase tracking-widest text-amber-100">🎯 Daily Focus</p>
+            <p className="mt-2 text-2xl font-black text-white drop-shadow-lg">
               {remainingTodayCount === 0 ? 'All Done' : 'Check In'}
             </p>
-            <p className="mt-1 text-sm text-gray-500">
+            <p className="mt-1 text-sm text-amber-100 font-semibold">
               {remainingTodayCount === 0 ? 'Great job today.' : 'Complete your pending tasks.'}
             </p>
           </div>
         </div>
 
         {/* Today's Challenges */}
-        <h2 className="text-2xl font-semibold text-gray-900 mb-6 tracking-tight">Active Challenges</h2>
+        <h2 className="text-3xl font-black text-white mb-6 tracking-wider drop-shadow-lg">⚔️ ACTIVE CHALLENGES</h2>
         
         {/* Daily Check-in Timer - Only show if user has active challenges */}
         {challenges.length > 0 && (
-          <div className="mb-6 p-5 bg-white border border-[#ECECEC] shadow-sm rounded-[24px]">
+          <div className="mb-6 p-5 bg-gradient-to-r from-cyan-600 to-blue-600 shadow-2xl rounded-2xl border-2 border-cyan-400">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-xs font-medium text-gray-500">Daily Reset in:</p>
-                <p className="text-xl font-semibold text-gray-900 tabular-nums mt-1">
+                <p className="text-xs font-bold uppercase tracking-widest text-cyan-100">⏱️ Daily Reset in:</p>
+                <p className="text-xl font-black text-white tabular-nums mt-1 drop-shadow-lg">
                   {formatTimeUntilReset(timeRemaining)}
                 </p>
               </div>
@@ -218,57 +218,59 @@ export default function Dashboard() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
           {challenges.length === 0 ? (
-            <div className="col-span-full text-center py-12 bg-white border border-[#ECECEC] rounded-[24px]">
-              <p className="text-gray-500 text-lg font-medium">No active challenges. Start one in Explore.</p>
+            <div className="col-span-full text-center py-16 bg-gradient-to-br from-slate-800 to-slate-700 rounded-2xl border-2 border-purple-500 shadow-2xl">
+              <p className="text-white text-lg font-bold">🎯 No active challenges. Start one in Explore.</p>
             </div>
           ) : (
             challenges.map(uc => {
               const isCheckedInToday = checkedInToday.includes(uc._id);
               
               return (
-              <div key={uc._id} className="flex flex-col bg-white border border-[#ECECEC] rounded-[24px] p-6 shadow-sm">
+              <div key={uc._id} className="flex flex-col bg-gradient-to-br from-slate-700 to-slate-800 border-2 border-purple-500 rounded-2xl p-6 shadow-2xl hover:border-pink-500 transition-colors">
                 <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-lg font-semibold text-gray-900">{uc.challengeId?.title || 'Challenge'}</h3>
-                  <span className="px-2.5 py-1 text-xs font-medium rounded-lg bg-gray-50 text-gray-600">
+                  <h3 className="text-lg font-black text-white drop-shadow-lg">{uc.challengeId?.title || 'Challenge'}</h3>
+                  <span className={`px-3 py-1.5 text-xs font-bold rounded-lg uppercase tracking-wide ${
+                    uc.mode === 'easy' ? 'bg-green-500 text-white' : uc.mode === 'medium' ? 'bg-yellow-500 text-white' : 'bg-red-500 text-white'
+                  }`}>
                     {uc.mode}
                   </span>
                 </div>
                 
                 <div className="mb-3">
-                  <p className="text-xs font-medium text-gray-500 mb-2 flex justify-between">
-                    <span>Phase Progress</span>
-                    <span className="text-gray-900">{uc.completedDays} / {uc.requiredDays} days</span>
+                  <p className="text-xs font-bold text-purple-300 mb-2 flex justify-between uppercase tracking-wide">
+                    <span>🎯 Phase Progress</span>
+                    <span className="text-white">{uc.completedDays} / {uc.requiredDays} days</span>
                   </p>
-                  <div className="h-1.5 overflow-hidden rounded-full bg-gray-100">
+                  <div className="h-2 overflow-hidden rounded-full bg-slate-600 border border-slate-500">
                     <div 
-                      className="h-full rounded-full bg-[#6366F1] transition-all duration-[800ms] ease-out" 
+                      className="h-full rounded-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-[800ms] ease-out shadow-lg" 
                       style={{ width: `${Math.min(100, Math.max(0, (uc.completedDays / uc.requiredDays) * 100))}%` }} 
                     />
                   </div>
                 </div>
 
                 <div className="mb-4">
-                  <p className="text-xs font-medium text-gray-500">Streak: <span className="font-semibold text-gray-900 tabular-nums">{uc.currentStreak} days</span></p>
+                  <p className="text-xs font-bold text-cyan-300 uppercase tracking-wide">🔥 Streak: <span className="font-black text-white tabular-nums">{uc.currentStreak} days</span></p>
                 </div>
 
                 <div className="grid gap-3 mt-auto pt-2">
                   <button
                     onClick={() => handleCheckin(uc._id)}
                     disabled={isCheckedInToday || checking[uc._id]}
-                    className={`w-full font-medium rounded-xl py-2.5 transition-colors text-sm ${
+                    className={`w-full font-bold rounded-xl py-3 transition-all text-sm uppercase tracking-wide ${
                       isCheckedInToday 
-                        ? 'bg-gray-100 text-gray-500 cursor-not-allowed' 
-                        : 'bg-[#6366F1] text-white hover:bg-indigo-700 shadow-sm'
+                        ? 'bg-slate-600 text-gray-400 cursor-not-allowed' 
+                        : 'bg-gradient-to-r from-purple-600 to-pink-500 text-white hover:from-purple-700 hover:to-pink-600 shadow-lg hover:shadow-2xl'
                     }`}
                   >
-                    {isCheckedInToday ? 'Checked In' : checking[uc._id] ? 'Syncing...' : 'Check In'}
+                    {isCheckedInToday ? '✅ Checked In' : checking[uc._id] ? '⏳ Syncing...' : '✨ Check In'}
                   </button>
                   <button
                     onClick={() => handleLeave(uc._id)}
                     disabled={leaving[uc._id]}
-                    className="w-full font-medium bg-white border border-[#ECECEC] text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 rounded-xl py-2.5 transition-colors text-sm"
+                    className="w-full font-bold bg-gradient-to-r from-red-600 to-orange-500 text-white hover:from-red-700 hover:to-orange-600 rounded-xl py-3 transition-all text-sm uppercase tracking-wide shadow-lg hover:shadow-2xl"
                   >
-                    {leaving[uc._id] ? 'Leaving...' : 'Leave Challenge'}
+                    {leaving[uc._id] ? '⏳ Leaving...' : '🚫 Leave Challenge'}
                   </button>
                 </div>
               </div>

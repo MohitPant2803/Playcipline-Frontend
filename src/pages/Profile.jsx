@@ -100,10 +100,10 @@ export default function Profile() {
     }
   };
 
-  if (loading) return <div className="flex items-center justify-center h-screen">Loading...</div>;
+  if (loading) return <div className="flex items-center justify-center h-screen"><div className="animate-bounce text-2xl font-black text-white">Loading...</div></div>;
 
   return (
-    <div className="pb-20 sm:pb-0 bg-[#FAFAF8] text-gray-900 font-sans min-h-screen">
+    <div className="pb-20 sm:pb-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white font-sans min-h-screen">
       <ProfileView
         profile={user}
         stats={stats}
@@ -118,14 +118,14 @@ export default function Profile() {
             <button
               type="button"
               onClick={() => setIsEditing(!isEditing)}
-              className="bg-[#6366F1] text-white px-5 py-2 rounded-xl text-sm font-medium hover:bg-indigo-700 shadow-sm transition"
+              className="bg-gradient-to-r from-purple-600 to-pink-500 text-white px-5 py-2.5 rounded-xl text-sm font-bold hover:from-purple-700 hover:to-pink-600 shadow-lg transition uppercase tracking-wide"
             >
               {isEditing ? 'Cancel' : 'Edit Profile'}
             </button>
             <button
               type="button"
               onClick={() => setShowLogoutConfirm(true)}
-              className="bg-white border border-[#ECECEC] text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-200 px-5 py-2 rounded-xl text-sm font-medium transition"
+              className="bg-gradient-to-r from-red-600 to-orange-500 text-white hover:from-red-700 hover:to-orange-600 px-5 py-2.5 rounded-xl text-sm font-bold shadow-lg transition uppercase tracking-wide"
             >
               Sign Out
             </button>
@@ -149,32 +149,34 @@ export default function Profile() {
 
       {/* Active Challenges Section */}
       <div className="max-w-4xl mx-auto px-4 pb-12 mt-8">
-        <h2 className="text-2xl font-semibold text-gray-900 mb-6 tracking-tight">Active Challenges</h2>
+        <h2 className="text-3xl font-black text-white mb-6 tracking-wider drop-shadow-lg">⚔️ ACTIVE CHALLENGES</h2>
         {stats?.allChallenges?.filter(c => c.status === 'active').length === 0 ? (
-          <div className="bg-white p-6 rounded-[24px] border border-[#ECECEC] text-center text-gray-500 shadow-sm">
-            No active challenges currently. Head to Explore to begin your evolution.
+          <div className="bg-gradient-to-br from-slate-800 to-slate-700 p-8 rounded-2xl border-2 border-purple-500 text-center text-purple-300 shadow-2xl font-bold text-lg">
+            🎯 No active challenges currently. Head to Explore to begin your evolution.
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             {stats?.allChallenges?.filter(c => c.status === 'active').map(uc => (
-              <div key={uc._id} className="bg-white p-6 rounded-[24px] border border-[#ECECEC] shadow-sm hover:shadow-md transition-all duration-200">
+              <div key={uc._id} className="bg-gradient-to-br from-slate-700 to-slate-800 p-6 rounded-2xl border-2 border-purple-500 shadow-2xl hover:border-pink-500 transition-all duration-200">
                 <div className="flex justify-between items-start mb-3">
-                  <span className="text-xs font-medium text-gray-600 bg-gray-50 px-2.5 py-1 rounded-lg">
+                  <span className={`text-xs font-bold text-white px-3 py-1.5 rounded-lg uppercase tracking-wide ${
+                    uc.mode === 'easy' ? 'bg-green-500' : uc.mode === 'medium' ? 'bg-yellow-500' : 'bg-red-500'
+                  }`}>
                     {uc.mode} Mode
                   </span>
-                  <span className="text-xs font-medium text-gray-500 bg-gray-50 px-2.5 py-1 rounded-lg">
+                  <span className="text-xs font-bold text-cyan-300 bg-slate-600 px-3 py-1.5 rounded-lg uppercase tracking-wide">
                     Day {uc.completedDays} / {uc.requiredDays}
                   </span>
                 </div>
-                <h3 className="font-semibold text-lg text-gray-900 mb-2">{uc.challengeId?.title || 'Unknown Challenge'}</h3>
-                <p className="text-sm text-gray-500 mb-4 line-clamp-2">{uc.challengeId?.description || 'No description available.'}</p>
-                <div className="w-full bg-gray-100 rounded-full h-1.5 mb-2 overflow-hidden">
+                <h3 className="font-black text-lg text-white mb-2 drop-shadow-lg">{uc.challengeId?.title || 'Unknown Challenge'}</h3>
+                <p className="text-sm text-purple-200 mb-4 line-clamp-2 font-semibold">{uc.challengeId?.description || 'No description available.'}</p>
+                <div className="w-full bg-slate-600 rounded-full h-2 mb-2 overflow-hidden border border-slate-500">
                   <div 
-                    className="bg-[#6366F1] h-full rounded-full transition-all duration-[800ms] ease-out" 
+                    className="bg-gradient-to-r from-purple-500 to-pink-500 h-full rounded-full transition-all duration-[800ms] ease-out shadow-lg" 
                     style={{ width: `${Math.min(100, Math.max(0, (uc.completedDays / uc.requiredDays) * 100))}%` }}
                   />
                 </div>
-                <p className="text-xs text-right text-gray-500 font-medium">{Math.round((uc.completedDays / uc.requiredDays) * 100)}% Completed</p>
+                <p className="text-xs text-right text-purple-300 font-bold uppercase tracking-wide">{Math.round((uc.completedDays / uc.requiredDays) * 100)}% Completed</p>
               </div>
             ))}
           </div>

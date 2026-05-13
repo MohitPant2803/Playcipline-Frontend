@@ -83,9 +83,9 @@ export default function Header() {
   };
 
   return (
-    <header className="bg-white shadow-sm border-b border-gray-200">
+    <header className="bg-gradient-to-r from-purple-600 via-pink-500 to-red-500 shadow-2xl border-b-4 border-purple-700">
       <div className="max-w-7xl mx-auto px-4 py-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <h1 className="text-2xl font-bold text-blue-600">Playcipline</h1>
+        <h1 className="text-3xl font-black text-white tracking-wider drop-shadow-lg">🎮 Playcipline</h1>
         {user && (
           <div className="relative w-full sm:max-w-sm">
             <input
@@ -93,25 +93,25 @@ export default function Header() {
               value={userSearch}
               onChange={(event) => setUserSearch(event.target.value)}
               placeholder="Search users..."
-              className="w-full rounded-lg border border-gray-300 px-4 py-2 text-sm outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
+              className="w-full rounded-xl border-2 border-white bg-white bg-opacity-20 backdrop-blur-sm px-4 py-2.5 text-sm text-white outline-none transition focus:border-yellow-300 focus:ring-2 focus:ring-yellow-200 placeholder-white placeholder-opacity-70"
             />
             {userSearch.trim().length >= 2 && (
-              <div className="absolute left-0 right-0 top-12 z-30 overflow-hidden rounded-lg border border-gray-200 bg-white shadow-lg">
+              <div className="absolute left-0 right-0 top-12 z-30 overflow-hidden rounded-xl border-2 border-purple-300 bg-gradient-to-b from-white to-gray-50 shadow-2xl">
                 {searchingUsers ? (
-                  <p className="px-4 py-3 text-sm text-gray-600">Searching...</p>
+                  <p className="px-4 py-3 text-sm text-purple-600 font-semibold">Searching...</p>
                 ) : userResults.length === 0 ? (
-                  <p className="px-4 py-3 text-sm text-gray-600">No users found</p>
+                  <p className="px-4 py-3 text-sm text-purple-600 font-semibold">No users found</p>
                 ) : (
                   userResults.map(result => (
                     <div
                       key={result._id}
-                      className="flex items-center gap-3 border-b border-gray-100 px-4 py-3 last:border-b-0 cursor-pointer hover:bg-gray-50 transition"
+                      className="flex items-center gap-3 border-b border-purple-100 px-4 py-3 last:border-b-0 cursor-pointer hover:bg-purple-50 transition-colors"
                       onClick={() => handleUserClick(result._id)}
                     >
                       {result.avatar ? (
-                        <img src={result.avatar} alt={result.name} className="h-9 w-9 rounded-full" />
+                        <img src={result.avatar} alt={result.name} className="h-9 w-9 rounded-full border-2 border-purple-300" />
                       ) : (
-                        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-700">
+                        <span className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-sm font-bold text-white">
                           {(result.name || 'U').charAt(0).toUpperCase()}
                         </span>
                       )}
@@ -126,10 +126,10 @@ export default function Header() {
                             e.stopPropagation();
                             handleFollowToggle(result);
                           }}
-                          className={`ml-auto rounded-lg px-3 py-1 text-xs font-bold transition ${
+                          className={`ml-auto rounded-lg px-3 py-1 text-xs font-bold transition transform hover:scale-105 ${
                             result.isFollowing
-                              ? 'border border-gray-300 bg-white text-gray-700 hover:bg-gray-50'
-                              : 'bg-blue-600 text-white hover:bg-blue-700'
+                              ? 'border-2 border-purple-300 bg-white text-purple-600 hover:bg-purple-50'
+                              : 'bg-gradient-to-r from-purple-600 to-pink-500 text-white hover:from-purple-700 hover:to-pink-600 shadow-lg'
                           }`}
                         >
                           {result.isFollowing ? 'Following' : 'Follow'}

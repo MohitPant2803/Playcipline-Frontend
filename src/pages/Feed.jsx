@@ -108,64 +108,64 @@ export default function Feed() {
     return activity.likes?.length || 0;
   };
 
-  if (loading) return <div className="flex items-center justify-center h-screen">Loading...</div>;
+  if (loading) return <div className="flex items-center justify-center h-screen"><div className="animate-bounce text-2xl font-black text-white">Loading...</div></div>;
 
   return (
-    <div className="pb-20 sm:pb-0 bg-[#FAFAF8] text-gray-900 font-sans min-h-screen">
+    <div className="pb-20 sm:pb-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white font-sans min-h-screen">
       <div className="max-w-2xl mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 tracking-tight">Activity Feed</h1>
-          <p className="mt-2 text-gray-500">See what others are accomplishing.</p>
+          <h1 className="text-4xl font-black text-white tracking-wider drop-shadow-lg">📢 ACTIVITY FEED</h1>
+          <p className="mt-2 text-purple-300 font-semibold">See what others are accomplishing. 🏆</p>
         </div>
 
         <div className="space-y-4">
           {activities.length === 0 ? (
-            <div className="text-center py-12 bg-white border border-[#ECECEC] rounded-[24px]">
-              <p className="text-gray-500 text-lg font-medium">No recent activity found.</p>
+            <div className="text-center py-16 bg-gradient-to-br from-slate-800 to-slate-700 rounded-2xl border-2 border-purple-500 shadow-2xl">
+              <p className="text-white text-lg font-bold">📭 No recent activity found.</p>
             </div>
           ) : (
             activities.map(activity => (
-              <div key={activity._id} className="bg-white border border-[#ECECEC] rounded-[24px] p-6 shadow-sm">
+              <div key={activity._id} className="bg-gradient-to-br from-slate-700 to-slate-800 border-2 border-purple-500 rounded-2xl p-6 shadow-2xl hover:border-pink-500 transition-all">
                 {/* Activity Header */}
                 <div className="flex gap-4 mb-3">
                   {activity.userId?.avatar && (
                     <img
                       src={activity.userId.avatar}
                       alt={activity.userId.name}
-                      className="w-10 h-10 rounded-full border border-[#ECECEC]"
+                      className="w-12 h-12 rounded-full border-2 border-purple-400 shadow-lg"
                     />
                   )}
                   <div className="flex-grow">
-                    <p className="font-semibold text-gray-900">{activity.userId?.name || 'User'}</p>
-                    <p className="text-sm text-gray-500 capitalize">
+                    <p className="font-black text-white">{activity.userId?.name || 'User'}</p>
+                    <p className="text-sm text-purple-300 capitalize font-semibold">
                       {getActivityText(activity)}
                     </p>
-                    <p className="text-xs text-gray-400 mt-1">{timeAgo(activity.createdAt)}</p>
+                    <p className="text-xs text-purple-200 mt-1 font-bold uppercase tracking-wide">{timeAgo(activity.createdAt)}</p>
                   </div>
                 </div>
 
                 {/* Like Button */}
-                <div className="border-t border-[#ECECEC] pt-4 mb-4 mt-2">
+                <div className="border-t-2 border-purple-500 pt-4 mb-4 mt-2">
                   <button
                     onClick={() => handleLike(activity._id)}
                     disabled={!user}
-                    className={`transition font-medium text-sm flex items-center gap-2 ${
+                    className={`transition font-bold text-sm flex items-center gap-2 uppercase tracking-wide ${
                       user
-                        ? 'text-gray-500 hover:text-red-500 cursor-pointer'
-                        : 'text-gray-400 cursor-not-allowed'
+                        ? 'text-purple-300 hover:text-pink-400 cursor-pointer'
+                        : 'text-gray-500 cursor-not-allowed'
                     }`}
                   >
-                    <span className={activity.likes?.includes(user?._id) ? "text-red-500" : ""}>♥️</span> {activity.likes?.length || 0}
+                    <span className={activity.likes?.includes(user?._id) ? "text-pink-500 text-xl" : "text-lg"}>♥️</span> {activity.likes?.length || 0}
                   </button>
                 </div>
 
                 {/* Comments */}
                 {activity.comments && activity.comments.length > 0 && (
-                  <div className="mb-4 space-y-2 bg-gray-50 border border-[#ECECEC] p-4 rounded-xl">
+                  <div className="mb-4 space-y-2 bg-slate-600 bg-opacity-50 border-l-4 border-cyan-400 p-4 rounded-lg">
                     {activity.comments.map((comment, idx) => (
                       <div key={idx} className="text-sm">
-                        <p className="font-semibold text-gray-800 text-xs">{comment.userId?.name || 'User'}</p>
-                        <p className="text-gray-600 mt-0.5">{comment.text}</p>
+                        <p className="font-bold text-cyan-300 text-xs uppercase tracking-wide">{comment.userId?.name || 'User'}</p>
+                        <p className="text-purple-200 mt-0.5 font-semibold">{comment.text}</p>
                       </div>
                     ))}
                   </div>
@@ -184,19 +184,19 @@ export default function Feed() {
                       }
                     }}
                     disabled={!user}
-                    className={`flex-grow px-4 py-2 border rounded-xl text-sm focus:outline-none placeholder-gray-400 text-gray-900 ${
+                    className={`flex-grow px-4 py-2 border-2 rounded-xl text-sm focus:outline-none placeholder-purple-300 text-white font-semibold ${
                       user
-                        ? 'border-[#ECECEC] bg-white focus:border-[#6366F1] focus:ring-1 focus:ring-[#6366F1]'
-                        : 'border-[#ECECEC] bg-gray-50 cursor-not-allowed'
+                        ? 'border-purple-500 bg-slate-600 focus:border-cyan-400 focus:ring-1 focus:ring-cyan-400'
+                        : 'border-slate-600 bg-slate-700 cursor-not-allowed'
                     }`}
                   />
                   <button
                     onClick={() => handleComment(activity._id)}
                     disabled={!user}
-                    className={`px-5 py-2 rounded-xl transition text-sm font-medium ${
+                    className={`px-5 py-2 rounded-xl transition text-sm font-bold uppercase tracking-wide ${
                       user
-                        ? 'bg-[#6366F1] text-white hover:bg-indigo-700 shadow-sm'
-                        : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                        ? 'bg-gradient-to-r from-purple-600 to-pink-500 text-white hover:from-purple-700 hover:to-pink-600 shadow-lg'
+                        : 'bg-slate-600 text-gray-400 cursor-not-allowed'
                     }`}
                   >
                     Post
@@ -213,14 +213,14 @@ export default function Feed() {
       <Modal
         isOpen={showLoginPrompt}
         onClose={() => setShowLoginPrompt(false)}
-        title="Login Required"
+        title="🔐 LOGIN REQUIRED"
       >
         <div className="space-y-4">
-          <p className="text-gray-600">You need to be logged in to like and comment on activities.</p>
+          <p className="text-gray-700 font-semibold">You need to be logged in to like and comment on activities.</p>
           <div className="flex gap-3">
             <button
               onClick={() => setShowLoginPrompt(false)}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+              className="flex-1 px-4 py-3 border-2 border-gray-300 rounded-lg hover:bg-gray-100 font-bold uppercase tracking-wide"
             >
               Continue Browsing
             </button>
@@ -229,7 +229,7 @@ export default function Feed() {
                 setShowLoginPrompt(false);
                 navigate('/');
               }}
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 text-center font-medium"
+              className="flex-1 px-4 py-3 bg-gradient-to-r from-purple-600 to-pink-500 text-white rounded-lg hover:from-purple-700 hover:to-pink-600 text-center font-bold uppercase tracking-wide shadow-lg"
             >
               Login
             </button>
