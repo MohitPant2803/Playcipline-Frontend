@@ -169,7 +169,10 @@ export default function Feed() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const handleLike = async (activityId) => {
+  const handleLike = async (e, activityId) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
     if (!user) {
       setShowLoginPrompt(true);
       return;
@@ -595,15 +598,12 @@ export default function Feed() {
                     {/* Action Bar */}
                     <div className="flex items-center gap-6 mb-5">
                       <button
-                        onClick={() => handleLike(activity._id)}
-                        disabled={!user}
-                        className={`group flex items-center gap-1.5 transition ${
-                          user ? 'cursor-pointer' : 'cursor-not-allowed'
-                        }`}
+                        onClick={(e) => handleLike(e, activity._id)}
+                        className="group flex items-center gap-1.5 transition cursor-pointer"
                       >
                         <div className={`p-1.5 rounded-full transition-colors ${
                           activity.likes?.includes(user?._id) 
-                            ? 'text-cyan-400 bg-cyan-500/10 shadow-[0_0_10px_rgba(34,211,238,0.2)]' 
+                            ? 'text-rose-500 bg-rose-500/10 shadow-[0_0_10px_rgba(244,63,94,0.2)]' 
                             : 'text-slate-500 group-hover:bg-white/[0.05] group-hover:text-slate-300'
                         }`}>
                           <svg xmlns="http://www.w3.org/2000/svg" fill={activity.likes?.includes(user?._id) ? "currentColor" : "none"} viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
@@ -611,7 +611,7 @@ export default function Feed() {
                           </svg>
                         </div>
                         <span className={`text-[10px] sm:text-xs font-bold uppercase tracking-widest ${
-                          activity.likes?.includes(user?._id) ? 'text-cyan-400' : 'text-slate-500 group-hover:text-slate-300'
+                          activity.likes?.includes(user?._id) ? 'text-rose-500' : 'text-slate-500 group-hover:text-slate-300'
                         }`}>
                           {getLikeCount(activity)}
                         </span>
