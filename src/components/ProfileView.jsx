@@ -54,7 +54,7 @@ function Reveal({ children, delay = 0, className = '' }) {
   const [ref, inView] = useScrollReveal({ threshold: 0, rootMargin: '100px' });
   const baseClass = "transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform";
   return (
-    <div ref={ref} className={`${baseClass} ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'} ${className}`} style={{ transitionDelay: `${delay}ms` }}>
+    <div ref={ref} className={`${baseClass} ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-16'} ${className}`} style={{ transitionDelay: `${delay}ms` }}>
       {children}
     </div>
   );
@@ -242,12 +242,12 @@ export default function ProfileView({
         )}
 
         {/* Premium Life Identity Graph Component */}
-        <Reveal delay={200}>
+        <Reveal delay={0}>
           <IdentityGraph stats={stats} />
         </Reveal>
 
         {/* Horizontal Badge Showcase */}
-        <Reveal delay={300}>
+        <Reveal delay={0}>
           <div className="mb-16">
             <h2 className="text-2xl font-black text-white tracking-wider drop-shadow-lg uppercase mb-6">🎖️ Achievement Showcase</h2>
             <div className="flex overflow-x-auto gap-4 pb-4 snap-x hide-scrollbar">
@@ -276,7 +276,7 @@ export default function ProfileView({
         </Reveal>
 
         {showActivities && (
-          <Reveal delay={400} className="mb-16">
+          <Reveal delay={0} className="mb-16">
             <div className="flex justify-between items-center mb-6">
               <h2 className="text-2xl font-black text-white tracking-wider drop-shadow-lg uppercase">📋 Timeline</h2>
               {activities.length > 3 && (
@@ -339,7 +339,7 @@ export default function ProfileView({
         )}
 
         {stats?.allChallenges && (
-          <Reveal delay={500} className="mb-12">
+          <Reveal delay={0} className="mb-12">
             <h2 className="text-2xl font-black text-white mb-6 tracking-wider drop-shadow-lg uppercase">🎯 Trophies</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {completedChallenges.map(challenge => (

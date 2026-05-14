@@ -28,38 +28,20 @@ export const PROGRESSION_STAGES = [
   { id: 'legendary', rank: 'Level 100+', name: 'Legendary', desc: 'Complete identity transformation. You are no longer building habits; you are building a legacy. You have become the architect of your reality.', traits: ['Legacy', 'Purpose', 'Transformation'], colorClass: 'text-yellow-400', glowClass: 'bg-yellow-400', shadowClass: 'shadow-[0_0_30px_rgba(250,204,21,0.4)]', lineGradient: 'from-yellow-500/50 to-transparent' },
 ];
 
-// Unified Cinematic Motion System
-function useParallax(speed = 0.1) {
+// Unified Cinematic Motion System - using CSS animations only
+function useParallax() {
   const ref = useRef(null);
-  useEffect(() => {
-    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
-    if (mediaQuery.matches) return;
-
-    let rafId;
-    const handleScroll = () => {
-      if (!ref.current || !ref.current.parentElement) return;
-      // Use parent bounding rect to prevent transform feedback loop jitter
-      const rect = ref.current.parentElement.getBoundingClientRect();
-      const offset = rect.top * speed;
-      rafId = requestAnimationFrame(() => {
-        if (ref.current) {
-          ref.current.style.transform = `translate3d(0, ${offset}px, 0)`;
-        }
-      });
-    };
-    window.addEventListener('scroll', handleScroll, { passive: true });
-    handleScroll(); // Trigger initial placement
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      if (rafId) cancelAnimationFrame(rafId);
-    };
-  }, [speed]);
   return ref;
 }
 
 function useScrollReveal(options = { threshold: 0.3 }) {
   const [inView, setInView] = useState(false);
   const ref = useRef(null);
+  const optionsRef = useRef(options);
+  
+  useEffect(() => {
+    optionsRef.current = options;
+  }, [options.threshold, options.rootMargin]);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -72,34 +54,32 @@ function useScrollReveal(options = { threshold: 0.3 }) {
       if (entry.isIntersecting) {
         setInView(true);
       } else if (entry.boundingClientRect.top > 0) {
-        // Reset the animation only when scrolling back up past the element
         setInView(false);
       }
-    }, options);
+    }, optionsRef.current);
 
     if (ref.current) observer.observe(ref.current);
     return () => {
       if (ref.current) observer.unobserve(ref.current);
     };
-  }, [options.threshold, options.rootMargin]);
+  }, []);
 
   return [ref, inView];
 }
 
-function Reveal({ children, delay = 0, className = '', direction = 'up', blur = false, threshold = 0.2, as = 'div' }) {
+function Reveal({ children, delay = 0, className = '', direction = 'up', threshold = 0.2, as = 'div' }) {
   const [ref, inView] = useScrollReveal({ threshold, rootMargin: '100px' });
   
-  const baseClass = "transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform motion-reduce:transition-none motion-reduce:transform-none motion-reduce:opacity-100 motion-reduce:blur-none";
+  const baseClass = "transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] motion-reduce:transition-none motion-reduce:transform-none motion-reduce:opacity-100";
   
   let hiddenClass = "opacity-0";
-  let visibleClass = "opacity-100 scale-100 translate-y-0 translate-x-0 blur-none";
+  let visibleClass = "opacity-100 translate-y-0 translate-x-0";
   
-  if (direction === 'up') hiddenClass += " translate-y-16";
-  if (direction === 'down') hiddenClass += " -translate-y-16";
-  if (direction === 'left') hiddenClass += " -translate-x-16";
-  if (direction === 'right') hiddenClass += " translate-x-16";
-  if (blur) hiddenClass += " blur-[12px] scale-95";
-
+  if (direction === 'up') hiddenClass += " translate-y-8";
+  if (direction === 'down') hiddenClass += " -translate-y-8";
+  if (direction === 'left') hiddenClass += " -translate-x-8";
+  if (direction === 'right') hiddenClass += " translate-x-8";
+  
   const Component = as;
   return (
     <Component ref={ref} className={`${baseClass} ${inView ? visibleClass : hiddenClass} ${className}`} style={{ transitionDelay: `${delay}ms` }}>
@@ -109,13 +89,10 @@ function Reveal({ children, delay = 0, className = '', direction = 'up', blur = 
 }
 
 function ParallaxOrb({ className, speed, animationDuration, animationDelay }) {
-  const ref = useParallax(speed);
   return (
     <div className="absolute inset-0 pointer-events-none overflow-visible flex items-center justify-center">
       <div 
-        ref={ref}
-        className={`rounded-full mix-blend-screen filter animate-pulse will-change-transform ${className}`} 
-        style={{ animationDuration, animationDelay }}
+        className={`rounded-full mix-blend-screen filter ${className}`}
       ></div>
     </div>
   );
@@ -124,7 +101,6 @@ function ParallaxOrb({ className, speed, animationDuration, animationDelay }) {
 function CinematicDomain({ domain }) {
   const [ref, inView] = useScrollReveal({ threshold: 0.1, rootMargin: '100px' });
   const navigate = useNavigate();
-  const parallaxRef = useParallax(0.08);
   
   const { id, title, subtitle, icon, quote, description, align, gradient, glow } = domain;
   
@@ -136,43 +112,43 @@ function CinematicDomain({ domain }) {
   
   const flexClass = align === 'right' ? 'justify-end' : align === 'center' ? 'justify-center' : 'justify-start';
 
-  const baseTransition = "transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform";
-  const hiddenState = "opacity-0 translate-y-12";
+  const baseTransition = "transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)]";
+  const hiddenState = "opacity-0 translate-y-8";
   const visibleState = "opacity-100 translate-y-0";
 
   return (
     <div ref={ref} className="relative w-full py-32 sm:py-48 flex items-center px-6 sm:px-12 lg:px-24 overflow-hidden">
          {/* Ambient Backgrounds */}
-         <div className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${inView ? 'opacity-100' : 'opacity-0'}`}>
+         <div className={`absolute inset-0 transition-opacity duration-700 ease-out ${inView ? 'opacity-100' : 'opacity-0'}`}>
             <div className={`absolute inset-0 bg-gradient-to-b ${gradient}`}></div>
             <div className="absolute inset-0 overflow-hidden pointer-events-none flex items-center justify-center">
-               <div ref={parallaxRef} className={`w-[90vw] h-[90vw] max-w-[1000px] max-h-[1000px] rounded-full mix-blend-screen filter blur-[120px] opacity-60 ${glow} animate-pulse will-change-transform`} style={{ animationDuration: '8s' }}></div>
+               <div className={`w-[90vw] h-[90vw] max-w-[1000px] max-h-[1000px] rounded-full mix-blend-screen filter blur-[60px] opacity-40 ${glow}`}></div>
             </div>
          </div>
          
          {/* Content */}
          <div className={`relative z-10 w-full flex ${flexClass}`}>
            <div className={`max-w-3xl flex flex-col ${alignClass}`}>
-              <div className={`flex items-center gap-4 mb-6 ${baseTransition} ${inView ? visibleState : hiddenState}`} style={{ transitionDelay: '0ms' }}>
+              <div className={`flex items-center gap-4 mb-6 transition-opacity duration-700 ease-out ${inView ? 'opacity-100' : 'opacity-0'}`} style={{ transitionDelay: '0ms' }}>
                 <span className="text-5xl sm:text-6xl drop-shadow-2xl">{icon}</span>
                 <span className="text-sm md:text-base font-black uppercase tracking-[0.5em] text-white/50">{subtitle}</span>
               </div>
              
-              <h2 className={`text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/60 leading-[0.9] tracking-tighter mb-8 uppercase ${baseTransition} ${inView ? visibleState : hiddenState}`} style={{ transitionDelay: '100ms' }}>{title}</h2>
+              <h2 className={`text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/60 leading-[0.9] tracking-tighter mb-8 uppercase px-4 -mx-4 py-2 transition-opacity duration-700 ease-out ${inView ? 'opacity-100' : 'opacity-0'}`} style={{ transitionDelay: '0ms' }}>{title}</h2>
              
-              <p className={`text-2xl sm:text-3xl md:text-4xl text-white font-bold leading-tight mb-6 ${baseTransition} ${inView ? visibleState : hiddenState}`} style={{ transitionDelay: '200ms' }}>"{quote}"</p>
+              <p className={`text-2xl sm:text-3xl md:text-4xl text-white font-bold leading-tight mb-6 transition-opacity duration-700 ease-out ${inView ? 'opacity-100' : 'opacity-0'}`} style={{ transitionDelay: '0ms' }}>"{quote}"</p>
              
-              <p className={`text-lg sm:text-xl text-slate-400 font-medium leading-relaxed mb-12 max-w-2xl ${baseTransition} ${inView ? visibleState : hiddenState}`} style={{ transitionDelay: '300ms' }}>{description}</p>
+              <p className={`text-lg sm:text-xl text-slate-400 font-medium leading-relaxed mb-12 max-w-2xl transition-opacity duration-700 ease-out ${inView ? 'opacity-100' : 'opacity-0'}`} style={{ transitionDelay: '0ms' }}>{description}</p>
              
-              <div className={`${baseTransition} ${inView ? visibleState : hiddenState}`} style={{ transitionDelay: '400ms' }}>
+              <div className={`transition-opacity duration-700 ease-out ${inView ? 'opacity-100' : 'opacity-0'}`} style={{ transitionDelay: '0ms' }}>
                 <button 
                   onClick={() => navigate(`/explore/${id}`)}
-                  className={`group relative px-8 py-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/30 rounded-full overflow-hidden transition-all duration-500 transform hover:scale-105 shadow-[0_0_30px_rgba(0,0,0,0.5)]`}
+                  className="group relative px-8 py-4 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/30 rounded-full overflow-hidden transition-all duration-300 ease-out transform hover:scale-105 shadow-lg hover:shadow-xl"
                 >
-                  <div className={`absolute inset-0 opacity-0 group-hover:opacity-30 transition-opacity duration-500 ${glow}`}></div>
+                  <div className={`absolute inset-0 opacity-0 group-hover:opacity-20 transition-opacity duration-300 ease-out ${glow}`}></div>
                   <span className="relative z-10 text-sm font-black uppercase tracking-[0.2em] text-white flex items-center gap-3">
                     Enter Domain 
-                    <span className="group-hover:translate-x-2 transition-transform duration-500">→</span>
+                    <span className="group-hover:translate-x-2 transition-transform duration-300 ease-out">→</span>
                   </span>
                 </button>
               </div>
@@ -184,21 +160,22 @@ function CinematicDomain({ domain }) {
 
 function IdentityPanel({ title, subtitle, description, align = 'left', gradient, glow }) {
   const [ref, inView] = useScrollReveal({ threshold: 0.1, rootMargin: '100px' });
-  const parallaxRef = useParallax(0.08);
   
   const alignClass = align === 'center' ? 'items-center text-center' : align === 'right' ? 'items-end text-right' : 'items-start text-left';
   
   return (
     <div ref={ref} className="relative w-full py-32 sm:py-48 flex items-center justify-center px-6 sm:px-12 overflow-hidden">
-         <div className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${inView ? 'opacity-100' : 'opacity-0'}`}>
+         <div className={`absolute inset-0 transition-opacity duration-700 ease-out ${inView ? 'opacity-100' : 'opacity-0'}`}>
             <div className={`absolute inset-0 bg-gradient-to-b ${gradient}`}></div>
-            <div ref={parallaxRef} className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] max-w-[800px] max-h-[800px] rounded-full mix-blend-screen filter blur-[100px] opacity-70 ${glow} will-change-transform`}></div>
+            <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] max-w-[800px] max-h-[800px] rounded-full mix-blend-screen filter blur-[60px] opacity-30 ${glow}`}></div>
          </div>
          
          <div className={`relative z-10 max-w-5xl w-full flex flex-col ${alignClass}`}>
-             <Reveal delay={0}><span className="text-sm md:text-base font-black uppercase tracking-[0.4em] mb-6 text-white/50">{subtitle}</span></Reveal>
-             <Reveal delay={100}><h2 className="text-5xl sm:text-7xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/70 leading-[1.1] tracking-tight mb-8">{title}</h2></Reveal>
-             <Reveal delay={200}><p className="text-xl sm:text-2xl md:text-3xl text-white/70 max-w-2xl font-medium leading-relaxed">{description}</p></Reveal>
+             <Reveal delay={0}><span className="text-sm md:text-base font-black uppercase tracking-[0.4em] mb-6 text-white/50 block">
+             {subtitle}
+             </span>
+             <h2 className="text-5xl sm:text-7xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/70 leading-[1.1] tracking-tight mb-8 px-4 -mx-4 py-2">{title}</h2>
+             <p className="text-xl sm:text-2xl md:text-3xl text-white/70 max-w-2xl font-medium leading-relaxed">{description}</p></Reveal>
          </div>
     </div>
   );
@@ -230,7 +207,7 @@ function TimelineMilestone({ day, title, description, align = 'left', glowColor 
       {/* Cinematic Content Card */}
       <Reveal direction={isLeft ? 'left' : 'right'} className={`w-full md:w-1/2 flex ${isLeft ? 'md:justify-end md:pr-24' : 'md:justify-start md:pl-24 md:ml-auto'} pl-24 pr-4`}>
         <div className={`flex flex-col ${isLeft ? 'md:text-right' : 'md:text-left'} text-left`}>
-          <span className={`text-xl sm:text-2xl font-black uppercase tracking-[0.3em] mb-4 transition-colors duration-1000 ${inView ? textGlowClasses[glowColor] : 'text-slate-800'}`}>{day}</span>
+          <span className={`text-xl sm:text-2xl font-black uppercase tracking-[0.3em] mb-4 transition-colors duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] ${inView ? textGlowClasses[glowColor] : 'text-slate-800'}`}>{day}</span>
           <h3 className="text-3xl sm:text-5xl font-black text-white mb-6 tracking-tight drop-shadow-lg leading-tight">{title}</h3>
           <p className="text-lg sm:text-xl text-slate-400 font-medium leading-relaxed">{description}</p>
         </div>
@@ -242,20 +219,20 @@ function TimelineMilestone({ day, title, description, align = 'left', glowColor 
 function ReflectiveText({ text, subtext, actionButton = null }) {
   return (
     <div className="min-h-[75vh] flex flex-col items-center justify-center text-center px-4 sm:px-12 relative z-10">
-      <Reveal blur delay={0}>
-        <h3 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/40 tracking-tighter leading-[1.1] p-4">
-         {text}
-        </h3>
+      <Reveal delay={0}>
+        <div className="flex flex-col items-center">
+          <h3 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/40 tracking-tighter leading-[1.1] p-4">
+           {text}
+          </h3>
+          {subtext && (
+            <p className="mt-4 sm:mt-8 text-xl sm:text-2xl md:text-3xl text-slate-500 font-medium max-w-3xl leading-relaxed">
+            {subtext}
+            </p>
+          )}
+        </div>
       </Reveal>
-      {subtext && (
-        <Reveal delay={200}>
-          <p className="mt-8 text-xl sm:text-2xl md:text-3xl text-slate-500 font-medium max-w-3xl leading-relaxed">
-          {subtext}
-          </p>
-        </Reveal>
-      )}
       {actionButton && (
-         <Reveal delay={400}>
+         <Reveal delay={0}>
            <div className="mt-16">
            {actionButton}
            </div>
@@ -301,21 +278,21 @@ function ProgressionStage({ stage, index, isLast }) {
   return (
     <div ref={ref} className="relative flex flex-col items-center text-center w-full pt-16 pb-24 sm:pb-32 z-10">
       {/* Central Glowing Node */}
-      <div className={`relative z-20 w-8 h-8 sm:w-10 sm:h-10 rounded-full border-4 border-[#020617] bg-[#020617] flex items-center justify-center mb-10 transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform ${inView ? 'scale-100 opacity-100 ' + stage.shadowClass : 'scale-50 opacity-0'}`}>
+      <div className={`relative z-20 w-8 h-8 sm:w-10 sm:h-10 rounded-full border-4 border-[#020617] bg-[#020617] flex items-center justify-center mb-10 transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] ${inView ? 'scale-100 opacity-100 ' + stage.shadowClass : 'scale-50 opacity-0'}`}>
         <div className={`w-3 h-3 sm:w-4 sm:h-4 rounded-full ${stage.glowClass} ${inView ? 'opacity-100 scale-100' : 'opacity-0 scale-0'} transition-all duration-1000 delay-300 ease-[cubic-bezier(0.16,1,0.3,1)]`}></div>
       </div>
 
       {/* Ambient background glow */}
-      <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] max-w-[600px] max-h-[600px] rounded-full blur-[120px] opacity-0 transition-opacity duration-1000 pointer-events-none ${stage.glowClass} ${inView ? 'opacity-15' : 'opacity-0'}`}></div>
+      <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[80vw] h-[80vw] max-w-[600px] max-h-[600px] rounded-full blur-[120px] opacity-0 transition-opacity duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] pointer-events-none ${stage.glowClass} ${inView ? 'opacity-15' : 'opacity-0'}`}></div>
 
       {/* Text Content */}
-      <Reveal delay={100} className="px-4">
+      <Reveal delay={0} className="px-4">
         <span className={`text-sm sm:text-base font-black uppercase tracking-[0.4em] mb-4 block ${stage.colorClass} drop-shadow-lg`}>{stage.rank}</span>
         <h3 className="text-5xl sm:text-7xl lg:text-8xl font-black text-white tracking-tighter mb-8 drop-shadow-2xl uppercase">{stage.name}</h3>
         
         <div className="flex flex-wrap justify-center gap-3 sm:gap-4 mb-8">
           {stage.traits.map((trait, i) => (
-            <span key={trait} className="px-4 py-1.5 rounded-full border border-white/10 bg-white/5 text-xs sm:text-sm font-bold uppercase tracking-widest text-slate-300 backdrop-blur-sm transition-all duration-700 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform" style={{ transitionDelay: `${inView ? (i * 100) + 200 : 0}ms`, opacity: inView ? 1 : 0, transform: inView ? 'translateY(0)' : 'translateY(16px)' }}>
+            <span key={trait} className="px-4 py-1.5 rounded-full border border-white/10 bg-white/5 text-xs sm:text-sm font-bold uppercase tracking-widest text-slate-300 transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)]" style={{ transitionDelay: '0ms', opacity: inView ? 1 : 0, transform: inView ? 'translateY(0)' : 'translateY(16px)' }}>
               {trait}
             </span>
           ))}
@@ -326,7 +303,7 @@ function ProgressionStage({ stage, index, isLast }) {
       
       {/* Vertical connector line pointing down to the next node */}
       {!isLast && (
-        <div className={`absolute top-20 bottom-[-5rem] left-1/2 -translate-x-1/2 w-[2px] bg-gradient-to-b ${stage.lineGradient} transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] origin-top -z-10 ${inView ? 'scale-y-100 opacity-100' : 'scale-y-0 opacity-0'}`} style={{ transitionDelay: '300ms' }}></div>
+        <div className={`absolute top-20 bottom-[-5rem] left-1/2 -translate-x-1/2 w-[2px] bg-gradient-to-b ${stage.lineGradient} transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] origin-top -z-10 ${inView ? 'scale-y-100 opacity-100' : 'scale-y-0 opacity-0'}`} style={{ transitionDelay: '0ms' }}></div>
       )}
     </div>
   );
@@ -363,26 +340,18 @@ export default function Explore() {
 
         {/* Hero Content */}
         <div className="max-w-5xl mx-auto relative z-20 text-center flex flex-col items-center mt-10">
-          <Reveal delay={100} blur>
-            <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-8 sm:mb-12 transition-transform hover:scale-105 cursor-default shadow-[0_0_20px_rgba(255,255,255,0.05)]">
-            <span className="relative flex h-2.5 w-2.5">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-cyan-500"></span>
-            </span>
-            <span className="text-xs font-bold text-cyan-50 uppercase tracking-[0.25em]">Your Evolution Awaits</span>
-          </div>
-          </Reveal>
-
-          <Reveal delay={200} blur>
-            <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tighter mb-8 text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-slate-400 leading-[1.1] drop-shadow-2xl uppercase">
-              Focus. Forge. Finish.
-            </h1>
-          </Reveal>
-
-          <Reveal delay={300}>
-            <p className="text-lg sm:text-2xl text-slate-300 mb-16 leading-relaxed max-w-3xl font-medium tracking-wide drop-shadow-md">
-              Select your domain. Build relentless habits, execute with precision, and become the architect of your own reality.
-            </p>
+          <Reveal delay={0}>
+            <div className="flex flex-col items-center">
+              <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-white/5 border border-white/10 mb-8 sm:mb-12 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:scale-105 cursor-default shadow-[0_0_20px_rgba(255,255,255,0.05)]">
+                <span className="relative flex h-2.5 w-2.5">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-cyan-500"></span>
+                </span>
+                <span className="text-xs font-bold text-cyan-50 uppercase tracking-[0.25em]">Your Evolution Awaits</span>
+              </div>
+              <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tighter mb-8 text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-slate-400 leading-[1.1] drop-shadow-2xl uppercase px-4 py-2">Focus. Forge. Finish.</h1>
+              <p className="text-lg sm:text-2xl text-slate-300 mb-16 leading-relaxed max-w-3xl font-medium tracking-wide drop-shadow-md">Select your domain. Build relentless habits, execute with precision, and become the architect of your own reality.</p>
+            </div>
           </Reveal>
         </div>
 
@@ -392,7 +361,7 @@ export default function Explore() {
           onClick={() => window.scrollTo({ top: window.innerHeight, behavior: 'smooth' })}
         >
           <span className="text-[10px] font-black uppercase tracking-[0.3em] text-slate-400 group-hover:text-cyan-300 transition-colors">Select Domain</span>
-          <div className="w-6 h-10 border-2 border-slate-500 group-hover:border-cyan-400 rounded-full flex justify-center p-1 transition-colors">
+          <div className="w-6 h-10 border-2 border-slate-500 group-hover:border-cyan-400 rounded-full flex justify-center p-1 transition-colors duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform">
             <div className="w-1 h-2 bg-cyan-400 rounded-full animate-bounce mt-1"></div>
           </div>
         </div>
@@ -422,14 +391,14 @@ export default function Explore() {
 
             <button 
               onClick={() => document.getElementById('domains-section')?.scrollIntoView({ behavior: 'smooth' })}
-              className="group flex flex-col items-center gap-2 md:gap-4 focus:outline-none py-2 relative z-10"
+              className="group flex flex-col items-center gap-2 md:gap-4 focus:outline-none py-2 relative z-10 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)]"
               title="Jump to Domains"
             >
-              <span className="text-[7px] md:text-[9px] font-black uppercase tracking-[0.4em] text-white/50 group-hover:text-cyan-400 transition-colors duration-500" style={{ writingMode: 'vertical-rl' }}>
+              <span className="text-[7px] md:text-[9px] font-black uppercase tracking-[0.4em] text-white/50 group-hover:text-cyan-400 transition-colors duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] writing-vertical-rl" style={{ writingMode: 'vertical-rl' }}>
                 Explore Domains
               </span>
-              <div className="w-6 h-6 md:w-8 md:h-8 rounded-full border border-white/10 group-hover:border-cyan-400 flex items-center justify-center transition-all duration-500 bg-[#020617] group-hover:shadow-[0_0_20px_rgba(34,211,238,0.4)] group-hover:bg-cyan-900/20">
-                <span className="text-white/50 group-hover:text-cyan-400 group-hover:translate-y-1 transition-all duration-500 text-[10px] md:text-xs">↓</span>
+              <div className="w-6 h-6 md:w-8 md:h-8 rounded-full border border-white/10 group-hover:border-cyan-400 flex items-center justify-center transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] bg-[#020617] group-hover:shadow-[0_0_20px_rgba(34,211,238,0.4)] group-hover:bg-cyan-900/20">
+                <span className="text-white/50 group-hover:text-cyan-400 group-hover:translate-y-1 transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] text-[10px] md:text-xs">↓</span>
               </div>
             </button>
 
@@ -563,11 +532,11 @@ export default function Explore() {
             actionButton={
               <button 
                 onClick={() => document.getElementById('domains-section')?.scrollIntoView({ behavior: 'smooth' })}
-                className="group relative px-10 py-5 bg-white/5 hover:bg-white/10 border border-white/20 hover:border-white/40 rounded-full overflow-hidden transition-all duration-500 transform hover:scale-105 shadow-[0_0_40px_rgba(255,255,255,0.05)] hover:shadow-[0_0_60px_rgba(255,255,255,0.15)]"
+                className="group relative px-10 py-5 bg-white/5 hover:bg-white/10 border border-white/20 hover:border-white/40 rounded-full overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] transform hover:scale-105 shadow-[0_0_40px_rgba(255,255,255,0.05)] hover:shadow-[0_0_60px_rgba(255,255,255,0.15)]"
               >
                 <span className="relative z-10 text-sm sm:text-base font-black uppercase tracking-[0.3em] text-white flex items-center gap-4">
                   Make Your Choice
-                  <span className="group-hover:-translate-y-2 transition-transform duration-500 text-xl">↑</span>
+                  <span className="group-hover:-translate-y-2 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] text-xl">↑</span>
                 </span>
               </button>
             }
@@ -617,11 +586,11 @@ export default function Explore() {
             <p className="text-slate-500 font-medium mb-8 text-lg">The path is long. The reward is everything.</p>
             <button 
               onClick={() => document.getElementById('domains-section')?.scrollIntoView({ behavior: 'smooth' })}
-              className="group relative px-10 py-5 bg-white/5 hover:bg-white/10 border border-white/20 hover:border-white/40 rounded-full overflow-hidden transition-all duration-500 transform hover:scale-105 shadow-[0_0_40px_rgba(255,255,255,0.05)] hover:shadow-[0_0_60px_rgba(255,255,255,0.15)]"
+              className="group relative px-10 py-5 bg-white/5 hover:bg-white/10 border border-white/20 hover:border-white/40 rounded-full overflow-hidden transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] transform hover:scale-105 shadow-[0_0_40px_rgba(255,255,255,0.05)] hover:shadow-[0_0_60px_rgba(255,255,255,0.15)]"
             >
               <span className="relative z-10 text-sm sm:text-base font-black uppercase tracking-[0.3em] text-white flex items-center gap-4">
                 Begin Your Progression
-                <span className="group-hover:-translate-y-2 transition-transform duration-500 text-xl">↑</span>
+                <span className="group-hover:-translate-y-2 transition-transform duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] text-xl">↑</span>
               </span>
             </button>
           </div>
