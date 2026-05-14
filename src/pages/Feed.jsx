@@ -19,6 +19,79 @@ function timeAgo(date) {
   return `${days} days ago`;
 }
 
+const VisibilitySelector = ({ visibility, isOwner, onChange, activeDropdown, setActiveDropdown, activityId }) => {
+  const options = [
+    { value: 'personal', label: 'Personal', color: 'bg-rose-500' },
+    { value: 'friends', label: 'Friends', color: 'bg-purple-500' },
+    { value: 'global', label: 'Global', color: 'bg-cyan-500' }
+  ];
+
+  const current = options.find(o => o.value === (visibility || 'global')) || options[2];
+  const isOpen = activeDropdown === `vis-${activityId}`;
+
+  const ref = useRef(null);
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (isOpen && ref.current && !ref.current.contains(e.target)) {
+        setActiveDropdown(null);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [isOpen, setActiveDropdown]);
+
+  if (!isOwner) {
+    return (
+      <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-white/[0.02] border border-white/5 text-slate-400 text-[9px] font-bold uppercase tracking-widest mt-0.5">
+        <span className={`w-1.5 h-1.5 rounded-full ${current.color}`}></span>
+        {current.label}
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative" ref={ref}>
+      <button 
+        onClick={(e) => { 
+          e.stopPropagation(); 
+          setActiveDropdown(isOpen ? null : `vis-${activityId}`); 
+        }}
+        className={`flex items-center gap-1.5 px-2.5 py-1 mt-0.5 rounded-full border text-[9px] font-bold uppercase tracking-widest transition-all cursor-pointer shadow-sm ${
+          isOpen 
+            ? 'bg-white/10 border-white/20 text-white shadow-[0_0_15px_rgba(255,255,255,0.05)]' 
+            : 'bg-[#12121c]/80 hover:bg-white/10 border-white/10 text-slate-300 hover:text-white'
+        }`}
+      >
+        <span className={`w-1.5 h-1.5 rounded-full ${current.color} shadow-[0_0_8px_currentColor]`}></span>
+        {current.label}
+      </button>
+      
+      {isOpen && (
+        <div className="absolute left-0 mt-2 w-32 bg-[#12121c]/95 border border-white/10 rounded-2xl shadow-2xl py-1.5 z-50 overflow-hidden animate-fade-in-fast backdrop-blur-xl">
+          {options.map(opt => (
+            <button
+              key={opt.value}
+              onClick={(e) => {
+                e.stopPropagation();
+                onChange(activityId, opt.value);
+                setActiveDropdown(null);
+              }}
+              className={`w-full flex items-center gap-2.5 px-4 py-2 text-[10px] font-bold uppercase tracking-widest transition-colors ${
+                (visibility || 'global') === opt.value 
+                  ? 'text-white bg-white/5' 
+                  : 'text-slate-400 hover:bg-white/5 hover:text-white'
+              }`}
+            >
+              <span className={`w-1.5 h-1.5 rounded-full ${opt.color}`}></span>
+              {opt.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+};
+
 export default function Feed() {
   const navigate = useNavigate();
   const { user } = useAuth();
@@ -35,6 +108,7 @@ export default function Feed() {
   const dropdownRef = useRef(null);
   const fileInputRef = useRef(null);
   const [postImage, setPostImage] = useState(null);
+  const [postVisibility, setPostVisibility] = useState('global');
 
   // Filter out activities from demo/test users
   const isDemoUser = (activity) => {
@@ -149,7 +223,8 @@ export default function Feed() {
       const res = await feedAPI.createPost({ 
         text: postText, 
         challengeId: postChallenge || null,
-        image: postImage 
+        image: postImage,
+        visibility: postVisibility
       });
       setToast({ message: 'Post created!', type: 'success' });
       setActivities([res.data, ...activities]);
@@ -158,6 +233,24 @@ export default function Feed() {
       setPostImage(null);
     } catch (err) {
       setToast({ message: 'Failed to create post.', type: 'error' });
+    }
+  };
+
+  const handleVisibilityChange = async (activityId, newVisibility) => {
+    try {
+      const res = await feedAPI.editPost(activityId, { visibility: newVisibility });
+      setActivities(current => {
+        const updated = current.map(a => a._id === activityId ? { ...a, ...res.data } : a);
+        if (feedMode === 'global' && newVisibility !== 'global') {
+          return updated.filter(a => a._id !== activityId);
+        }
+        if (feedMode === 'friends' && newVisibility === 'personal') {
+          return updated.filter(a => a._id !== activityId);
+        }
+        return updated;
+      });
+    } catch (err) {
+      setToast({ message: 'Failed to update visibility', type: 'error' });
     }
   };
 
@@ -357,6 +450,16 @@ export default function Feed() {
                         ))}
                       </select>
                     )}
+
+                    <select
+                      value={postVisibility}
+                      onChange={(e) => setPostVisibility(e.target.value)}
+                      className="bg-[#020617]/80 border border-white/10 focus:border-purple-500/50 text-[10px] font-black uppercase tracking-[0.1em] text-slate-400 rounded-full px-4 py-2.5 focus:outline-none cursor-pointer hover:bg-white/5 transition-all truncate backdrop-blur-xl shadow-lg"
+                    >
+                      <option className="bg-slate-900" value="global">🌍 Global</option>
+                      <option className="bg-slate-900" value="friends">👥 Friends</option>
+                      <option className="bg-slate-900" value="personal">🔒 Personal</option>
+                    </select>
                   </div>
 
                   <button
@@ -410,8 +513,10 @@ export default function Feed() {
             </div>
           ) : (
             activities.map((activity) => (
-            <article key={activity._id} className="relative bg-[#12121c]/60 border border-white/[0.06] rounded-[28px] p-6 sm:p-8 backdrop-blur-xl transition-all duration-500 hover:bg-[#12121c]/80 hover:border-white/10 hover:-translate-y-1 hover:shadow-2xl group/card overflow-hidden">
-                <div className="absolute top-0 right-0 w-48 h-48 bg-purple-500/5 rounded-full blur-[60px] -mr-24 -mt-24 group-hover/card:bg-purple-500/10 transition-colors duration-700 pointer-events-none z-0"></div>
+            <article key={activity._id} className={`relative bg-[#12121c]/60 border border-white/[0.06] rounded-[28px] p-6 sm:p-8 backdrop-blur-xl transition-all duration-500 hover:bg-[#12121c]/80 hover:border-white/10 hover:-translate-y-1 hover:shadow-2xl group/card ${activeDropdown?.includes(activity._id) ? 'z-50' : 'z-10'}`}>
+                <div className="absolute inset-0 rounded-[28px] overflow-hidden pointer-events-none z-0">
+                  <div className="absolute top-0 right-0 w-48 h-48 bg-purple-500/5 rounded-full blur-[60px] -mr-24 -mt-24 group-hover/card:bg-purple-500/10 transition-colors duration-700"></div>
+                </div>
                 {/* Activity Header */}
                 <div className="flex items-start gap-4 relative z-10">
                   {activity.userId?.avatar ? (
@@ -428,17 +533,27 @@ export default function Feed() {
                   
                   <div className="flex-grow min-w-0">
                     <div className="flex items-baseline justify-between gap-2">
-                      <p className="font-bold text-white text-base tracking-wide truncate">{activity.userId?.name || 'User'}</p>
+                      <div className="flex items-start sm:items-center flex-col sm:flex-row gap-1 sm:gap-3 min-w-0">
+                        <p className="font-bold text-white text-base tracking-wide truncate leading-none">{activity.userId?.name || 'User'}</p>
+                        <VisibilitySelector 
+                          visibility={activity.visibility} 
+                          isOwner={user?._id === activity.userId?._id} 
+                          onChange={handleVisibilityChange}
+                          activeDropdown={activeDropdown}
+                          setActiveDropdown={setActiveDropdown}
+                          activityId={activity._id}
+                        />
+                      </div>
                       <div className="flex items-center gap-1.5 shrink-0">
                         <p className="text-[10px] text-slate-500 font-bold uppercase tracking-[0.1em]">{timeAgo(activity.createdAt)}</p>
                         
                         {/* Options Dropdown */}
                         {user && user._id === activity.userId?._id && (
-                          <div className="relative" ref={activeDropdown === activity._id ? dropdownRef : null}>
+                          <div className="relative" ref={activeDropdown === `opt-${activity._id}` ? dropdownRef : null}>
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                setActiveDropdown(activeDropdown === activity._id ? null : activity._id);
+                                setActiveDropdown(activeDropdown === `opt-${activity._id}` ? null : `opt-${activity._id}`);
                               }}
                               className="p-1.5 text-slate-500 hover:text-slate-300 hover:bg-white/5 rounded-full transition-all"
                             >
@@ -447,8 +562,8 @@ export default function Feed() {
                               </svg>
                             </button>
                             
-                            {activeDropdown === activity._id && (
-                              <div className="absolute right-0 mt-1 w-36 bg-[#12121c]/95 border border-white/10 rounded-2xl shadow-2xl py-1.5 z-20 overflow-hidden origin-top-right animate-fade-in-fast backdrop-blur-xl">
+                            {activeDropdown === `opt-${activity._id}` && (
+                              <div className="absolute right-0 mt-1 w-36 bg-[#12121c]/95 border border-white/10 rounded-2xl shadow-2xl py-1.5 z-50 overflow-hidden origin-top-right animate-fade-in-fast backdrop-blur-xl">
                                 <button onClick={() => { handleEditPost(activity._id); setActiveDropdown(null); }} className="w-full flex items-center gap-2.5 px-4 py-2 text-xs font-bold uppercase tracking-widest text-slate-300 hover:bg-white/5 hover:text-white transition-colors">
                                   <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-3.5 h-3.5 text-slate-400">
                                     <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125" />
