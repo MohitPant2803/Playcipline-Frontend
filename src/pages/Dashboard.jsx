@@ -96,6 +96,8 @@ export default function Dashboard() {
   };
 
   const handleLeave = async (userChallengeId) => {
+    if (!window.confirm("Are you sure you want to abandon this path? Your progress will be lost.")) return;
+    
     setLeaving({ ...leaving, [userChallengeId]: true });
     try {
       await challengeAPI.leave(userChallengeId);

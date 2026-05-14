@@ -270,6 +270,8 @@ export default function Feed() {
   };
 
   const handleDeletePost = async (activityId) => {
+    if (!window.confirm("Are you sure you want to permanently delete this post?")) return;
+    
     try {
       await feedAPI.deletePost(activityId);
       setToast({ message: 'Post deleted.', type: 'success' });
@@ -280,6 +282,8 @@ export default function Feed() {
   };
 
   const handleDeleteComment = async (activityId, commentId, idx) => {
+    if (!window.confirm("Are you sure you want to delete this comment?")) return;
+    
     try {
       if (commentId) {
         await feedAPI.deleteComment(activityId, commentId);

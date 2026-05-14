@@ -144,7 +144,7 @@ export default function Header() {
     navigate('/');
   };
 
-  const isExplorePage = location.pathname === '/explore' || location.pathname === '/';
+  const isHidablePage = location.pathname === '/explore' || location.pathname === '/';
 
   return (
     <>
@@ -153,7 +153,7 @@ export default function Header() {
           isScrolled
             ? 'bg-slate-900/80 backdrop-blur-lg border-b border-white/10 shadow-2xl shadow-black/20'
             : 'bg-transparent border-b border-transparent'
-        } ${isExplorePage && isHidden ? '-translate-y-full' : 'translate-y-0'}`}
+        } ${isHidablePage && isHidden ? '-translate-y-full' : 'translate-y-0'}`}
       >
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6">
           <div className={`flex items-center justify-between transition-all duration-500 ${isScrolled ? 'h-16' : 'h-24'}`}>
@@ -166,7 +166,7 @@ export default function Header() {
                 </button>
               </div>
 
-              <Link to={user ? '/dashboard' : '/explore'} className="flex items-center gap-2 sm:gap-3 group shrink-0">
+              <Link to="/explore" className="flex items-center gap-2 sm:gap-3 group shrink-0">
                 <span className="text-2xl sm:text-3xl drop-shadow-[0_0_10px_theme(colors.purple.500)] transition-transform duration-300 group-hover:scale-110 motion-reduce:animate-none">🎮</span>
                 <h1 className="text-lg sm:text-2xl font-black text-white tracking-wider drop-shadow-lg hidden min-[300px]:block">Playcipline</h1>
               </Link>

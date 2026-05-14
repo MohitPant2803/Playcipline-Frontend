@@ -54,6 +54,8 @@ export default function DomainPage() {
   }, [user, domainInfo]);
 
   const handleJoin = async () => {
+    if (!window.confirm("Are you sure you want to commit to this evolution path?")) return;
+    
     setJoining(true);
     try {
       const res = await challengeAPI.join(selectedChallenge._id, selectedMode);
@@ -84,6 +86,8 @@ export default function DomainPage() {
   const handleLeave = async (challenge) => {
     if (!challenge.enrollmentId) return;
 
+    if (!window.confirm("Are you sure you want to abandon this path? Your progress will be lost.")) return;
+    
     setLeavingId(challenge._id);
     try {
       await challengeAPI.leave(challenge.enrollmentId);
@@ -224,95 +228,175 @@ export default function DomainPage() {
         )}
 
         {selectedChallenge && (
-          <div
-            className="fixed inset-0 z-50 flex items-center justify-center bg-[#020617]/90 backdrop-blur-xl p-4 animate-fade-in-fast"
-            onClick={() => setSelectedChallenge(null)}
-          >
-            <div
-              className="w-full max-w-xl bg-[#12121c]/90 border border-white/10 rounded-[2rem] shadow-2xl flex flex-col relative overflow-hidden"
-              onClick={(e) => e.stopPropagation()}
+          <div className="fixed inset-0 z-[100] bg-[#020617] overflow-y-auto overflow-x-hidden scroll-smooth animate-fade-in-fast selection:bg-cyan-500/30">
+            {/* Cinematic Backgrounds */}
+            <div className="fixed inset-0 pointer-events-none">
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-cyan-900/10 via-[#020617] to-[#020617]"></div>
+              <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_100%)]"></div>
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[100vw] h-[50vw] bg-cyan-600/5 blur-[150px] rounded-full mix-blend-screen"></div>
+            </div>
+
+            {/* Abort Button */}
+            <button 
+              onClick={() => { setSelectedChallenge(null); setSelectedMode(null); }} 
+              className="fixed top-4 sm:top-6 left-4 sm:left-6 z-50 text-slate-500 hover:text-white font-black uppercase tracking-[0.2em] text-[10px] flex items-center gap-3 transition-colors group bg-[#020617]/50 p-2 pr-4 rounded-full backdrop-blur-md border border-white/5 hover:border-white/20"
             >
-              {/* Atmospheric Modal Glow */}
-              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-64 h-32 bg-cyan-500/10 blur-[60px] pointer-events-none"></div>
+              <span className="w-8 h-8 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:bg-white/10 transition-colors shadow-inner">✕</span>
+              Abort Protocol
+            </button>
 
-              <div className="p-6 sm:p-8 border-b border-white/10 flex justify-between items-center relative z-10">
-                <h2 className="text-xl sm:text-2xl font-black text-white tracking-widest uppercase drop-shadow-md">Select Protocol</h2>
-                <button
-                  onClick={() => setSelectedChallenge(null)}
-                  className="text-slate-500 hover:text-white transition-colors"
-                >
-                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-                </button>
-              </div>
+            {/* Scrollable Content Engine */}
+            <div className="relative z-10 w-full min-h-screen flex flex-col items-center">
               
-              <div className="p-6 sm:p-8 overflow-y-auto relative z-10">
-                <h3 className="text-2xl font-black text-white tracking-tight mb-8">{selectedChallenge.title}</h3>
+              {/* Hero Section */}
+              <div className="min-h-[80vh] flex flex-col items-center justify-center text-center px-4 w-full max-w-5xl mx-auto pt-24 sm:pt-20">
+                <span className="px-4 py-1.5 rounded-full border border-white/10 bg-white/5 text-[10px] font-black uppercase tracking-[0.3em] text-cyan-400 mb-8 backdrop-blur-md shadow-[0_0_20px_rgba(34,211,238,0.1)]">
+                  {selectedChallenge.category} Protocol
+                </span>
+                <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-white/40 uppercase drop-shadow-[0_0_30px_rgba(255,255,255,0.05)] mb-8 px-4 -mx-4 py-2 leading-[0.9]">
+                  {selectedChallenge.title}
+                </h1>
+                <p className="text-lg sm:text-2xl text-slate-300 font-medium max-w-3xl leading-relaxed mb-12 drop-shadow-md">
+                  {selectedChallenge.description}
+                </p>
                 
-                <div className="grid gap-4">
-                  {getModes(selectedChallenge.duration).map(mode => (
-                    <div
-                      key={mode.value}
-                      onClick={() => user && setSelectedMode(mode.value)}
-                      className={`relative p-5 rounded-[1.5rem] border transition-all duration-300 overflow-hidden ${
-                        user ? 'cursor-pointer hover:-translate-y-0.5' : 'cursor-not-allowed opacity-60'
-                      } ${
-                        selectedMode === mode.value
-                          ? 'bg-cyan-500/10 border-cyan-500/50 shadow-[0_0_20px_rgba(34,211,238,0.15)]'
-                          : 'bg-white/[0.02] border-white/10 hover:border-white/20 hover:bg-white/[0.04]'
-                      }`}
-                    >
-                      {selectedMode === mode.value && <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/10 to-transparent pointer-events-none"></div>}
-                      <div className="relative z-10 flex justify-between items-start gap-4">
-                        <div>
-                          <p className={`font-black uppercase tracking-widest text-[11px] mb-1.5 ${selectedMode === mode.value ? 'text-cyan-400' : 'text-slate-300'}`}>{mode.name}</p>
-                          <p className="text-xs font-medium text-slate-400 leading-relaxed">{mode.desc}</p>
-                        </div>
-                        <span className={`shrink-0 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full border ${selectedMode === mode.value ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30' : 'bg-white/5 text-slate-500 border-white/10'}`}>
-                          +{mode.xp} XP
-                        </span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                
-                {!user && (
-                  <div className="mt-8 p-5 bg-white/[0.02] border border-white/10 rounded-2xl flex items-start gap-4">
-                    <span className="text-xl">🔐</span>
-                    <p className="text-xs text-slate-400 font-medium leading-relaxed mt-0.5">Log in to select your commitment level and begin this evolution.</p>
+                <div className="flex flex-wrap justify-center gap-4 sm:gap-6">
+                  <div className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#12121c]/60 border border-white/10 backdrop-blur-xl shadow-lg">
+                    <span className="text-slate-500 text-lg">⏱️</span>
+                    <span className="text-xs font-black text-white uppercase tracking-widest">{selectedChallenge.duration} Days</span>
                   </div>
-                )}
-
-                <div className="mt-8 pt-8 border-t border-white/10 flex gap-4">
-                  <button
-                    onClick={() => setSelectedChallenge(null)}
-                    className="flex-1 rounded-full py-3.5 text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 transition-all duration-300 border border-transparent hover:border-white/10 hover:bg-white/5 hover:text-white"
-                  >
-                    Cancel
-                  </button>
-                  {user ? (
-                    <button
-                      onClick={handleJoin}
-                      disabled={!selectedMode || joining}
-                      className={`flex-1 rounded-full py-3.5 text-[10px] font-black uppercase tracking-[0.2em] transition-all duration-500 ${
-                        !selectedMode 
-                          ? 'bg-white/5 text-slate-600 border border-transparent cursor-not-allowed' 
-                          : 'bg-cyan-500 text-[#020617] hover:bg-cyan-400 shadow-[0_0_20px_rgba(34,211,238,0.4)] hover:-translate-y-0.5'
-                      }`}
-                    >
-                      {joining ? 'Initializing...' : 'Commit to Path'}
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => {
-                        window.location.href = `${API_BASE_URL}/api/auth/google`;
-                      }}
-                      className="flex-1 rounded-full py-3.5 text-[10px] font-black uppercase tracking-[0.2em] text-[#020617] transition-all duration-500 bg-white hover:bg-slate-200 shadow-[0_0_20px_rgba(255,255,255,0.2)]"
-                    >
-                      Log in to Start
-                    </button>
-                  )}
+                  <div className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#12121c]/60 border border-white/10 backdrop-blur-xl shadow-lg">
+                    <span className="text-slate-500 text-lg">⚡</span>
+                    <span className="text-xs font-black text-white uppercase tracking-widest">{selectedChallenge.baseDifficulty === 1 ? 'Easy' : selectedChallenge.baseDifficulty === 2 ? 'Medium' : selectedChallenge.baseDifficulty === 3 ? 'Hard' : 'Hardcore'}</span>
+                  </div>
+                  <div className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#12121c]/60 border border-white/10 backdrop-blur-xl shadow-lg">
+                    <span className="text-slate-500 text-lg">🛡️</span>
+                    <span className="text-xs font-black text-white uppercase tracking-widest">Active Cohort</span>
+                  </div>
                 </div>
               </div>
+
+              {/* Transformation Hooks */}
+              <div className="w-full bg-gradient-to-b from-transparent via-[#12121c]/80 to-transparent py-32 border-y border-white/5">
+                <div className="max-w-6xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
+                  <div className="flex flex-col items-center">
+                    <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-6 text-2xl shadow-inner">🧠</div>
+                    <h3 className="text-xl font-black text-white uppercase tracking-widest mb-4 drop-shadow-md">Mental Resilience</h3>
+                    <p className="text-slate-400 text-sm leading-relaxed font-medium">Reprogram your baseline. When motivation fades, absolute discipline takes control.</p>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-6 text-2xl shadow-inner">⚔️</div>
+                    <h3 className="text-xl font-black text-white uppercase tracking-widest mb-4 drop-shadow-md">Identity Shift</h3>
+                    <p className="text-slate-400 text-sm leading-relaxed font-medium">You are no longer trying. You are becoming. Consistency fundamentally alters who you are.</p>
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-6 text-2xl shadow-inner">🔥</div>
+                    <h3 className="text-xl font-black text-white uppercase tracking-widest mb-4 drop-shadow-md">Compounding Output</h3>
+                    <p className="text-slate-400 text-sm leading-relaxed font-medium">Small daily executions compound into monumental long-term reality.</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Progress Preview / Timeline */}
+              <div className="w-full max-w-5xl mx-auto px-4 py-32 text-center">
+                <h2 className="text-3xl sm:text-5xl font-black text-white uppercase tracking-tighter mb-4 drop-shadow-lg">The Evolution Arc</h2>
+                <p className="text-slate-400 font-medium mb-20">Understand the journey before you take the first step.</p>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8 relative">
+                  <div className="hidden md:block absolute top-12 left-[16.66%] right-[16.66%] h-0.5 bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent -z-10"></div>
+                  
+                  <div className="flex flex-col items-center relative z-10 group">
+                    <div className="w-24 h-24 rounded-full bg-[#020617] border-4 border-slate-800 flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(0,0,0,0.5)] group-hover:scale-110 transition-transform duration-500">
+                      <span className="text-sm font-black text-slate-500 uppercase tracking-widest">Day 1</span>
+                    </div>
+                    <h4 className="text-lg font-black text-white uppercase tracking-widest mb-3">The Decision</h4>
+                    <p className="text-xs text-slate-400 leading-relaxed max-w-[250px]">Motivation carries you through the start, but resistance is waiting.</p>
+                  </div>
+                  
+                  <div className="flex flex-col items-center relative z-10 group">
+                    <div className="w-24 h-24 rounded-full bg-[#020617] border-4 border-cyan-500/50 flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(34,211,238,0.2)] group-hover:scale-110 transition-transform duration-500">
+                      <span className="text-sm font-black text-cyan-400 uppercase tracking-widest">Day {Math.floor(selectedChallenge.duration / 2)}</span>
+                    </div>
+                    <h4 className="text-lg font-black text-white uppercase tracking-widest mb-3">The Crucible</h4>
+                    <p className="text-xs text-slate-400 leading-relaxed max-w-[250px]">Excitement fades. This is where character is forged and the weak quit.</p>
+                  </div>
+                  
+                  <div className="flex flex-col items-center relative z-10 group">
+                    <div className="w-24 h-24 rounded-full bg-[#020617] border-4 border-white flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(255,255,255,0.2)] group-hover:scale-110 transition-transform duration-500">
+                      <span className="text-sm font-black text-white uppercase tracking-widest">Day {selectedChallenge.duration}</span>
+                    </div>
+                    <h4 className="text-lg font-black text-white uppercase tracking-widest mb-3">The New Baseline</h4>
+                    <p className="text-xs text-slate-400 leading-relaxed max-w-[250px]">It's no longer a challenge. It's simply who you are now.</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Commitment Level */}
+              <div className="w-full bg-white/[0.02] border-t border-white/5 py-32">
+                <div className="max-w-6xl mx-auto px-4">
+                  <div className="text-center mb-16">
+                    <h2 className="text-3xl sm:text-5xl font-black text-white uppercase tracking-tighter mb-4 drop-shadow-lg">Select Commitment Level</h2>
+                    <p className="text-slate-400 font-medium">How far are you willing to push your baseline?</p>
+                  </div>
+                  
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
+                    {getModes(selectedChallenge.duration).map(mode => (
+                      <div
+                        key={mode.value}
+                        onClick={() => user && setSelectedMode(mode.value)}
+                        className={`relative p-8 rounded-[2rem] border transition-all duration-500 overflow-hidden ${
+                          user ? 'cursor-pointer hover:-translate-y-2 hover:shadow-2xl' : 'cursor-not-allowed opacity-60'
+                        } ${
+                          selectedMode === mode.value
+                            ? 'bg-cyan-500/10 border-cyan-400/50 shadow-[0_0_30px_rgba(34,211,238,0.15)] transform scale-[1.02]'
+                            : 'bg-[#12121c]/80 border-white/10 hover:border-white/30 backdrop-blur-xl'
+                        }`}
+                      >
+                        {selectedMode === mode.value && <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 via-transparent to-transparent pointer-events-none"></div>}
+                        
+                        <div className="relative z-10 flex flex-col h-full">
+                          <div className="flex justify-between items-start mb-8">
+                            <h3 className={`text-2xl font-black uppercase tracking-widest ${selectedMode === mode.value ? 'text-cyan-400 drop-shadow-md' : 'text-white'}`}>{mode.name}</h3>
+                            <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full border ${selectedMode === mode.value ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30' : 'bg-white/5 text-slate-500 border-white/10'}`}>
+                              +{mode.xp} XP
+                            </span>
+                          </div>
+                          <p className="text-sm font-medium text-slate-400 leading-relaxed flex-grow mb-8">{mode.desc}</p>
+                          
+                          <div className={`w-full h-1.5 rounded-full overflow-hidden bg-white/5`}>
+                            <div className={`h-full rounded-full ${selectedMode === mode.value ? 'bg-cyan-400 shadow-[0_0_10px_rgba(34,211,238,0.8)]' : 'bg-slate-600'}`} style={{ width: mode.value === 'easy' ? '60%' : mode.value === 'medium' ? '80%' : '100%' }}></div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+
+              {/* Final CTA */}
+              <div className="w-full py-32 flex flex-col items-center justify-center px-4 text-center">
+                {!user && (
+                  <p className="text-slate-400 mb-8 font-medium">Log in to select your commitment level and begin.</p>
+                )}
+                <button
+                  onClick={user ? handleJoin : () => window.location.href = `${API_BASE_URL}/api/auth/google`}
+                  disabled={user && (!selectedMode || joining)}
+                  className={`group relative px-12 sm:px-16 py-6 sm:py-8 rounded-full border transition-all duration-500 ${
+                    user && !selectedMode
+                      ? 'bg-white/5 border-transparent text-slate-600 cursor-not-allowed'
+                      : 'bg-cyan-500/10 border-cyan-500/30 hover:bg-cyan-500/20 hover:border-cyan-500/50 shadow-[0_0_40px_rgba(34,211,238,0.1)] hover:shadow-[0_0_60px_rgba(34,211,238,0.3)] hover:-translate-y-1'
+                  }`}
+                >
+                  <div className={`absolute inset-0 rounded-full bg-gradient-to-r from-transparent via-cyan-400/10 to-transparent opacity-0 transition-opacity duration-500 ${user && selectedMode ? 'group-hover:opacity-100' : ''}`}></div>
+                  <span className={`relative z-10 font-black uppercase tracking-[0.3em] text-sm sm:text-xl transition-colors ${user && !selectedMode ? 'text-slate-600' : 'text-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]'}`}>
+                    {!user ? 'Log In To Commit' : joining ? 'Initializing Protocol...' : 'Begin Evolution'}
+                  </span>
+                </button>
+                {user && selectedMode && (
+                  <p className="mt-8 text-[10px] font-black uppercase tracking-widest text-slate-500 animate-pulse">Ready for execution</p>
+                )}
+              </div>
+
             </div>
           </div>
         )}

@@ -67,6 +67,14 @@ export default function Leaderboard() {
   const [loading, setLoading] = useState(true);
   const [toast, setToast] = useState(null);
   const [activeTab, setActiveTab] = useState('global');
+  const [isScrolled, setIsScrolled] = useState(false);
+
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 100);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    handleScroll();
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   // Filter out demo/test users from leaderboard
   const isDemoUser = (user) => {
@@ -114,49 +122,51 @@ export default function Leaderboard() {
       <div className="fixed top-1/4 left-1/4 w-[40vw] h-[40vw] max-w-[600px] bg-purple-600/10 blur-[120px] rounded-full pointer-events-none mix-blend-screen animate-pulse -z-10" style={{ animationDuration: '8s' }}></div>
       <div className="fixed bottom-1/4 right-1/4 w-[40vw] h-[40vw] max-w-[600px] bg-cyan-600/10 blur-[120px] rounded-full pointer-events-none mix-blend-screen animate-pulse -z-10" style={{ animationDuration: '12s' }}></div>
 
-      <div className="relative z-10 flex-grow flex flex-col pt-28 sm:pt-32">
+      <div className="relative z-10 flex-grow flex flex-col">
         
-        {/* Standard Header Section */}
-        <div className="w-full pb-6 relative z-40">
+        {/* Sticky Header Section */}
+        <div className={`sticky top-16 z-40 w-full bg-[#020617]/80 backdrop-blur-2xl border-b border-white/5 pb-6 shadow-2xl transition-all duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] ${isScrolled ? 'pt-6 sm:pt-8' : 'pt-28 sm:pt-32'}`}>
           <div className="max-w-[900px] mx-auto px-4">
             {/* Header & Tabs */}
-            <div className="mb-6 sm:mb-8 text-center flex flex-col items-center">
-              <h1 className="text-4xl sm:text-5xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-white/40 uppercase drop-shadow-2xl mb-4">Global Rankings</h1>
-              <p className="text-sm sm:text-base text-slate-400 font-medium tracking-wide mb-6">Consistency compounds over time.</p>
+            <Reveal>
+              <div className="mb-6 sm:mb-8 text-center flex flex-col items-center">
+                <h1 className="text-4xl sm:text-5xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-white/40 uppercase drop-shadow-2xl mb-4">Global Rankings</h1>
+                <p className="text-sm sm:text-base text-slate-400 font-medium tracking-wide mb-6">Consistency compounds over time.</p>
                 
-              <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
-                <div className="inline-flex p-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
-                  {['global', 'friends'].map(tab => (
-                    <button
-                      key={tab}
-                      type="button"
-                      onClick={() => {
-                        if (tab === 'friends' && !user) {
-                          navigate('/');
-                          return;
-                        }
-                        setActiveTab(tab);
-                      }}
-                      disabled={tab === 'friends' && !user}
-                      className={`rounded-full px-6 py-2.5 text-[11px] sm:text-xs font-black uppercase tracking-widest transition-all duration-300 ${
-                        activeTab === tab
-                          ? 'bg-white/10 text-white shadow-[0_0_15px_rgba(255,255,255,0.05)] border border-white/5'
-                          : tab === 'friends' && !user
-                          ? 'text-slate-600 cursor-not-allowed border border-transparent'
-                          : 'text-slate-500 hover:text-slate-300 hover:bg-white/5 border border-transparent'
-                      }`}
-                    >
-                      {tab === 'global' ? 'Global' : 'Friends'}
-                    </button>
-                  ))}
-                </div>
+                <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6">
+                  <div className="inline-flex p-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
+                    {['global', 'friends'].map(tab => (
+                      <button
+                        key={tab}
+                        type="button"
+                        onClick={() => {
+                          if (tab === 'friends' && !user) {
+                            navigate('/');
+                            return;
+                          }
+                          setActiveTab(tab);
+                        }}
+                        disabled={tab === 'friends' && !user}
+                        className={`rounded-full px-6 py-2.5 text-[11px] sm:text-xs font-black uppercase tracking-widest transition-all duration-300 ${
+                          activeTab === tab
+                            ? 'bg-white/10 text-white shadow-[0_0_15px_rgba(255,255,255,0.05)] border border-white/5'
+                            : tab === 'friends' && !user
+                            ? 'text-slate-600 cursor-not-allowed border border-transparent'
+                            : 'text-slate-500 hover:text-slate-300 hover:bg-white/5 border border-transparent'
+                        }`}
+                      >
+                        {tab === 'global' ? 'Global' : 'Friends'}
+                      </button>
+                    ))}
+                  </div>
 
-                <div className="flex items-center gap-3 px-5 py-3 rounded-full bg-white/[0.02] border border-white/5 backdrop-blur-md shadow-inner">
-                  <span className="text-[9px] font-black uppercase tracking-widest text-slate-500">Reset In:</span>
-                  <WeeklyCountdown />
+                  <div className="flex items-center gap-3 px-5 py-3 rounded-full bg-white/[0.02] border border-white/5 backdrop-blur-md shadow-inner">
+                    <span className="text-[9px] font-black uppercase tracking-widest text-slate-500">Reset In:</span>
+                    <WeeklyCountdown />
+                  </div>
                 </div>
               </div>
-            </div>
+            </Reveal>
           </div>
         </div>
 
