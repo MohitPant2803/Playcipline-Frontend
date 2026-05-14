@@ -93,9 +93,14 @@ export const userAPI = {
 
 export const feedAPI = {
   getAll: () => apiClient.get('/feed'),
+  getPersonalized: () => apiClient.get('/feed/personalized'),
   getUserActivities: (userId) => apiClient.get(`/feed/user/${userId}`),
   like: (activityId) => apiClient.post('/feed/like', { activityId }),
   comment: (activityId, text) => apiClient.post('/feed/comment', { activityId, text }),
+  createPost: (data) => apiClient.post('/feed/post', data),
+  deletePost: (activityId) => apiClient.delete(`/feed/post/${activityId}`),
+  editPost: (activityId, data) => apiClient.put(`/feed/post/${activityId}`, data),
+  deleteComment: (activityId, commentId) => apiClient.delete(`/feed/post/${activityId}/comment/${commentId}`)
 };
 
 export { API_BASE_URL };

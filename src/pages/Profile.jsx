@@ -179,11 +179,13 @@ export default function Profile() {
                 </div>
                 <h3 className="font-black text-2xl text-white mb-2 drop-shadow-lg tracking-tight mt-6">{uc.challengeId?.title || 'Unknown Challenge'}</h3>
                 <p className="text-sm text-slate-400 mb-8 line-clamp-2 font-medium leading-relaxed">{uc.challengeId?.description || 'No description available.'}</p>
-                <div className="w-full bg-white/5 rounded-full h-1.5 mb-3 overflow-hidden">
+                <div className="w-full bg-white/[0.03] rounded-full h-1.5 mb-4 overflow-hidden border border-white/[0.05] relative shadow-inner">
                   <div 
-                    className="bg-gradient-to-r from-cyan-400 to-blue-500 h-full rounded-full transition-all duration-1000 ease-out shadow-[0_0_10px_rgba(34,211,238,0.5)]" 
+                    className="absolute top-0 left-0 h-full rounded-full bg-gradient-to-r from-cyan-500/80 to-cyan-300 transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] shadow-[0_0_15px_rgba(34,211,238,0.6)]" 
                     style={{ width: `${Math.min(100, Math.max(0, (uc.completedDays / uc.requiredDays) * 100))}%` }}
-                  />
+                  >
+                    <div className="absolute top-0 right-0 bottom-0 w-8 bg-gradient-to-r from-transparent to-white/50 blur-[2px]"></div>
+                  </div>
                 </div>
                 <p className="text-[10px] text-right text-cyan-500 font-black uppercase tracking-widest">{Math.round((uc.completedDays / uc.requiredDays) * 100)}% Engaged</p>
               </div>

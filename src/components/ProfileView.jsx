@@ -110,14 +110,14 @@ export default function ProfileView({
               {/* Glowing Avatar Ring */}
               <div className="relative w-32 h-32 mb-6 group-hover:scale-105 transition-transform duration-500">
                 <svg className="absolute inset-0 w-full h-full -rotate-90 drop-shadow-[0_0_15px_rgba(168,85,247,0.5)]" viewBox="0 0 100 100">
-                  <circle cx="50" cy="50" r="48" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="4" />
+                  <circle cx="50" cy="50" r="48" fill="none" stroke="rgba(255,255,255,0.03)" strokeWidth="1.5" />
                   <circle 
                     cx="50" cy="50" r="48" fill="none" 
-                    stroke="url(#purpleGradient)" strokeWidth="4" 
+                    stroke="url(#purpleGradient)" strokeWidth="2.5" 
                     strokeDasharray={circumference} 
                     strokeDashoffset={strokeDashoffset} 
                     strokeLinecap="round" 
-                    className="transition-all duration-1000 ease-out" 
+                    className="transition-all duration-1500 ease-[cubic-bezier(0.16,1,0.3,1)] drop-shadow-[0_0_8px_rgba(168,85,247,0.4)]" 
                   />
                   <defs>
                     <linearGradient id="purpleGradient" x1="0%" y1="0%" x2="100%" y2="0%">

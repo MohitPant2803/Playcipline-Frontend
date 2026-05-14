@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { challengeAPI, checkinAPI } from '../api/client';
 import Toast from '../components/Toast';
-import { Card, Badge, Button, ProgressBar } from '../components/UI';
 import XPProgressCard from '../components/XPProgressCard';
 import { getLevelInfo } from '../utils/leveling';
 import { useDailyCheckInCountdown } from '../hooks/useDailyCheckIn';
@@ -96,10 +95,6 @@ export default function Dashboard() {
     }
   };
 
-  const getModeColor = (mode) => {
-    return mode === 'easy' ? 'green' : mode === 'medium' ? 'yellow' : 'red';
-  };
-
   const handleLeave = async (userChallengeId) => {
     setLeaving({ ...leaving, [userChallengeId]: true });
     try {
@@ -143,135 +138,152 @@ export default function Dashboard() {
   const remainingTodayCount = Math.max(0, challenges.length - completedTodayCount);
   const currentStreak = getEffectiveStreak();
 
-  if (loading) return <div className="flex items-center justify-center h-screen"><div className="animate-bounce text-2xl font-black">Loading...</div></div>;
+  if (loading) return (
+    <div className="flex flex-col items-center justify-center h-screen bg-[#020617] relative overflow-hidden">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-purple-900/20 via-[#020617] to-[#020617]"></div>
+      <div className="w-16 h-16 border-4 border-white/5 border-t-cyan-500 rounded-full animate-spin mb-6 shadow-[0_0_30px_rgba(34,211,238,0.3)]"></div>
+      <div className="animate-pulse text-xs font-black text-slate-500 uppercase tracking-widest drop-shadow-md">Initializing System...</div>
+    </div>
+  );
 
   return (
-    <div className="pt-24 pb-20 sm:pb-0 bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 text-white font-sans min-h-screen">
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        <div className="mb-6">
-          <h1 className="text-4xl font-black tracking-wider drop-shadow-lg">⚡ DASHBOARD</h1>
+    <div className="pt-32 pb-20 sm:pb-0 bg-[#020617] text-white font-sans min-h-screen relative overflow-hidden selection:bg-purple-500/30">
+      {/* Cinematic Ambient Background */}
+      <div className="fixed inset-0 bg-[#020617] -z-20 pointer-events-none"></div>
+      
+      {/* Subtle Grid Texture for OS feel */}
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_50%_at_50%_0%,#000_70%,transparent_100%)] -z-10 pointer-events-none"></div>
+
+      {/* Deep Atmospheric Glows */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-purple-900/20 via-[#020617]/80 to-[#020617] -z-10 pointer-events-none"></div>
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[100vw] h-[500px] bg-purple-600/10 blur-[150px] rounded-full pointer-events-none mix-blend-screen -z-10"></div>
+      <div className="absolute top-1/4 left-0 w-[50vw] h-[50vw] max-w-[800px] bg-indigo-600/10 blur-[120px] rounded-full pointer-events-none mix-blend-screen animate-pulse -z-10" style={{ animationDuration: '8s' }}></div>
+      <div className="absolute bottom-1/4 right-0 w-[50vw] h-[50vw] max-w-[800px] bg-cyan-600/10 blur-[120px] rounded-full pointer-events-none mix-blend-screen animate-pulse -z-10" style={{ animationDuration: '12s' }}></div>
+
+      {/* Soft Vignette & Noise Overlay */}
+      <div className="fixed inset-0 pointer-events-none z-50 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(2,6,23,0.6)_100%)]"></div>
+      <div className="fixed inset-0 pointer-events-none z-50 opacity-[0.015] mix-blend-overlay" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.85\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")' }}></div>
+
+      <div className="max-w-6xl mx-auto px-4 py-12 sm:py-16 relative z-10">
+        <div className="mb-16 sm:mb-20 text-center flex flex-col items-center relative">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[150px] bg-purple-500/20 blur-[80px] pointer-events-none -z-10"></div>
+          <h1 className="text-5xl sm:text-7xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-white/40 uppercase drop-shadow-[0_0_30px_rgba(255,255,255,0.1)] mb-6 relative z-10">Your Evolution</h1>
+          <p className="text-xs sm:text-sm text-slate-400 font-black tracking-[0.3em] uppercase relative z-10">Consistency compounds silently.</p>
         </div>
 
-        <XPProgressCard totalXP={user?.totalXP || 0} className="mb-8" />
+        <XPProgressCard totalXP={user?.totalXP || 0} />
 
-        {/* Header Stats */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-          <div className="bg-gradient-to-br from-blue-600 to-cyan-500 rounded-2xl p-6 shadow-2xl border-2 border-cyan-400">
-            <p className="text-xs font-bold uppercase tracking-widest text-cyan-100">📊 Total XP</p>
-            <p className="text-3xl font-black mt-2 tabular-nums text-white drop-shadow-lg">{user?.totalXP || 0}</p>
+        {/* Cinematic Context Stats */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-10 mb-20 px-2 sm:px-0">
+          
+          {/* Progression */}
+          <div className="flex flex-col border-l border-white/10 pl-5 sm:pl-6">
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-2.5">Current Level</p>
+            <p className="text-lg sm:text-xl font-medium text-white tracking-wide mb-1">Level {levelInfo.level}</p>
+            <p className="text-xs text-slate-400">{levelInfo.xpNeededForNextLevel} XP to next evolution</p>
           </div>
-          <div className="bg-gradient-to-br from-purple-600 to-pink-500 rounded-2xl p-6 shadow-2xl border-2 border-pink-400">
-            <p className="text-xs font-bold uppercase tracking-widest text-pink-100">🎯 Level</p>
-            <p className="text-3xl font-black mt-2 tabular-nums text-white drop-shadow-lg">{levelInfo.level}</p>
-          </div>
-          <div className="bg-gradient-to-br from-orange-600 to-red-500 rounded-2xl p-6 shadow-2xl border-2 border-orange-400">
-            <p className="text-xs font-bold uppercase tracking-widest text-orange-100">🔥 Global Streak</p>
-            <p className="text-3xl font-black mt-2 tabular-nums text-white drop-shadow-lg">{currentStreak} <span className="text-lg font-bold text-orange-100">days</span></p>
-          </div>
-          <div className="bg-gradient-to-br from-green-600 to-emerald-500 rounded-2xl p-6 shadow-2xl border-2 border-green-400 relative overflow-hidden">
-            <p className="text-xs font-bold uppercase tracking-widest text-green-100">💪 Active Slots</p>
-            <p className="text-3xl font-black mt-2 tabular-nums text-white drop-shadow-lg">{challenges.length}/{maxActiveChallenges}</p>
-            <p className="mt-1 text-xs text-green-100 absolute bottom-4 right-5 font-bold">MAX 3</p>
-          </div>
-        </div>
 
-        <div className="grid grid-cols-1 gap-4 md:grid-cols-3 mb-8">
-          <div className="bg-gradient-to-br from-indigo-600 to-blue-500 rounded-2xl p-6 shadow-2xl border-2 border-blue-400">
-            <p className="text-xs font-bold uppercase tracking-widest text-blue-100">✅ Daily Tasks</p>
-            <p className="mt-2 text-2xl font-black tabular-nums text-white drop-shadow-lg">{remainingTodayCount} remaining</p>
-            <p className="mt-1 text-sm text-blue-100 font-semibold">{completedTodayCount} completed today</p>
+          {/* Streak */}
+          <div className="flex flex-col border-l border-white/10 pl-5 sm:pl-6">
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-2.5">Momentum</p>
+            <p className="text-lg sm:text-xl font-medium text-white tracking-wide mb-1">{currentStreak} Days Active</p>
+            <p className="text-xs text-slate-400">Personal best: {user?.longestStreak || 0} days</p>
           </div>
-          <div className="bg-gradient-to-br from-rose-600 to-pink-500 rounded-2xl p-6 shadow-2xl border-2 border-pink-400">
-            <p className="text-xs font-bold uppercase tracking-widest text-pink-100">📈 Challenge Capacity</p>
-            <p className="mt-2 text-2xl font-black tabular-nums text-white drop-shadow-lg">
-              {Math.max(0, maxActiveChallenges - challenges.length)} slots open
-            </p>
-            <p className="mt-1 text-sm text-pink-100 font-semibold">Keep max 3 active.</p>
+
+          {/* Active Challenges */}
+          <div className="flex flex-col border-l border-white/10 pl-5 sm:pl-6">
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-2.5">System Bandwidth</p>
+            <p className="text-lg sm:text-xl font-medium text-white tracking-wide mb-1">{challenges.length} Active Paths</p>
+            <p className="text-xs text-slate-400">{Math.max(0, maxActiveChallenges - challenges.length)} slots available</p>
           </div>
-          <div className="bg-gradient-to-br from-amber-600 to-orange-500 rounded-2xl p-6 shadow-2xl border-2 border-amber-400">
-            <p className="text-xs font-bold uppercase tracking-widest text-amber-100">🎯 Daily Focus</p>
-            <p className="mt-2 text-2xl font-black text-white drop-shadow-lg">
-              {remainingTodayCount === 0 ? 'All Done' : 'Check In'}
-            </p>
-            <p className="mt-1 text-sm text-amber-100 font-semibold">
-              {remainingTodayCount === 0 ? 'Great job today.' : 'Complete your pending tasks.'}
-            </p>
+
+          {/* Daily Execution / Tasks */}
+          <div className="flex flex-col border-l border-white/10 pl-5 sm:pl-6">
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-2.5">Daily Directives</p>
+            <p className="text-lg sm:text-xl font-medium text-white tracking-wide mb-1">{completedTodayCount} of {challenges.length} Done</p>
+            <p className="text-xs text-slate-400">{remainingTodayCount === 0 ? 'All protocols finished' : `${remainingTodayCount} awaiting execution`}</p>
           </div>
+
         </div>
 
         {/* Today's Challenges */}
-        <h2 className="text-3xl font-black text-white mb-6 tracking-wider drop-shadow-lg">⚔️ ACTIVE CHALLENGES</h2>
-        
-        {/* Daily Check-in Timer - Only show if user has active challenges */}
-        {challenges.length > 0 && (
-          <div className="mb-6 p-5 bg-gradient-to-r from-cyan-600 to-blue-600 shadow-2xl rounded-2xl border-2 border-cyan-400">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs font-bold uppercase tracking-widest text-cyan-100">⏱️ Daily Reset in:</p>
-                <p className="text-xl font-black text-white tabular-nums mt-1 drop-shadow-lg">
-                  {formatTimeUntilReset(timeRemaining)}
-                </p>
-              </div>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8 relative">
+          <div className="absolute left-0 top-1/2 -translate-y-1/2 w-48 h-24 bg-cyan-500/10 blur-[50px] pointer-events-none -z-10"></div>
+          <h2 className="text-2xl sm:text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-400 tracking-wider drop-shadow-lg uppercase relative z-10">Active Evolutions</h2>
+          {challenges.length > 0 && (
+            <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-widest text-cyan-400 bg-cyan-900/20 border border-cyan-500/20 rounded-full px-4 py-2 shadow-[0_0_15px_rgba(34,211,238,0.1)] backdrop-blur-md relative z-10">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              <span>Cycle Ends In {formatTimeUntilReset(timeRemaining)}</span>
             </div>
-          </div>
-        )}
+          )}
+        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 mb-16">
           {challenges.length === 0 ? (
-            <div className="col-span-full text-center py-16 bg-gradient-to-br from-slate-800 to-slate-700 rounded-2xl border-2 border-purple-500 shadow-2xl">
-              <p className="text-white text-lg font-bold">🎯 No active challenges. Start one in Explore.</p>
+            <div className="col-span-full text-center py-20 bg-[#11111c]/60 border border-white/[0.06] rounded-[2rem] backdrop-blur-xl shadow-lg">
+              <p className="text-slate-400 font-medium tracking-wide">Your journey awaits. Select a domain in Explore to begin.</p>
             </div>
           ) : (
             challenges.map(uc => {
               const isCheckedInToday = checkedInToday.includes(uc._id);
               
               return (
-              <div key={uc._id} className="flex flex-col bg-gradient-to-br from-slate-700 to-slate-800 border-2 border-purple-500 rounded-2xl p-6 shadow-2xl hover:border-pink-500 transition-colors">
-                <div className="flex justify-between items-start mb-2">
-                  <h3 className="text-lg font-black text-white drop-shadow-lg">{uc.challengeId?.title || 'Challenge'}</h3>
-                  <span className={`px-3 py-1.5 text-xs font-bold rounded-lg uppercase tracking-wide ${
-                    uc.mode === 'easy' ? 'bg-green-500 text-white' : uc.mode === 'medium' ? 'bg-yellow-500 text-white' : 'bg-red-500 text-white'
+              <div key={uc._id} className="bg-[#11111c]/60 border border-white/[0.06] p-6 sm:p-8 rounded-[2rem] shadow-xl hover:shadow-2xl hover:-translate-y-1 hover:bg-[#11111c]/80 hover:border-white/10 transition-all duration-500 ease-out group relative overflow-hidden backdrop-blur-xl flex flex-col">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/5 rounded-full blur-[50px] -mr-16 -mt-16 group-hover:bg-cyan-500/10 transition-colors duration-700 pointer-events-none"></div>
+                
+                <div className="flex justify-between items-start mb-8">
+                  <h3 className="text-2xl sm:text-3xl font-black text-white drop-shadow-lg tracking-tighter leading-tight pr-4">{uc.challengeId?.title || 'Challenge'}</h3>
+                  <span className={`px-3 py-1.5 text-[9px] font-black rounded-full uppercase tracking-[0.2em] border shrink-0 ${
+                    uc.mode === 'easy' ? 'bg-emerald-900/30 text-emerald-400 border-emerald-500/30' : uc.mode === 'medium' ? 'bg-yellow-900/30 text-yellow-400 border-yellow-500/30' : 'bg-red-900/30 text-red-400 border-red-500/30'
                   }`}>
-                    {uc.mode}
+                    {uc.mode} Mode
                   </span>
                 </div>
                 
-                <div className="mb-3">
-                  <p className="text-xs font-bold text-purple-300 mb-2 flex justify-between uppercase tracking-wide">
-                    <span>🎯 Phase Progress</span>
-                    <span className="text-white">{uc.completedDays} / {uc.requiredDays} days</span>
+                <div className="mb-6">
+                  <p className="text-[10px] font-black text-slate-500 mb-3 flex justify-between uppercase tracking-widest">
+                    <span>Evolution Progress</span>
+                    <span className="text-cyan-400">{uc.completedDays} / {uc.requiredDays} Days</span>
                   </p>
-                  <div className="h-2 overflow-hidden rounded-full bg-slate-600 border border-slate-500">
+                  <div className="w-full bg-white/[0.03] rounded-full h-1.5 overflow-hidden border border-white/[0.05] relative shadow-inner">
                     <div 
-                      className="h-full rounded-full bg-gradient-to-r from-purple-500 to-pink-500 transition-all duration-[800ms] ease-out shadow-lg" 
-                      style={{ width: `${Math.min(100, Math.max(0, (uc.completedDays / uc.requiredDays) * 100))}%` }} 
-                    />
+                      className="absolute top-0 left-0 h-full rounded-full bg-gradient-to-r from-cyan-500/80 to-cyan-300 transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] shadow-[0_0_15px_rgba(34,211,238,0.6)]" 
+                      style={{ width: `${Math.min(100, Math.max(0, (uc.completedDays / uc.requiredDays) * 100))}%` }}
+                    >
+                      {/* Animated Highlight Tip */}
+                      <div className="absolute top-0 right-0 bottom-0 w-8 bg-gradient-to-r from-transparent to-white/50 blur-[2px]"></div>
+                    </div>
                   </div>
                 </div>
 
-                <div className="mb-4">
-                  <p className="text-xs font-bold text-cyan-300 uppercase tracking-wide">🔥 Streak: <span className="font-black text-white tabular-nums">{uc.currentStreak} days</span></p>
+                <div className="mb-10">
+                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Momentum: <span className="text-white tabular-nums ml-2 text-xs">{uc.currentStreak} Days</span></p>
                 </div>
 
-                <div className="grid gap-3 mt-auto pt-2">
-                  <button
-                    onClick={() => handleCheckin(uc._id)}
-                    disabled={isCheckedInToday || checking[uc._id]}
-                    className={`w-full font-bold rounded-xl py-3 transition-all text-sm uppercase tracking-wide ${
-                      isCheckedInToday 
-                        ? 'bg-slate-600 text-gray-400 cursor-not-allowed' 
-                        : 'bg-gradient-to-r from-purple-600 to-pink-500 text-white hover:from-purple-700 hover:to-pink-600 shadow-lg hover:shadow-2xl'
-                    }`}
-                  >
-                    {isCheckedInToday ? '✅ Checked In' : checking[uc._id] ? '⏳ Syncing...' : '✨ Check In'}
-                  </button>
-                  <button
-                    onClick={() => handleLeave(uc._id)}
-                    disabled={leaving[uc._id]}
-                    className="w-full font-bold bg-gradient-to-r from-red-600 to-orange-500 text-white hover:from-red-700 hover:to-orange-600 rounded-xl py-3 transition-all text-sm uppercase tracking-wide shadow-lg hover:shadow-2xl"
-                  >
-                    {leaving[uc._id] ? '⏳ Leaving...' : '🚫 Leave Challenge'}
-                  </button>
+                <div className="mt-auto pt-2 relative z-10">
+                  {isCheckedInToday ? (
+                    <button
+                      disabled
+                      className="relative w-full rounded-full py-4 text-[10px] font-black uppercase tracking-[0.3em] text-cyan-300 transition-all duration-500 border border-cyan-500/20 bg-cyan-900/20 shadow-[0_0_20px_rgba(34,211,238,0.1)] backdrop-blur-md cursor-default overflow-hidden group"
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-r from-transparent via-cyan-500/10 to-transparent animate-[pulse_3s_ease-in-out_infinite]"></div>
+                      <span className="relative z-10 flex items-center justify-center gap-2">
+                        <svg className="w-4 h-4 text-cyan-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}>
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                        </svg>
+                        Protocol Executed
+                      </span>
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => handleCheckin(uc._id)}
+                      disabled={checking[uc._id]}
+                      className="relative w-full rounded-full py-4 text-[10px] font-black uppercase tracking-[0.3em] text-white transition-all duration-500 overflow-hidden group/execute border border-white/10 bg-white/5 hover:bg-white/10 hover:border-white/20 backdrop-blur-md shadow-lg hover:shadow-[0_0_30px_rgba(255,255,255,0.05)]"
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/5 to-white/0 opacity-0 group-hover/execute:opacity-100 transition-opacity duration-500 translate-x-[-100%] group-hover/execute:translate-x-[100%] ease-in-out"></div>
+                      <span className="relative z-10">{checking[uc._id] ? 'Synchronizing...' : 'Execute Protocol'}</span>
+                    </button>
+                  )}
                 </div>
               </div>
             );

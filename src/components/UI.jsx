@@ -2,27 +2,23 @@ import React from 'react';
 
 export function Badge({ text, color = 'blue' }) {
   const colors = {
-    blue: 'bg-gradient-to-r from-blue-500 to-cyan-500 text-white shadow-lg',
-    green: 'bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg',
-    yellow: 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white shadow-lg',
-    red: 'bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg',
-    purple: 'bg-gradient-to-r from-purple-600 to-pink-500 text-white shadow-lg',
-    gold: 'bg-gradient-to-r from-yellow-400 to-yellow-600 text-white shadow-lg'
+    blue: 'bg-indigo-50 text-[#6366F1] border border-indigo-100',
+    green: 'bg-[#F0FDF4] text-[#166534] border border-[#DCFCE7]',
+    yellow: 'bg-[#FFFBEB] text-[#B45309] border border-[#FEF3C7]',
+    red: 'bg-[#FFF1F2] text-[#BE123C] border border-[#FFE4E6]',
+    gray: 'bg-gray-50 text-gray-600 border border-gray-200'
   };
 
   return (
-    <span className={`inline-block px-4 py-2 rounded-full text-sm font-bold uppercase tracking-wide ${colors[color] || colors.blue}`}>
+    <span className={`inline-flex px-2.5 py-0.5 rounded-full text-xs font-medium tracking-wide ${colors[color] || colors.blue}`}>
       {text}
     </span>
   );
 }
 
-export function Card({ children, className = '', gradient = false, ...props }) {
-  const bgClass = gradient 
-    ? 'bg-gradient-to-br from-slate-900 to-slate-800 border border-slate-700' 
-    : 'bg-white';
+export function Card({ children, className = '', ...props }) {
   return (
-    <div className={`${bgClass} rounded-2xl shadow-xl p-6 backdrop-blur-sm ${className}`} {...props}>
+    <div className={`bg-white rounded-[24px] border border-[#ECECEC] shadow-sm p-6 ${className}`} {...props}>
       {children}
     </div>
   );
@@ -30,23 +26,23 @@ export function Card({ children, className = '', gradient = false, ...props }) {
 
 export function Button({ children, onClick, disabled = false, variant = 'primary', size = 'md', className = '' }) {
   const variants = {
-    primary: 'bg-gradient-to-r from-purple-600 to-pink-500 text-white hover:from-purple-700 hover:to-pink-600 disabled:opacity-50 shadow-lg hover:shadow-xl',
-    secondary: 'bg-gradient-to-r from-cyan-500 to-blue-500 text-white hover:from-cyan-600 hover:to-blue-600 disabled:opacity-50 shadow-lg hover:shadow-xl',
-    danger: 'bg-gradient-to-r from-red-500 to-orange-500 text-white hover:from-red-600 hover:to-orange-600 disabled:opacity-50 shadow-lg hover:shadow-xl',
-    ghost: 'bg-transparent text-white border-2 border-white hover:bg-white hover:text-slate-900 disabled:opacity-50'
+    primary: 'bg-[#6366F1] text-white hover:bg-[#4F46E5] disabled:opacity-50 shadow-sm border border-transparent',
+    secondary: 'bg-white border border-[#ECECEC] text-gray-700 hover:bg-gray-50 disabled:opacity-50',
+    danger: 'bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 disabled:opacity-50',
+    ghost: 'bg-transparent text-gray-600 hover:bg-gray-50 disabled:opacity-50'
   };
 
   const sizes = {
-    sm: 'px-3 py-1.5 text-sm',
-    md: 'px-4 py-2.5 text-base',
-    lg: 'px-6 py-3.5 text-lg'
+    sm: 'px-3 py-1.5 text-xs',
+    md: 'px-4 py-2 text-sm',
+    lg: 'px-5 py-2.5 text-base'
   };
 
   return (
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`rounded-xl font-bold transition-all duration-200 transform hover:scale-105 active:scale-95 ${variants[variant]} ${sizes[size]} disabled:cursor-not-allowed ${className}`}
+      className={`rounded-xl font-medium transition-colors duration-200 ${variants[variant]} ${sizes[size]} disabled:cursor-not-allowed flex items-center justify-center gap-2 ${className}`}
     >
       {children}
     </button>
@@ -55,16 +51,10 @@ export function Button({ children, onClick, disabled = false, variant = 'primary
 
 export function ProgressBar({ current, total, percentage = false, color = 'purple' }) {
   const percent = percentage ? current : (current / total * 100);
-  const colorMap = {
-    purple: 'from-purple-600 to-pink-500',
-    green: 'from-green-500 to-emerald-500',
-    blue: 'from-blue-500 to-cyan-500',
-    gold: 'from-yellow-400 to-orange-500'
-  };
   return (
-    <div className="w-full bg-gradient-to-r from-slate-200 to-slate-300 rounded-full h-3 overflow-hidden shadow-inner">
+    <div className="w-full bg-gray-100 rounded-full h-1.5 overflow-hidden">
       <div
-        className={`h-full rounded-full bg-gradient-to-r ${colorMap[color] || colorMap.purple} transition-all duration-500 ease-out shadow-lg`}
+        className={`h-full rounded-full bg-[#6366F1] transition-all duration-500 ease-out`}
         style={{ width: `${percent}%` }}
       ></div>
     </div>

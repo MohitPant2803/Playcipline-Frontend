@@ -25,7 +25,7 @@ function WeeklyCountdown() {
   }, []);
 
   return (
-    <p className="text-2xl font-black mt-1 tabular-nums text-white drop-shadow-lg">
+    <p className="text-xl sm:text-2xl font-bold tracking-tight text-white tabular-nums">
       {formatTimeRemaining(timeRemaining)}
     </p>
   );
@@ -81,11 +81,20 @@ export default function Leaderboard() {
   }, [activeTab]);
 
   return (
-    <div className="pt-24 pb-20 sm:pb-0 bg-gradient-to-br from-purple-900 via-slate-900 to-slate-800 text-white font-sans min-h-screen">
-      <div className="max-w-4xl mx-auto px-4 py-8">
-        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <h1 className="text-4xl font-black tracking-wider drop-shadow-lg">🏆 LEADERBOARD</h1>
-          <div className="inline-flex rounded-2xl border-2 border-purple-500 bg-slate-900 bg-opacity-80 p-1.5 shadow-2xl backdrop-blur-sm">
+    <div className="pt-32 pb-20 sm:pb-0 bg-[#020617] text-white font-sans min-h-screen relative overflow-hidden selection:bg-purple-500/30">
+      {/* Cinematic Ambient Background */}
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-purple-900/20 via-[#020617] to-[#020617] -z-10 pointer-events-none"></div>
+      <div className="absolute top-1/4 left-1/4 w-[40vw] h-[40vw] max-w-[600px] bg-purple-600/10 blur-[120px] rounded-full pointer-events-none mix-blend-screen animate-pulse" style={{ animationDuration: '8s' }}></div>
+      <div className="absolute bottom-1/4 right-1/4 w-[40vw] h-[40vw] max-w-[600px] bg-cyan-600/10 blur-[120px] rounded-full pointer-events-none mix-blend-screen animate-pulse" style={{ animationDuration: '12s' }}></div>
+
+      <div className="max-w-[900px] mx-auto px-4 py-8 sm:py-12 relative z-10">
+        
+        {/* Header & Tabs */}
+        <div className="mb-12 sm:mb-16 text-center flex flex-col items-center">
+          <h1 className="text-4xl sm:text-5xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-white/40 uppercase drop-shadow-2xl mb-4">Global Rankings</h1>
+          <p className="text-sm sm:text-base text-slate-400 font-medium tracking-wide mb-8">Consistency compounds over time.</p>
+          
+          <div className="inline-flex p-1.5 rounded-full bg-white/5 border border-white/10 backdrop-blur-md">
             {['global', 'friends'].map(tab => (
               <button
                 key={tab}
@@ -98,90 +107,105 @@ export default function Leaderboard() {
                   setActiveTab(tab);
                 }}
                 disabled={tab === 'friends' && !user}
-                className={`rounded-xl px-4 py-2 text-sm font-bold uppercase tracking-wide transition-all ${
+                className={`rounded-full px-6 py-2.5 text-[11px] sm:text-xs font-black uppercase tracking-widest transition-all duration-300 ${
                   activeTab === tab
-                    ? 'bg-gradient-to-r from-purple-600 to-pink-500 text-white shadow-lg'
+                    ? 'bg-white/10 text-white shadow-[0_0_15px_rgba(255,255,255,0.05)] border border-white/5'
                     : tab === 'friends' && !user
-                    ? 'text-gray-500 cursor-not-allowed'
-                    : 'text-gray-300 hover:text-white hover:bg-slate-800'
+                    ? 'text-slate-600 cursor-not-allowed border border-transparent'
+                    : 'text-slate-500 hover:text-slate-300 hover:bg-white/5 border border-transparent'
                 }`}
               >
-                {tab === 'global' ? '🌍 Global' : '👥 Friends'}
+                {tab === 'global' ? 'Global' : 'Friends'}
               </button>
             ))}
           </div>
         </div>
 
         {/* Week End Countdown */}
-        <div className="mb-6 p-6 bg-gradient-to-r from-cyan-500 to-blue-600 rounded-2xl shadow-2xl border-2 border-cyan-400 relative overflow-hidden">
-          <div className="absolute inset-0 opacity-20" style={{
-            backgroundImage: 'radial-gradient(circle at 20% 50%, rgba(255,255,255,0.3) 0%, transparent 50%)',
-          }}></div>
-          <div className="relative flex items-center justify-between">
-            <div>
-              <p className="text-xs font-bold uppercase tracking-widest text-cyan-100">⏱️ Weekly Reset:</p>
+        <div className="mb-10 p-6 sm:p-8 bg-white/[0.02] border border-white/5 rounded-3xl backdrop-blur-xl shadow-2xl flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="text-center sm:text-left">
+              <p className="text-[10px] font-black uppercase tracking-widest text-slate-500 mb-1">Weekly Reset</p>
               <WeeklyCountdown />
             </div>
-          </div>
         </div>
 
-        <div className={`space-y-3 transition-opacity duration-300 will-change-opacity ${loading ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
+        <div className={`space-y-4 transition-opacity duration-500 will-change-opacity ${loading ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}>
           {loading && leaderboard.length === 0 ? (
             <div className="text-center py-16">
-              <div className="animate-bounce text-xl font-bold text-purple-300 tracking-widest uppercase">Loading...</div>
+              <div className="animate-pulse text-xs font-black text-slate-500 tracking-widest uppercase">Loading Rankings...</div>
             </div>
           ) : leaderboard.length === 0 ? (
-            <div className="text-center py-16 bg-gradient-to-br from-slate-800 to-slate-700 rounded-2xl border-2 border-purple-500 shadow-2xl">
-              <p className="text-white text-lg font-bold">
+            <div className="text-center py-20 bg-white/[0.02] border border-white/5 rounded-[2rem] backdrop-blur-xl">
+              <p className="text-slate-400 text-sm font-medium">
                 {activeTab === 'friends'
-                  ? '👥 Follow people to build your friends leaderboard.'
-                  : '🚀 No entries found. Be the first to join.'}
+                  ? 'Follow people to build your friends leaderboard.'
+                  : 'No entries found. Be the first to join.'}
               </p>
             </div>
           ) : leaderboard.map((user, index) => {
-            const medals = ['🥇', '🥈', '🥉'];
-            const medal = medals[index] || `#${index + 1}`;
+            let borderColor = 'border-white/5 group-hover/card:border-white/10';
+            let rankColor = 'text-slate-600 group-hover/card:text-slate-400';
+            let glow = null;
+            let badgeColor = 'text-cyan-400 bg-white/5 border-white/10 group-hover/card:bg-white/10 group-hover/card:border-white/20';
+
+            if (index === 0) {
+              borderColor = 'border-purple-500/30 group-hover/card:border-purple-500/50';
+              rankColor = 'text-purple-400 font-bold';
+              glow = <div className="absolute top-1/2 right-0 -translate-y-1/2 w-48 h-48 bg-purple-500/10 blur-[60px] rounded-full pointer-events-none group-hover/card:bg-purple-500/20 transition-colors duration-700"></div>;
+              badgeColor = 'text-purple-300 bg-purple-500/10 border-purple-500/20 group-hover/card:bg-purple-500/20';
+            } else if (index === 1) {
+              borderColor = 'border-slate-300/20 group-hover/card:border-slate-300/40';
+              rankColor = 'text-slate-300 font-bold';
+              glow = <div className="absolute top-1/2 right-0 -translate-y-1/2 w-48 h-48 bg-slate-300/5 blur-[60px] rounded-full pointer-events-none group-hover/card:bg-slate-300/10 transition-colors duration-700"></div>;
+              badgeColor = 'text-slate-300 bg-slate-300/10 border-slate-300/20 group-hover/card:bg-slate-300/20';
+            } else if (index === 2) {
+              borderColor = 'border-amber-700/30 group-hover/card:border-amber-700/50';
+              rankColor = 'text-amber-500 font-bold';
+              glow = <div className="absolute top-1/2 right-0 -translate-y-1/2 w-48 h-48 bg-amber-700/10 blur-[60px] rounded-full pointer-events-none group-hover/card:bg-amber-700/20 transition-colors duration-700"></div>;
+              badgeColor = 'text-amber-400 bg-amber-500/10 border-amber-500/20 group-hover/card:bg-amber-500/20';
+            } else if (user._id === currentUserId) {
+              borderColor = 'border-cyan-500/30 group-hover/card:border-cyan-500/50';
+              rankColor = 'text-cyan-400 font-bold';
+              glow = <div className="absolute top-1/2 right-0 -translate-y-1/2 w-48 h-48 bg-cyan-500/10 blur-[60px] rounded-full pointer-events-none group-hover/card:bg-cyan-500/20 transition-colors duration-700"></div>;
+            }
+            
             return (
             <div
               key={user._id}
               onClick={() => navigate(`/user/${user._id}`)}
-              className={`flex items-center gap-4 cursor-pointer p-5 rounded-2xl border-2 transition-all duration-200 transform hover:scale-102 hover:shadow-2xl ${
-                user._id === currentUserId 
-                  ? 'bg-gradient-to-r from-purple-600 to-pink-500 border-purple-300 shadow-2xl' 
-                  : index === 0 ? 'bg-gradient-to-r from-yellow-500 to-orange-500 border-yellow-400 shadow-2xl' 
-                  : index === 1 ? 'bg-gradient-to-r from-gray-400 to-gray-500 border-gray-300 shadow-xl'
-                  : index === 2 ? 'bg-gradient-to-r from-orange-600 to-orange-700 border-orange-400 shadow-xl'
-                  : 'bg-slate-700 border-slate-600 hover:border-purple-500 shadow-lg'
-              }`}
+              className={`relative flex items-center gap-4 sm:gap-6 cursor-pointer p-5 sm:p-7 rounded-[2rem] border transition-all duration-500 group/card overflow-hidden backdrop-blur-xl bg-white/[0.02] hover:bg-white/[0.04] ${borderColor}`}
             >
-              <div className={`text-3xl font-black w-10 text-center ${index < 3 ? 'drop-shadow-lg' : ''}`}>{medal}</div>
+              {glow}
+              <div className={`text-2xl sm:text-3xl font-light w-10 text-center transition-colors relative z-10 ${rankColor}`}>#{index + 1}</div>
               {user.avatar && (
                 <img
                   src={user.avatar}
                   alt={user.name}
-                  className="w-12 h-12 rounded-full border-3 border-white shadow-lg"
+                  className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-[#020617] bg-[#020617] object-cover relative z-10"
                 />
               )}
-              <div className="flex-grow">
-                <p className="font-bold text-lg">{user.name}</p>
-                <p className="text-sm font-semibold opacity-90">⭐ Level {user.level}</p>
+              <div className="flex-grow min-w-0 relative z-10">
+                <p className="font-black text-white text-base sm:text-lg tracking-wide truncate">
+                  {user.name} {user._id === currentUserId && <span className="text-slate-500 font-medium ml-1 text-sm">(You)</span>}
+                </p>
+                <p className="text-[10px] sm:text-xs font-bold text-slate-500 uppercase tracking-widest mt-1">Level {user.level}</p>
               </div>
-              <div className="text-right">
-                <span className="px-4 py-2 text-sm font-bold rounded-xl bg-black bg-opacity-30 text-white backdrop-blur-sm">
-                  ✨ {user.weeklyXP} XP
+              <div className="text-right shrink-0 relative z-10">
+                <span className={`px-4 py-2 text-[10px] sm:text-xs font-black rounded-full backdrop-blur-sm transition-colors uppercase tracking-widest border ${badgeColor}`}>
+                  {user.weeklyXP} XP
                 </span>
               </div>
             </div>
           )})}
 
           {userRank && userRank > 50 && (
-            <div className="mt-8 pt-8 border-t-2 border-purple-500">
-              <p className="text-center text-purple-300 text-sm font-bold mb-4 uppercase tracking-wide">
-                📊 Your Rank: #{userRank}
+            <div className="mt-12 pt-8 border-t border-white/5">
+              <p className="text-center text-[10px] text-slate-500 font-black mb-4 uppercase tracking-widest">
+                Your Rank: #{userRank}
               </p>
-              <div className="bg-gradient-to-r from-purple-900 to-slate-800 border-2 border-purple-500 p-5 rounded-2xl text-center shadow-2xl">
-                <p className="text-white font-bold text-lg">
-                  🚀 Keep completing challenges to reach the top 50!
+              <div className="bg-white/[0.02] border border-white/5 p-6 rounded-[2rem] text-center shadow-2xl backdrop-blur-xl hover:bg-white/[0.04] transition-colors">
+                <p className="text-slate-300 font-medium text-sm">
+                  Keep completing challenges to reach the top 50.
                 </p>
               </div>
             </div>
