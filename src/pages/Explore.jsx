@@ -81,13 +81,13 @@ function useScrollReveal(options = { threshold: 0.3 }) {
     return () => {
       if (ref.current) observer.unobserve(ref.current);
     };
-  }, [options.threshold]);
+  }, [options.threshold, options.rootMargin]);
 
   return [ref, inView];
 }
 
 function Reveal({ children, delay = 0, className = '', direction = 'up', blur = false, threshold = 0.2, as = 'div' }) {
-  const [ref, inView] = useScrollReveal({ threshold });
+  const [ref, inView] = useScrollReveal({ threshold, rootMargin: '100px' });
   
   const baseClass = "transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform motion-reduce:transition-none motion-reduce:transform-none motion-reduce:opacity-100 motion-reduce:blur-none";
   
@@ -122,7 +122,7 @@ function ParallaxOrb({ className, speed, animationDuration, animationDelay }) {
 }
 
 function CinematicDomain({ domain }) {
-  const [ref, inView] = useScrollReveal({ threshold: 0.3 });
+  const [ref, inView] = useScrollReveal({ threshold: 0.1, rootMargin: '100px' });
   const navigate = useNavigate();
   const parallaxRef = useParallax(0.08);
   
@@ -141,7 +141,7 @@ function CinematicDomain({ domain }) {
   const visibleState = "opacity-100 translate-y-0";
 
   return (
-    <div ref={ref} className="relative w-full py-32 sm:py-48 flex items-center px-6 sm:px-12 lg:px-24 overflow-hidden border-b border-white/5">
+    <div ref={ref} className="relative w-full py-32 sm:py-48 flex items-center px-6 sm:px-12 lg:px-24 overflow-hidden">
          {/* Ambient Backgrounds */}
          <div className={`absolute inset-0 transition-opacity duration-1000 ease-in-out ${inView ? 'opacity-100' : 'opacity-0'}`}>
             <div className={`absolute inset-0 bg-gradient-to-b ${gradient}`}></div>
@@ -183,7 +183,7 @@ function CinematicDomain({ domain }) {
 }
 
 function IdentityPanel({ title, subtitle, description, align = 'left', gradient, glow }) {
-  const [ref, inView] = useScrollReveal({ threshold: 0.2 });
+  const [ref, inView] = useScrollReveal({ threshold: 0.1, rootMargin: '100px' });
   const parallaxRef = useParallax(0.08);
   
   const alignClass = align === 'center' ? 'items-center text-center' : align === 'right' ? 'items-end text-right' : 'items-start text-left';
@@ -205,7 +205,7 @@ function IdentityPanel({ title, subtitle, description, align = 'left', gradient,
 }
 
 function TimelineMilestone({ day, title, description, align = 'left', glowColor = 'cyan' }) {
-  const [ref, inView] = useScrollReveal({ threshold: 0.4 });
+  const [ref, inView] = useScrollReveal({ threshold: 0.2, rootMargin: '100px' });
 
   const isLeft = align === 'left';
   
@@ -296,7 +296,7 @@ function ArchetypeCard({ archetype, delayIdx }) {
 */
 
 function ProgressionStage({ stage, index, isLast }) {
-  const [ref, inView] = useScrollReveal({ threshold: 0.3 });
+  const [ref, inView] = useScrollReveal({ threshold: 0.1, rootMargin: '100px' });
 
   return (
     <div ref={ref} className="relative flex flex-col items-center text-center w-full pt-16 pb-24 sm:pb-32 z-10">
@@ -478,7 +478,7 @@ export default function Explore() {
       </div>
 
       {/* Transformation Timeline Section */}
-      <div className="relative z-20 bg-[#020617] pt-24 pb-40 overflow-hidden border-t border-white/5">
+      <div className="relative z-20 bg-[#020617] pt-24 pb-40 overflow-hidden">
         {/* Ambient background glow */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-[80%] bg-gradient-to-b from-transparent via-cyan-900/5 to-transparent pointer-events-none"></div>
         
@@ -538,7 +538,7 @@ export default function Explore() {
       </div>
 
       {/* Cost of Staying the Same Section */}
-      <div className="relative z-40 bg-black py-20 overflow-hidden border-t border-white/5">
+      <div className="relative z-40 bg-black py-20 overflow-hidden">
         {/* Ambient atmospheric gradients */}
         <div className="absolute inset-0 bg-gradient-to-b from-[#020617] via-black to-[#020617] pointer-events-none"></div>
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[100vw] h-[100vw] max-w-[1200px] bg-red-900/5 rounded-full blur-[150px] pointer-events-none animate-pulse" style={{ animationDuration: '10s' }}></div>
@@ -596,7 +596,7 @@ export default function Explore() {
       */}
 
       {/* Progression Universe Section */}
-      <div className="relative z-50 bg-[#020617] py-32 overflow-hidden border-t border-white/5">
+      <div className="relative z-50 bg-[#020617] py-32 overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-slate-900/30 via-[#020617] to-[#020617] pointer-events-none"></div>
         
         <div className="max-w-7xl mx-auto px-4 relative z-10">

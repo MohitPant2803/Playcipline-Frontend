@@ -3,6 +3,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { userAPI, API_BASE_URL } from '../api/client';
 import LogoutConfirmModal from './LogoutConfirmModal';
+import UserAvatar from './UserAvatar';
 
 const NavLink = ({ to, children, onClick }) => {
   const location = useLocation();
@@ -194,7 +195,7 @@ export default function Header() {
                       ) : (
                         userResults.map(result => (
                           <div key={result._id} className="flex items-center gap-3 border-b border-white/5 px-4 py-3 last:border-b-0 cursor-pointer hover:bg-white/5 transition-colors" onClick={() => handleUserClick(result._id)}>
-                            <img src={result.avatar} alt={result.name} className="h-9 w-9 rounded-full border-2 border-white/20" />
+                            <UserAvatar user={result} size="custom" className="h-9 w-9 border-2 border-white/20" />
                             <div className="flex-grow"><p className="text-sm font-semibold text-white">{result.name}</p><p className="text-xs text-slate-400">{result.weeklyXP || 0} weekly XP</p></div>
                             {!result.isCurrentUser && (
                               <button type="button" onClick={(e) => { e.stopPropagation(); handleFollowToggle(result); }} className={`ml-auto rounded-full px-3 py-1 text-xs font-bold transition transform hover:scale-105 ${result.isFollowing ? 'border border-white/20 bg-white/10 text-slate-300 hover:bg-white/20' : 'bg-gradient-to-r from-purple-500 to-cyan-500 text-white shadow-lg'}`}>{result.isFollowing ? 'Following' : 'Follow'}</button>
@@ -210,7 +211,7 @@ export default function Header() {
               {user ? (
                 <div ref={profileMenuRef} className="relative">
                   <button onClick={() => setIsProfileMenuOpen(!isProfileMenuOpen)} className="group relative">
-                    <img src={user.avatar} alt={user.name} className="w-10 h-10 rounded-full border-2 border-transparent group-hover:border-purple-400 transition-all duration-300 shadow-lg" />
+                    <UserAvatar user={user} size="sm" className="border-2 border-transparent group-hover:border-purple-400 transition-all duration-300 shadow-lg" />
                     <span className="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-gradient-to-r from-purple-500 to-cyan-400 text-[10px] font-black text-white shadow-lg group-hover:animate-pulse">{user.level || 0}</span>
                   </button>
                   {isProfileMenuOpen && (

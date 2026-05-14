@@ -5,6 +5,7 @@ import Toast from '../components/Toast';
 import LogoutConfirmModal from '../components/LogoutConfirmModal';
 import FollowersModal from '../components/FollowersModal';
 import ProfileView from '../components/ProfileView';
+import PersonaSelector from '../components/PersonaSelector';
 
 export default function Profile() {
   const { user, logout, updateProfile } = useAuth();
@@ -16,6 +17,7 @@ export default function Profile() {
   const [saving, setSaving] = useState(false);
   const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
   const [socialModalType, setSocialModalType] = useState(null);
+  const [showPersonaSelector, setShowPersonaSelector] = useState(false);
   const [form, setForm] = useState({
     name: user?.name || '',
     avatar: user?.avatar || '',
@@ -108,6 +110,13 @@ export default function Profile() {
 
   if (loading) return <div className="flex items-center justify-center h-screen"><div className="animate-bounce text-2xl font-black text-white">Loading...</div></div>;
 
+  let currentPersonaObj = null;
+  try {
+    if (form.avatar && form.avatar.startsWith('{')) {
+      currentPersonaObj = JSON.parse(form.avatar);
+    }
+  } catch (e) {}
+
   return (
     <div className="pt-24 pb-20 sm:pb-0 bg-[#020617] text-white font-sans min-h-screen relative selection:bg-purple-500/30 overflow-hidden">
       <ProfileView
@@ -121,14 +130,17 @@ export default function Profile() {
         onFormChange={setForm}
         onSaveProfile={handleSaveProfile}
         onSocialClick={setSocialModalType}
+        onAvatarClick={() => setShowPersonaSelector(true)}
+        onCloseEdit={() => setIsEditing(false)}
+        currentPersonaObj={currentPersonaObj}
         actions={
           <>
             <button
               type="button"
-              onClick={() => setIsEditing(!isEditing)}
+              onClick={() => setIsEditing(true)}
               className="bg-white/10 border border-white/20 text-white px-6 py-2 rounded-full text-xs font-black hover:bg-white/20 transition-all uppercase tracking-widest shadow-[0_0_15px_rgba(255,255,255,0.05)]"
             >
-              {isEditing ? 'Cancel' : 'Edit Profile'}
+              Edit Profile
             </button>
             <button
               type="button"
@@ -152,6 +164,19 @@ export default function Profile() {
           userId={user._id}
           type={socialModalType}
           onClose={() => setSocialModalType(null)}
+        />
+      )}
+
+      {showPersonaSelector && (
+        <PersonaSelector
+          currentPersona={currentPersonaObj}
+          userName={form.name || user?.name}
+          userLevel={stats?.level || user?.level || 1}
+          onSelect={(persona) => {
+            setForm({ ...form, avatar: JSON.stringify(persona) });
+            setShowPersonaSelector(false);
+          }}
+          onClose={() => setShowPersonaSelector(false)}
         />
       )}
 

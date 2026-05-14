@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { userAPI } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 import { Card } from './UI';
+import UserAvatar from './UserAvatar';
 
 export default function FollowersModal({ userId, type = 'followers', onClose }) {
   const navigate = useNavigate();
@@ -108,17 +109,7 @@ export default function FollowersModal({ userId, type = 'followers', onClose }) 
                 className="flex items-center gap-3 p-3 hover:bg-gray-100 rounded-lg cursor-pointer transition"
                 onClick={() => handleUserClick(user._id)}
               >
-                {user.avatar ? (
-                  <img
-                    src={user.avatar}
-                    alt={user.name}
-                    className="w-12 h-12 rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-blue-100 font-bold text-blue-700">
-                    {(user.name || 'U').charAt(0).toUpperCase()}
-                  </div>
-                )}
+                <UserAvatar user={user} size="md" />
                 <div className="flex-grow">
                   <p className="font-semibold text-gray-900">{user.name}</p>
                   <p className="text-xs text-gray-600">Level {user.level}</p>

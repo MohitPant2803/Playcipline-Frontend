@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Card, Badge } from './UI';
 import { getLevelInfo } from '../utils/leveling';
 import IdentityGraph from '../pages/IdentityGraph';
+import UserAvatar from './UserAvatar';
 
 const ALL_BADGES = ['7-day', '21-day', '75-hard', 'hard-mode', 'perfect-streak'];
 
@@ -45,12 +46,12 @@ function useScrollReveal(options = { threshold: 0.2 }) {
     }, options);
     if (ref.current) observer.observe(ref.current);
     return () => { if (ref.current) observer.unobserve(ref.current); };
-  }, [options.threshold]);
+  }, [options.threshold, options.rootMargin]);
   return [ref, inView];
 }
 
 function Reveal({ children, delay = 0, className = '' }) {
-  const [ref, inView] = useScrollReveal({ threshold: 0.1 });
+  const [ref, inView] = useScrollReveal({ threshold: 0, rootMargin: '100px' });
   const baseClass = "transition-all duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform";
   return (
     <div ref={ref} className={`${baseClass} ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-12'} ${className}`} style={{ transitionDelay: `${delay}ms` }}>
@@ -70,7 +71,10 @@ export default function ProfileView({
   onSaveProfile,
   onSocialClick,
   activities = [],
-  showActivities = false
+  showActivities = false,
+  onAvatarClick,
+  currentPersonaObj,
+  onCloseEdit
 }) {
   const [showActivitiesModal, setShowActivitiesModal] = useState(false);
   const displayedActivities = activities.slice(0, 3);
@@ -126,13 +130,9 @@ export default function ProfileView({
                     </linearGradient>
                   </defs>
                 </svg>
-                {profile?.avatar ? (
-                  <img src={profile.avatar} alt={profile.name} className="absolute inset-1 w-[calc(100%-8px)] h-[calc(100%-8px)] rounded-full object-cover border-4 border-[#020617] bg-[#020617]" />
-                ) : (
-                  <div className="absolute inset-1 w-[calc(100%-8px)] h-[calc(100%-8px)] rounded-full bg-gradient-to-br from-purple-600 to-cyan-500 flex items-center justify-center text-4xl font-black text-white border-4 border-[#020617]">
-                    {(profile?.name || 'U').charAt(0).toUpperCase()}
-                  </div>
-                )}
+                <div className="absolute inset-1 w-[calc(100%-8px)] h-[calc(100%-8px)] rounded-full overflow-hidden flex items-center justify-center bg-[#020617] border-4 border-[#020617]">
+                  <UserAvatar user={profile} size="custom" className="w-full h-full border-none bg-transparent" />
+                </div>
                 <div className="absolute -bottom-2 left-1/2 -translate-x-1/2 bg-[#020617] border border-purple-500/50 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full shadow-[0_0_15px_rgba(168,85,247,0.4)]">
                   Lvl {levelInfo.level}
                 </div>
@@ -196,34 +196,49 @@ export default function ProfileView({
         </Reveal>
 
         {isEditing && form && (
-          <Reveal delay={100}>
-            <form onSubmit={onSaveProfile} className="bg-white/[0.02] border border-white/10 rounded-3xl p-8 mb-16 backdrop-blur-xl max-w-2xl mx-auto shadow-2xl">
-              <h3 className="text-xl font-black text-white uppercase tracking-wider mb-6">Edit Profile Settings</h3>
-              <div className="grid gap-5">
+          <div className="fixed inset-0 z-[90] flex items-center justify-center bg-[#020617]/90 backdrop-blur-xl p-4 sm:p-8 animate-fade-in-fast" onClick={onCloseEdit}>
+            <form onSubmit={onSaveProfile} onClick={e => e.stopPropagation()} className="w-full max-w-2xl bg-[#12121c]/90 border border-white/10 rounded-[2rem] p-6 sm:p-10 shadow-2xl relative">
+              <div className="flex justify-between items-center mb-8">
+                <h3 className="text-2xl font-black text-white uppercase tracking-wider">Edit Identity</h3>
+                <button type="button" onClick={onCloseEdit} className="text-slate-500 hover:text-white transition-colors">
+                  <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+                </button>
+              </div>
+              <div className="grid gap-6">
                 <label className="grid gap-2 text-[10px] font-black text-purple-400 uppercase tracking-widest">
                   Username
-                  <input type="text" value={form.name} onChange={(e) => onFormChange?.({ ...form, name: e.target.value })} placeholder={profile?.name || 'Your name'} className="rounded-xl bg-[#020617]/50 border border-white/10 text-white placeholder-slate-500 px-4 py-3 font-bold outline-none focus:border-purple-500 focus:bg-white/5 transition-colors" />
+                  <input type="text" value={form.name} onChange={(e) => onFormChange?.({ ...form, name: e.target.value })} placeholder={profile?.name || 'Your name'} className="rounded-xl bg-[#020617]/50 border border-white/10 text-white placeholder-slate-500 px-4 py-3.5 font-bold outline-none focus:border-purple-500 focus:bg-white/5 transition-colors" />
                 </label>
-                <label className="grid gap-2 text-[10px] font-black text-cyan-400 uppercase tracking-widest">
-                  Profile picture URL
-                  <input type="url" value={form.avatar} onChange={(e) => onFormChange?.({ ...form, avatar: e.target.value })} placeholder={profile?.avatar || 'Leave empty for Google picture'} className="rounded-xl bg-[#020617]/50 border border-white/10 text-white placeholder-slate-500 px-4 py-3 font-bold outline-none focus:border-cyan-500 focus:bg-white/5 transition-colors" />
+                <label className="grid gap-2 text-[10px] font-black text-cyan-400 uppercase tracking-widest relative">
+                  Persona Identity
+                  <button
+                    type="button"
+                    onClick={onAvatarClick}
+                    className="rounded-xl bg-[#020617]/50 border border-white/10 text-white px-4 py-3.5 font-bold outline-none hover:border-cyan-500 hover:bg-white/5 transition-colors text-left flex items-center justify-between group shadow-inner"
+                  >
+                    <span>{currentPersonaObj?.name || (form?.avatar ? 'Custom External Identity' : 'Select your Persona')}</span>
+                    <span className="text-cyan-500 group-hover:translate-x-1 transition-transform">Edit ➔</span>
+                  </button>
                 </label>
                 <label className="grid gap-2 text-[10px] font-black text-pink-400 uppercase tracking-widest">
                   Location
-                  <input type="text" value={form.location} onChange={(e) => onFormChange?.({ ...form, location: e.target.value })} placeholder="City, Country" className="rounded-xl bg-[#020617]/50 border border-white/10 text-white placeholder-slate-500 px-4 py-3 font-bold outline-none focus:border-pink-500 focus:bg-white/5 transition-colors" />
+                  <input type="text" value={form.location} onChange={(e) => onFormChange?.({ ...form, location: e.target.value })} placeholder="City, Country" className="rounded-xl bg-[#020617]/50 border border-white/10 text-white placeholder-slate-500 px-4 py-3.5 font-bold outline-none focus:border-pink-500 focus:bg-white/5 transition-colors" />
                 </label>
                 <label className="grid gap-2 text-[10px] font-black text-emerald-400 uppercase tracking-widest">
                   Bio
-                  <textarea value={form.bio} onChange={(e) => onFormChange?.({ ...form, bio: e.target.value.slice(0, 100) })} placeholder="A short note about your goals (max 100 chars)" maxLength={100} rows={3} className="resize-none rounded-xl bg-[#020617]/50 border border-white/10 text-white placeholder-slate-500 px-4 py-3 font-bold outline-none focus:border-emerald-500 focus:bg-white/5 transition-colors" />
+                  <textarea value={form.bio} onChange={(e) => onFormChange?.({ ...form, bio: e.target.value.slice(0, 100) })} placeholder="A short note about your goals (max 100 chars)" maxLength={100} rows={3} className="resize-none rounded-xl bg-[#020617]/50 border border-white/10 text-white placeholder-slate-500 px-4 py-3.5 font-bold outline-none focus:border-emerald-500 focus:bg-white/5 transition-colors" />
                 </label>
-                <div className="flex justify-end gap-3 mt-4">
-                  <button type="submit" disabled={saving} className="rounded-full bg-white/10 hover:bg-white/20 text-white px-8 py-3 text-xs font-black transition-colors disabled:opacity-50 uppercase tracking-widest border border-white/10">
-                    {saving ? '⏳ Saving...' : 'Save Changes'}
+                <div className="flex justify-end gap-3 mt-6">
+                  <button type="button" onClick={onCloseEdit} className="rounded-full bg-transparent text-slate-400 hover:text-white hover:bg-white/5 px-8 py-3 text-[10px] font-black transition-colors uppercase tracking-widest">
+                    Cancel
+                  </button>
+                  <button type="submit" disabled={saving} className="rounded-full bg-cyan-500 hover:bg-cyan-400 text-[#020617] px-8 py-3 text-[10px] font-black transition-all disabled:opacity-50 uppercase tracking-widest shadow-[0_0_20px_rgba(34,211,238,0.4)] hover:-translate-y-0.5">
+                    {saving ? 'Saving...' : 'Save Changes'}
                   </button>
                 </div>
               </div>
             </form>
-          </Reveal>
+          </div>
         )}
 
         {/* Premium Life Identity Graph Component */}

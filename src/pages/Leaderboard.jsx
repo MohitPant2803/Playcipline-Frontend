@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import Toast from '../components/Toast';
 import { Card, Badge } from '../components/UI';
 import { getTimeUntilWeekEnd, formatTimeRemaining } from '../utils/weeklyReset';
+import UserAvatar from '../components/UserAvatar';
 
 function WeeklyCountdown() {
   const [timeRemaining, setTimeRemaining] = useState(() => {
@@ -177,13 +178,8 @@ export default function Leaderboard() {
             >
               {glow}
               <div className={`text-2xl sm:text-3xl font-light w-10 text-center transition-colors relative z-10 ${rankColor}`}>#{index + 1}</div>
-              {user.avatar && (
-                <img
-                  src={user.avatar}
-                  alt={user.name}
-                  className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-[#020617] bg-[#020617] object-cover relative z-10"
-                />
-              )}
+              <UserAvatar user={user} size="lg" className="border-2 border-[#020617] relative z-10" />
+              
               <div className="flex-grow min-w-0 relative z-10">
                 <p className="font-black text-white text-base sm:text-lg tracking-wide truncate">
                   {user.name} {user._id === currentUserId && <span className="text-slate-500 font-medium ml-1 text-sm">(You)</span>}

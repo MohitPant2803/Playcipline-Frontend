@@ -5,6 +5,7 @@ import { useAuth } from '../context/AuthContext';
 import Toast from '../components/Toast';
 import Modal from '../components/Modal';
 import { Card } from '../components/UI';
+import UserAvatar from '../components/UserAvatar';
 
 function timeAgo(date) {
   if (!date) return '';
@@ -390,17 +391,8 @@ export default function Feed() {
           <div className="bg-[#12121c]/60 border border-white/[0.06] rounded-[28px] p-6 sm:p-8 backdrop-blur-xl shadow-xl relative overflow-hidden group hover:shadow-2xl hover:bg-[#12121c]/80 hover:border-white/10 transition-all duration-500 ease-out mb-12">
             <div className="absolute top-0 right-0 w-32 h-32 bg-cyan-500/5 rounded-full blur-[50px] -mr-16 -mt-16 group-hover:bg-cyan-500/10 transition-colors duration-700 pointer-events-none"></div>
             <div className="flex gap-4">
-              {user.avatar ? (
-                <img
-                  src={user.avatar}
-                  alt={user.name}
-                  className="w-12 h-12 rounded-full border-2 border-[#020617] bg-[#020617] object-cover shrink-0 relative z-10"
-                />
-              ) : (
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-purple-600/50 to-cyan-500/50 text-base font-black text-white border-2 border-[#020617] relative z-10">
-                  {(user.name || 'U').charAt(0).toUpperCase()}
-                </div>
-              )}
+              <UserAvatar user={user} size="md" className="border-2 border-[#020617] relative z-10" />
+              
               <div className="flex-grow min-w-0 relative z-10">
                 <textarea
                   value={postText}
@@ -519,17 +511,7 @@ export default function Feed() {
                 </div>
                 {/* Activity Header */}
                 <div className="flex items-start gap-4 relative z-10">
-                  {activity.userId?.avatar ? (
-                    <img
-                      src={activity.userId.avatar}
-                      alt={activity.userId.name}
-                      className="w-12 h-12 rounded-full border-2 border-[#020617] bg-[#020617] object-cover shrink-0"
-                    />
-                  ) : (
-                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-purple-600/50 to-cyan-500/50 text-base font-black text-white border-2 border-[#020617]">
-                      {(activity.userId?.name || 'U').charAt(0).toUpperCase()}
-                    </div>
-                  )}
+                  <UserAvatar user={activity.userId} size="md" className="border-2 border-[#020617]" />
                   
                   <div className="flex-grow min-w-0">
                     <div className="flex items-baseline justify-between gap-2">
