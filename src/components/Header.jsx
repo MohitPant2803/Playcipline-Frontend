@@ -38,6 +38,7 @@ export default function Header() {
   const [isHidden, setIsHidden] = useState(false);
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [imgError, setImgError] = useState(false);
   const profileMenuRef = useRef(null);
   const searchRef = useRef(null);
   const lastScrollY = useRef(0);
@@ -173,7 +174,11 @@ export default function Header() {
               </div>
 
               <Link to="/explore" className="flex items-center gap-2 sm:gap-3 group shrink-0">
-                <span className="text-2xl sm:text-3xl drop-shadow-[0_0_10px_theme(colors.purple.500)] transition-transform duration-300 group-hover:scale-110 motion-reduce:animate-none">🎮</span>
+                {!imgError ? (
+                  <img src="/icon.png" alt="Playcipline Logo" onError={() => setImgError(true)} className="w-8 h-8 sm:w-10 sm:h-10 transition-transform duration-300 group-hover:scale-110 motion-reduce:animate-none rounded-xl object-contain bg-white/5 p-1 shadow-inner" />
+                ) : (
+                  <span className="text-2xl sm:text-3xl drop-shadow-[0_0_10px_theme(colors.purple.500)] transition-transform duration-300 group-hover:scale-110 motion-reduce:animate-none">🎮</span>
+                )}
                 <h1 className="text-lg sm:text-2xl font-black text-white tracking-wider drop-shadow-lg hidden min-[300px]:block">Playcipline</h1>
               </Link>
               <nav className="hidden lg:flex items-center gap-4">

@@ -131,14 +131,14 @@ function CinematicDomain({ domain }) {
            <div className={`max-w-3xl flex flex-col ${alignClass}`}>
               <div className={`flex items-center gap-4 mb-6 transition-opacity duration-700 ease-out ${inView ? 'opacity-100' : 'opacity-0'}`} style={{ transitionDelay: '0ms' }}>
                 <span className="text-5xl sm:text-6xl drop-shadow-2xl">{icon}</span>
-                <span className="text-sm md:text-base font-black uppercase tracking-[0.5em] text-white/50">{subtitle}</span>
+                <span className="text-sm md:text-base font-black uppercase tracking-[0.5em] text-white/80 drop-shadow-sm">{subtitle}</span>
               </div>
              
-              <h2 className={`text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/60 leading-[0.9] tracking-tighter mb-8 uppercase px-4 -mx-4 py-2 transition-opacity duration-700 ease-out ${inView ? 'opacity-100' : 'opacity-0'}`} style={{ transitionDelay: '0ms' }}>{title}</h2>
+              <h2 className={`text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-300 drop-shadow-lg leading-[0.9] tracking-tighter mb-8 uppercase px-4 -mx-4 py-2 transition-opacity duration-700 ease-out ${inView ? 'opacity-100' : 'opacity-0'}`} style={{ transitionDelay: '0ms' }}>{title}</h2>
              
-              <p className={`text-2xl sm:text-3xl md:text-4xl text-white font-bold leading-tight mb-6 transition-opacity duration-700 ease-out ${inView ? 'opacity-100' : 'opacity-0'}`} style={{ transitionDelay: '0ms' }}>"{quote}"</p>
+              <p className={`text-2xl sm:text-3xl md:text-4xl text-white drop-shadow-md font-bold leading-tight mb-6 transition-opacity duration-700 ease-out ${inView ? 'opacity-100' : 'opacity-0'}`} style={{ transitionDelay: '0ms' }}>"{quote}"</p>
              
-              <p className={`text-lg sm:text-xl text-slate-400 font-medium leading-relaxed mb-12 max-w-2xl transition-opacity duration-700 ease-out ${inView ? 'opacity-100' : 'opacity-0'}`} style={{ transitionDelay: '0ms' }}>{description}</p>
+              <p className={`text-lg sm:text-xl text-slate-200 font-medium leading-relaxed mb-12 max-w-2xl drop-shadow-sm transition-opacity duration-700 ease-out ${inView ? 'opacity-100' : 'opacity-0'}`} style={{ transitionDelay: '0ms' }}>{description}</p>
              
               <div className={`transition-opacity duration-700 ease-out ${inView ? 'opacity-100' : 'opacity-0'}`} style={{ transitionDelay: '0ms' }}>
                 <button 
@@ -171,11 +171,11 @@ function IdentityPanel({ title, subtitle, description, align = 'left', gradient,
          </div>
          
          <div className={`relative z-10 max-w-5xl w-full flex flex-col ${alignClass}`}>
-             <Reveal delay={0}><span className="text-sm md:text-base font-black uppercase tracking-[0.4em] mb-6 text-white/50 block">
+             <Reveal delay={0}><span className="text-sm md:text-base font-black uppercase tracking-[0.4em] mb-6 text-white/80 drop-shadow-sm block">
              {subtitle}
              </span>
-             <h2 className="text-5xl sm:text-7xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/70 leading-[1.1] tracking-tight mb-8 px-4 -mx-4 py-2">{title}</h2>
-             <p className="text-xl sm:text-2xl md:text-3xl text-white/70 max-w-2xl font-medium leading-relaxed">{description}</p></Reveal>
+             <h2 className="text-5xl sm:text-7xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-200 drop-shadow-lg leading-[1.1] tracking-tight mb-8 px-4 -mx-4 py-2">{title}</h2>
+             <p className="text-xl sm:text-2xl md:text-3xl text-slate-200 max-w-2xl font-medium leading-relaxed drop-shadow-sm">{description}</p></Reveal>
          </div>
     </div>
   );
@@ -207,9 +207,9 @@ function TimelineMilestone({ day, title, description, align = 'left', glowColor 
       {/* Cinematic Content Card */}
       <Reveal direction={isLeft ? 'left' : 'right'} className={`w-full md:w-1/2 flex ${isLeft ? 'md:justify-end md:pr-24' : 'md:justify-start md:pl-24 md:ml-auto'} pl-24 pr-4`}>
         <div className={`flex flex-col ${isLeft ? 'md:text-right' : 'md:text-left'} text-left`}>
-          <span className={`text-xl sm:text-2xl font-black uppercase tracking-[0.3em] mb-4 transition-colors duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] ${inView ? textGlowClasses[glowColor] : 'text-slate-800'}`}>{day}</span>
+          <span className={`text-xl sm:text-2xl font-black uppercase tracking-[0.3em] mb-4 transition-colors duration-1000 ease-[cubic-bezier(0.16,1,0.3,1)] drop-shadow-md ${inView ? textGlowClasses[glowColor] : 'text-slate-800'}`}>{day}</span>
           <h3 className="text-3xl sm:text-5xl font-black text-white mb-6 tracking-tight drop-shadow-lg leading-tight">{title}</h3>
-          <p className="text-lg sm:text-xl text-slate-400 font-medium leading-relaxed">{description}</p>
+          <p className="text-lg sm:text-xl text-slate-200 font-medium leading-relaxed drop-shadow-sm">{description}</p>
         </div>
       </Reveal>
     </div>
@@ -221,11 +221,11 @@ function ReflectiveText({ text, subtext, actionButton = null }) {
     <div className="min-h-[75vh] flex flex-col items-center justify-center text-center px-4 sm:px-12 relative z-10">
       <Reveal delay={0}>
         <div className="flex flex-col items-center">
-          <h3 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/40 tracking-tighter leading-[1.1] p-4">
+          <h3 className="text-4xl sm:text-6xl md:text-7xl lg:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-300 drop-shadow-lg tracking-tighter leading-[1.1] p-4">
            {text}
           </h3>
           {subtext && (
-            <p className="mt-4 sm:mt-8 text-xl sm:text-2xl md:text-3xl text-slate-500 font-medium max-w-3xl leading-relaxed">
+            <p className="mt-4 sm:mt-8 text-xl sm:text-2xl md:text-3xl text-slate-300 font-medium max-w-3xl leading-relaxed drop-shadow-sm">
             {subtext}
             </p>
           )}
@@ -347,10 +347,10 @@ export default function Explore() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-cyan-500"></span>
                 </span>
-                <span className="text-xs font-bold text-cyan-50 uppercase tracking-[0.25em]">Your Evolution Awaits</span>
+                <span className="text-xs font-bold text-cyan-100 uppercase tracking-[0.25em] drop-shadow-md">Your Evolution Awaits</span>
               </div>
-              <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tighter mb-8 text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-slate-400 leading-[1.1] drop-shadow-2xl uppercase px-4 py-2">Focus. Forge. Finish.</h1>
-              <p className="text-lg sm:text-2xl text-slate-300 mb-16 leading-relaxed max-w-3xl font-medium tracking-wide drop-shadow-md">Select your domain. Build relentless habits, execute with precision, and become the architect of your own reality.</p>
+              <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tighter mb-8 text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-slate-300 leading-[1.1] drop-shadow-2xl uppercase px-4 py-2">Focus. Forge. Finish.</h1>
+              <p className="text-lg sm:text-2xl text-slate-200 mb-16 leading-relaxed max-w-3xl font-medium tracking-wide drop-shadow-md">Select your domain. Build relentless habits, execute with precision, and become the architect of your own reality.</p>
             </div>
           </Reveal>
         </div>

@@ -1,8 +1,38 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Dependencies
 node_modules/
+
+# Build Outputs (Vite)
+dist/
+dist-ssr/
+
+# Environment Variables
+# Ignore local environment files containing secrets
 .env
 .env.local
-dist/
-build/
+.env.*.local
+
+# OS Files
 .DS_Store
-*.log
-.opencode
+Thumbs.db
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs
+*.njsproj
+*.sln
+*.sw?
+
+# Optional: Vercel local cache
+.vercel/

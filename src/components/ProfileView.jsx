@@ -139,8 +139,8 @@ export default function ProfileView({
               </div>
 
               <h1 className="text-3xl font-black text-white tracking-tight drop-shadow-md mb-1">{profile?.name}</h1>
-              <p className="text-xs text-cyan-400 font-bold uppercase tracking-widest mb-4">{profile?.location || 'Location Unknown'}</p>
-              <p className="text-sm text-slate-400 font-medium leading-relaxed max-w-[250px] mb-6 line-clamp-2">
+              <p className="text-xs text-cyan-300 font-bold uppercase tracking-widest mb-4 drop-shadow-sm">{profile?.location || 'Location Unknown'}</p>
+              <p className="text-sm text-slate-200 font-medium leading-relaxed max-w-[250px] mb-6 line-clamp-2 drop-shadow-sm">
                 {profile?.bio || 'Building discipline, one day at a time.'}
               </p>
 

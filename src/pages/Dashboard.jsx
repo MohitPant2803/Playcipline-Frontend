@@ -162,15 +162,11 @@ export default function Dashboard() {
       <div className="absolute top-1/4 left-0 w-[50vw] h-[50vw] max-w-[800px] bg-indigo-600/10 blur-[120px] rounded-full pointer-events-none mix-blend-screen animate-pulse -z-10" style={{ animationDuration: '8s' }}></div>
       <div className="absolute bottom-1/4 right-0 w-[50vw] h-[50vw] max-w-[800px] bg-cyan-600/10 blur-[120px] rounded-full pointer-events-none mix-blend-screen animate-pulse -z-10" style={{ animationDuration: '12s' }}></div>
 
-      {/* Soft Vignette & Noise Overlay */}
-      <div className="fixed inset-0 pointer-events-none z-50 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(2,6,23,0.6)_100%)]"></div>
-      <div className="fixed inset-0 pointer-events-none z-50 opacity-[0.015] mix-blend-overlay" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.85\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E")' }}></div>
-
       <div className="max-w-6xl mx-auto px-4 py-12 sm:py-16 relative z-10">
         <div className="mb-16 sm:mb-20 text-center flex flex-col items-center relative">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[150px] bg-purple-500/20 blur-[80px] pointer-events-none -z-10"></div>
-          <h1 className="text-5xl sm:text-7xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-white/40 uppercase drop-shadow-[0_0_30px_rgba(255,255,255,0.1)] mb-6 relative z-10">Your Evolution</h1>
-          <p className="text-xs sm:text-sm text-slate-400 font-black tracking-[0.3em] uppercase relative z-10">Consistency compounds silently.</p>
+          <h1 className="text-5xl sm:text-7xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-200 uppercase drop-shadow-[0_0_30px_rgba(255,255,255,0.4)] mb-6 relative z-10">Your Evolution</h1>
+          <p className="text-xs sm:text-sm text-slate-300 font-black tracking-[0.3em] uppercase relative z-10 drop-shadow-md">Consistency compounds silently.</p>
         </div>
 
         <XPProgressCard totalXP={user?.totalXP || 0} />
@@ -180,30 +176,30 @@ export default function Dashboard() {
           
           {/* Progression */}
           <div className="flex flex-col border-l border-white/10 pl-5 sm:pl-6">
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-2.5">Current Level</p>
-            <p className="text-lg sm:text-xl font-medium text-white tracking-wide mb-1">Level {levelInfo.level}</p>
-            <p className="text-xs text-slate-400">{levelInfo.xpNeededForNextLevel} XP to next evolution</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2.5 drop-shadow-sm">Current Level</p>
+            <p className="text-lg sm:text-xl font-bold text-white tracking-wide mb-1 drop-shadow-md">Level {levelInfo.level}</p>
+            <p className="text-xs text-slate-300 font-medium">{levelInfo.xpNeededForNextLevel} XP to next evolution</p>
           </div>
 
           {/* Streak */}
           <div className="flex flex-col border-l border-white/10 pl-5 sm:pl-6">
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-2.5">Momentum</p>
-            <p className="text-lg sm:text-xl font-medium text-white tracking-wide mb-1">{currentStreak} Days Active</p>
-            <p className="text-xs text-slate-400">Personal best: {user?.longestStreak || 0} days</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2.5 drop-shadow-sm">Momentum</p>
+            <p className="text-lg sm:text-xl font-bold text-white tracking-wide mb-1 drop-shadow-md">{currentStreak} Days Active</p>
+            <p className="text-xs text-slate-300 font-medium">Personal best: {user?.longestStreak || 0} days</p>
           </div>
 
           {/* Active Challenges */}
           <div className="flex flex-col border-l border-white/10 pl-5 sm:pl-6">
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-2.5">System Bandwidth</p>
-            <p className="text-lg sm:text-xl font-medium text-white tracking-wide mb-1">{challenges.length} Active Paths</p>
-            <p className="text-xs text-slate-400">{Math.max(0, maxActiveChallenges - challenges.length)} slots available</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2.5 drop-shadow-sm">System Bandwidth</p>
+            <p className="text-lg sm:text-xl font-bold text-white tracking-wide mb-1 drop-shadow-md">{challenges.length} Active Paths</p>
+            <p className="text-xs text-slate-300 font-medium">{Math.max(0, maxActiveChallenges - challenges.length)} slots available</p>
           </div>
 
           {/* Daily Execution / Tasks */}
           <div className="flex flex-col border-l border-white/10 pl-5 sm:pl-6">
-            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500 mb-2.5">Daily Directives</p>
-            <p className="text-lg sm:text-xl font-medium text-white tracking-wide mb-1">{completedTodayCount} of {challenges.length} Done</p>
-            <p className="text-xs text-slate-400">{remainingTodayCount === 0 ? 'All protocols finished' : `${remainingTodayCount} awaiting execution`}</p>
+            <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400 mb-2.5 drop-shadow-sm">Daily Directives</p>
+            <p className="text-lg sm:text-xl font-bold text-white tracking-wide mb-1 drop-shadow-md">{completedTodayCount} of {challenges.length} Done</p>
+            <p className="text-xs text-slate-300 font-medium">{remainingTodayCount === 0 ? 'All protocols finished' : `${remainingTodayCount} awaiting execution`}</p>
           </div>
 
         </div>
@@ -243,7 +239,7 @@ export default function Dashboard() {
                 </div>
                 
                 <div className="mb-6">
-                  <p className="text-[10px] font-black text-slate-500 mb-3 flex justify-between uppercase tracking-widest">
+                  <p className="text-[10px] font-black text-slate-400 mb-3 flex justify-between uppercase tracking-widest drop-shadow-sm">
                     <span>Evolution Progress</span>
                     <span className="text-cyan-400">{uc.completedDays} / {uc.requiredDays} Days</span>
                   </p>
@@ -259,7 +255,7 @@ export default function Dashboard() {
                 </div>
 
                 <div className="mb-10">
-                  <p className="text-[10px] font-black text-slate-500 uppercase tracking-widest">Momentum: <span className="text-white tabular-nums ml-2 text-xs">{uc.currentStreak} Days</span></p>
+                  <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest drop-shadow-sm">Momentum: <span className="text-white drop-shadow-md tabular-nums ml-2 text-xs">{uc.currentStreak} Days</span></p>
                 </div>
 
                 <div className="mt-auto pt-2 relative z-10">

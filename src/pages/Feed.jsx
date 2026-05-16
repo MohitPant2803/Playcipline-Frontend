@@ -572,7 +572,7 @@ export default function Feed() {
                       </div>
                     </div>
                     
-                    <p className="text-[15px] sm:text-base text-slate-300 leading-relaxed mt-2 mb-5 font-medium">
+                    <p className="text-[15px] sm:text-base text-slate-200 leading-relaxed mt-2 mb-5 font-semibold drop-shadow-sm">
                       {getActivityText(activity)}
                     </p>
 
@@ -624,7 +624,7 @@ export default function Feed() {
                         {activity.comments.map((comment, idx) => (
                           <div key={idx} className="group/comment text-sm leading-snug flex items-start gap-2 bg-white/[0.02] p-3 rounded-2xl border border-white/[0.02]">
                             <span className="font-bold text-sm text-slate-200 shrink-0">{comment.userId?.name || 'User'}</span>
-                            <span className="text-[13px] sm:text-sm text-slate-400 font-medium break-words flex-grow">{comment.text}</span>
+                            <span className="text-[13px] sm:text-sm text-slate-200 font-medium break-words flex-grow drop-shadow-sm">{comment.text}</span>
                             {user && user._id === comment.userId?._id && (
                               <button 
                                 onClick={() => handleDeleteComment(activity._id, comment._id, idx)}

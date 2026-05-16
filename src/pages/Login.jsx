@@ -104,6 +104,7 @@ export default function Login() {
   const { user, loading, error } = useAuth();
   const navigate = useNavigate();
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [imgError, setImgError] = useState(false);
 
   React.useEffect(() => {
     if (user && !loading) {
@@ -132,7 +133,11 @@ export default function Login() {
 
   const LoginPanel = ({ isMobile = false }) => (
     <div className={`flex flex-col items-center text-center w-full max-w-sm mx-auto ${isMobile ? 'py-20 px-4' : ''}`}>
-      <span className="text-5xl drop-shadow-[0_0_20px_theme(colors.purple.500)] mb-6 animate-pulse">🎮</span>
+      {!imgError ? (
+        <img src="/icon.png" alt="Playcipline Logo" onError={() => setImgError(true)} className="w-16 h-16 mb-6 animate-pulse rounded-2xl shadow-[0_0_20px_rgba(168,85,247,0.4)] object-contain bg-white/5 p-2" />
+      ) : (
+        <span className="text-5xl drop-shadow-[0_0_20px_theme(colors.purple.500)] mb-6 animate-pulse block">🎮</span>
+      )}
       <h2 className="text-4xl font-black tracking-widest uppercase mb-4 text-white drop-shadow-lg">Playcipline</h2>
       <p className="text-slate-400 font-medium mb-12 text-lg">Your evolution begins here.</p>
 
@@ -194,7 +199,11 @@ export default function Login() {
       {/* Mobile Top Header (Quick Action) */}
       <div className="lg:hidden fixed top-0 inset-x-0 z-50 bg-slate-900/80 backdrop-blur-xl border-b border-white/10 px-4 py-4 flex justify-between items-center">
         <div className="flex items-center gap-2">
-          <span className="text-xl">🎮</span>
+          {!imgError ? (
+            <img src="/icon.png" alt="Playcipline Logo" onError={() => setImgError(true)} className="w-6 h-6 rounded-md object-contain bg-white/5 p-0.5" />
+          ) : (
+            <span className="text-xl">🎮</span>
+          )}
           <span className="font-black tracking-wider text-white">Playcipline</span>
         </div>
         <a href={authUrl} className="text-xs font-black uppercase tracking-widest text-white bg-white/10 px-4 py-2 rounded-full border border-white/20">Sign In</a>

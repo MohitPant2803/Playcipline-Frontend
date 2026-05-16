@@ -150,10 +150,10 @@ export default function DomainPage() {
         <div className="text-center mb-20 flex flex-col items-center relative">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[300px] h-[150px] bg-cyan-500/10 blur-[80px] pointer-events-none -z-10"></div>
           <div className="w-16 h-16 rounded-full bg-white/5 border border-white/10 flex items-center justify-center mb-6 backdrop-blur-md shadow-inner">
-             <span className="text-2xl opacity-60 grayscale">{domainInfo.icon}</span>
+             <span className="text-2xl opacity-90">{domainInfo.icon}</span>
           </div>
-          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-white/40 uppercase drop-shadow-[0_0_20px_rgba(255,255,255,0.05)] mb-4 px-4 py-2 -mx-4">{domainInfo.title}</h1>
-          <p className="text-xs sm:text-sm text-slate-500 font-black tracking-[0.3em] uppercase">{domainInfo.tagline}</p>
+          <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-200 uppercase drop-shadow-[0_0_20px_rgba(255,255,255,0.4)] mb-4 px-4 py-2 -mx-4">{domainInfo.title}</h1>
+          <p className="text-xs sm:text-sm text-slate-300 font-black tracking-[0.3em] uppercase drop-shadow-sm">{domainInfo.tagline}</p>
         </div>
         
         {loading ? (
@@ -184,8 +184,8 @@ export default function DomainPage() {
                     </span>
                   </div>
                   
-                  <h3 className="text-2xl font-black text-white tracking-tight drop-shadow-lg mb-3 leading-tight pr-4">{challenge.title}</h3>
-                  <p className="text-sm text-slate-400 mb-8 leading-relaxed font-medium flex-grow">{challenge.description}</p>
+                  <h3 className="text-2xl font-black text-white tracking-tight drop-shadow-xl mb-3 leading-tight pr-4">{challenge.title}</h3>
+                  <p className="text-sm text-slate-200 mb-8 leading-relaxed font-medium flex-grow drop-shadow-sm">{challenge.description}</p>
                   
                   <div className="flex flex-wrap gap-2 mb-8 mt-auto">
                     {renderDifficulty(challenge.baseDifficulty)}
@@ -250,13 +250,13 @@ export default function DomainPage() {
               
               {/* Hero Section */}
               <div className="min-h-[80vh] flex flex-col items-center justify-center text-center px-4 w-full max-w-5xl mx-auto pt-24 sm:pt-20">
-                <span className="px-4 py-1.5 rounded-full border border-white/10 bg-white/5 text-[10px] font-black uppercase tracking-[0.3em] text-cyan-400 mb-8 backdrop-blur-md shadow-[0_0_20px_rgba(34,211,238,0.1)]">
+                <span className="px-4 py-1.5 rounded-full border border-white/10 bg-white/5 text-[10px] font-black uppercase tracking-[0.3em] text-cyan-300 mb-8 backdrop-blur-md shadow-[0_0_20px_rgba(34,211,238,0.3)]">
                   {selectedChallenge.category} Protocol
                 </span>
-                <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-white/40 uppercase drop-shadow-[0_0_30px_rgba(255,255,255,0.05)] mb-8 px-4 -mx-4 py-2 leading-[0.9]">
+                <h1 className="text-5xl sm:text-7xl lg:text-8xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-b from-white to-slate-200 uppercase drop-shadow-[0_0_30px_rgba(255,255,255,0.4)] mb-8 px-4 -mx-4 py-2 leading-[0.9]">
                   {selectedChallenge.title}
                 </h1>
-                <p className="text-lg sm:text-2xl text-slate-300 font-medium max-w-3xl leading-relaxed mb-12 drop-shadow-md">
+                <p className="text-lg sm:text-2xl text-slate-200 font-medium max-w-3xl leading-relaxed mb-12 drop-shadow-lg">
                   {selectedChallenge.description}
                 </p>
                 
