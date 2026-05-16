@@ -21,10 +21,18 @@ export const getApiUrl = (endpoint) => {
 };
 
 export const getOAuthUrl = () => {
-  if (Capacitor.isNativePlatform()) {
-    return `${API_BASE_URL}/api/auth/google?redirect_uri=com.playcipline.app://auth`;
+  const isNative = Capacitor.isNativePlatform();
+  
+  console.log('\n--- OAUTH URL GENERATION ---');
+  console.log('1. Capacitor.isNativePlatform():', isNative);
+
+  let url = `${API_BASE_URL}/api/auth/google`;
+  if (isNative) {
+    url += '?redirect_uri=com.playcipline.app://auth';
   }
-  return `${API_BASE_URL}/api/auth/google`;
+  
+  console.log('2. Final Rendered URL:', url);
+  return url;
 };
 
 export default {

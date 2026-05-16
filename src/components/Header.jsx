@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { userAPI, API_BASE_URL } from '../api/client';
+import { Capacitor } from '@capacitor/core';
 import LogoutConfirmModal from './LogoutConfirmModal';
 import UserAvatar from './UserAvatar';
 
@@ -146,6 +147,11 @@ export default function Header() {
 
   const isHidablePage = location.pathname === '/explore' || location.pathname === '/';
 
+  const isNative = Capacitor.isNativePlatform();
+  const authUrl = isNative
+    ? `${API_BASE_URL}/api/auth/google?redirect_uri=com.playcipline.app://auth`
+    : `${API_BASE_URL}/api/auth/google`;
+
   return (
     <>
       <header
@@ -222,7 +228,7 @@ export default function Header() {
                   )}
                 </div>
               ) : (
-                <a href={`${API_BASE_URL}/api/auth/google`} className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-purple-600 to-pink-500 px-5 py-2 text-sm font-bold text-white shadow-lg transition-transform hover:scale-105 motion-reduce:transform-none">Login</a>
+                <a href={authUrl} className="inline-flex items-center justify-center rounded-full bg-gradient-to-r from-purple-600 to-pink-500 px-5 py-2 text-sm font-bold text-white shadow-lg transition-transform hover:scale-105 motion-reduce:transform-none">Login</a>
               )}
             </div>
           </div>
