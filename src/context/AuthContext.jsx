@@ -33,31 +33,37 @@ function authReducer(state, action) {
 export function AuthProvider({ children }) {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
-  useEffect(() => {
+  const refreshAuth = async (tokenOverride = null) => {
     const params = new URLSearchParams(window.location.search);
     const urlToken = params.get('token');
     const existingToken = localStorage.getItem('token');
-    const token = urlToken || existingToken;
+    const token = tokenOverride || urlToken || existingToken;
 
-    if (urlToken) {
+    if (urlToken && !tokenOverride) {
       localStorage.setItem('token', urlToken);
       // Clear URL immediately
       window.history.replaceState({}, document.title, window.location.pathname);
     }
 
     if (token) {
-      authAPI.getMe()
-        .then(res => {
-          dispatch({ type: 'SET_USER', payload: res.data, token });
-        })
-        .catch((err) => {
-          console.error('Auth error:', err.message);
-          localStorage.removeItem('token');
-          dispatch({ type: 'SET_LOADING', payload: false });
-        });
+      try {
+        const res = await authAPI.getMe();
+        dispatch({ type: 'SET_USER', payload: res.data, token });
+        return true;
+      } catch (err) {
+        console.error('Auth error:', err.message);
+        localStorage.removeItem('token');
+        dispatch({ type: 'LOGOUT' });
+        return false;
+      }
     } else {
-      dispatch({ type: 'SET_LOADING', payload: false });
+      dispatch({ type: 'LOGOUT' });
+      return false;
     }
+  };
+
+  useEffect(() => {
+    refreshAuth();
   }, []);
 
   const logout = () => {
@@ -88,7 +94,7 @@ export function AuthProvider({ children }) {
   };
 
   return (
-    <AuthContext.Provider value={{ ...state, logout, devLogin, updateProfile, mergeUser }}>
+    <AuthContext.Provider value={{ ...state, logout, devLogin, updateProfile, mergeUser, refreshAuth }}>
       {children}
     </AuthContext.Provider>
   );
