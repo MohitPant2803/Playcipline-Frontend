@@ -5,7 +5,7 @@ export const UserContext = createContext();
 export function UserProvider({ children }) {
   const [userStats, setUserStats] = useState({
     totalXP: 0,
-    level: 1,
+    level: 0,
     globalStreak: 0,
     weeklyXP: 0
   });

@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { API_BASE_URL } from '../api/client';
+import { Capacitor } from '@capacitor/core';
 
 // High-Performance Cinematic Motion System
 function useParallax(speed = 0.1) {
@@ -125,6 +126,10 @@ export default function Login() {
     return null;
   }
 
+  // Mobile-safe OAuth Flow
+  const isNative = Capacitor.isNativePlatform();
+  const authUrl = isNative ? `${API_BASE_URL}/api/auth/google?redirect_uri=com.playcipline.app://auth` : `${API_BASE_URL}/api/auth/google`;
+
   const LoginPanel = ({ isMobile = false }) => (
     <div className={`flex flex-col items-center text-center w-full max-w-sm mx-auto ${isMobile ? 'py-20 px-4' : ''}`}>
       <span className="text-5xl drop-shadow-[0_0_20px_theme(colors.purple.500)] mb-6 animate-pulse">🎮</span>
@@ -138,7 +143,7 @@ export default function Login() {
       )}
 
       <a
-        href={`${API_BASE_URL}/api/auth/google`}
+        href={authUrl}
         className="group relative w-full px-8 py-5 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/30 rounded-2xl overflow-hidden transition-all duration-500 transform hover:scale-[1.02] shadow-[0_0_40px_rgba(168,85,247,0.15)] hover:shadow-[0_0_60px_rgba(168,85,247,0.3)]"
       >
         <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 bg-gradient-to-r from-purple-600/20 to-pink-600/20"></div>
@@ -192,7 +197,7 @@ export default function Login() {
           <span className="text-xl">🎮</span>
           <span className="font-black tracking-wider text-white">Playcipline</span>
         </div>
-        <a href={`${API_BASE_URL}/api/auth/google`} className="text-xs font-black uppercase tracking-widest text-white bg-white/10 px-4 py-2 rounded-full border border-white/20">Sign In</a>
+        <a href={authUrl} className="text-xs font-black uppercase tracking-widest text-white bg-white/10 px-4 py-2 rounded-full border border-white/20">Sign In</a>
       </div>
 
       {/* LEFT SIDE: Cinematic Onboarding Scroll */}

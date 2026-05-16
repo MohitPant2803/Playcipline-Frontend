@@ -1,0 +1,9 @@
+{
+  "appId": "com.playcipline.app",
+  "appName": "Playcipline",
+  "webDir": "dist",
+  "server": {
+    "url": "https://playcipline-frontend.vercel.app",
+    "cleartext": true
+  }
+}
